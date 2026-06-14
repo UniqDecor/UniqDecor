@@ -21,6 +21,7 @@ import {
   MessageSquareMore,
   MapPin
 } from "lucide-react";
+import ShowroomVisit from "@/components/sections/homepage/ShowroomVisit";
 
 // Product categories dataset matching updated specs
 const AMENITIES_PRODUCTS = {
@@ -710,37 +711,8 @@ export default function LaxreeAmenitiesPage() {
         </div>
       </section>
 
-      {/* ESTIMATES & SURVEY */}
-      <section className="bg-[#1C3328] text-white py-20 px-6 md:px-12 relative overflow-hidden border-t-4 border-[#A3704C]" id="laxree-amenities-consultation">
-        <div className="absolute inset-0 laxree-amenities-premium-radial-bg pointer-events-none"></div>
-        
-        <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col gap-6 items-center">
-          <span className="text-xs uppercase tracking-[0.3em] text-[#A3704C] font-bold">Request Sample Amenities Kit</span>
-          <h2 className="font-serif text-3xl md:text-5xl font-bold tracking-tight">Free Hospitality Sample Kit</h2>
-          <p className="text-white/80 max-w-2xl text-xs md:text-base leading-relaxed">
-            Planning a new resort, luxury hotel, or glamping retreat? Contact us to receive a curated sample box of premium toiletries, trays, and in-room catalog pricing.
-          </p>
-          
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full justify-center">
-            <a 
-              href="https://wa.me/919982219222?text=Hi%20Uniq%20Decor!%20👋%20I%20am%20interested%20in%20LaxRee%20Hospitality%20Amenities%20and%20hotel%20room%20supplies.%20Please%20share%20a%20B2B%20catalog%20and%20sample%20pricing%20details." 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#25D366] hover:bg-[#128C7E] text-white text-xs uppercase tracking-widest font-bold rounded-full transition-all duration-300 shadow-lg hover:scale-[1.03] cursor-hover"
-            >
-              <MessageSquareMore className="w-4.5 h-4.5" />
-              Request Sample Kit on WhatsApp
-            </a>
-            <Link 
-              href="/#showroom" 
-              className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-transparent border border-white hover:bg-white hover:text-[#1C3328] text-white text-xs uppercase tracking-widest font-bold rounded-full transition-all duration-300 cursor-hover"
-            >
-              <Map className="w-4 h-4" />
-              View Showroom Address
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* SHOWROOM VISIT SECTION */}
+      <ShowroomVisit />
     </div>
   );
 }

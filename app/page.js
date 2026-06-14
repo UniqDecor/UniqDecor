@@ -11,6 +11,7 @@ import LaxreeSummary from "@/components/sections/homepage/LaxreeSummary";
 import WhyUs from "@/components/sections/homepage/WhyUs";
 import Testimonials from "@/components/sections/homepage/Testimonials";
 import Showroom from "@/components/sections/homepage/Showroom";
+import ShowroomVisit from "@/components/sections/homepage/ShowroomVisit";
 import Journey from "@/components/sections/homepage/Journey";
 import FAQ from "@/components/sections/homepage/FAQ";
 
@@ -75,6 +76,7 @@ export default function Home() {
       <WhyUs />
       <Testimonials />
       <Showroom />
+      <ShowroomVisit />
       <Journey />
       <FAQ />
     </div>

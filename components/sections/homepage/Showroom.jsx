@@ -118,26 +118,8 @@ function CardCarousel({ slides, title, desc, tag, icon }) {
 
 export default function Showroom() {
   const [activeCategory, setActiveCategory] = useState("all");
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    date: "",
-    category: "",
-  });
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [whatsappLink, setWhatsappLink] = useState("");
-
   const containerRef = useRef(null);
   const gridRef = useRef(null);
-
-  useEffect(() => {
-    // Set min date of picker to today
-    const dateInput = document.getElementById("booking-date-v8");
-    if (dateInput) {
-      const today = new Date().toISOString().split("T")[0];
-      dateInput.setAttribute("min", today);
-    }
-  }, []);
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -161,17 +143,6 @@ export default function Showroom() {
       });
     }
 
-    gsap.from(".showroom-booking-plate-v8", {
-      scrollTrigger: {
-        trigger: ".showroom-booking-plate-v8",
-        start: "top 90%",
-        once: true,
-      },
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      ease: "power3.out",
-    });
   }, { scope: containerRef });
 
   const handleCategoryChange = (catId) => {
@@ -202,37 +173,6 @@ export default function Showroom() {
         });
       },
     });
-  };
-
-  const handleFormChange = (e) => {
-    const { id, value } = e.target;
-    // Map element ids to state keys
-    const stateKey = id.replace("booking-", "").replace("-v8", "");
-    setFormData((prev) => ({ ...prev, [stateKey]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const { name, phone, date, category } = formData;
-
-    if (!name || !phone || !date || !category) {
-      alert("Please fill out all booking fields to coordinate.");
-      return;
-    }
-
-    const formattedDate = new Date(date).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-    const message = `Hi Uniq Decor Furniture! 👋\n\nI would like to schedule a showroom visit consultation.\n\n👤 *Client Name:* ${name}\n📱 *Contact:* ${phone}\n📅 *Preferred Date:* ${formattedDate}\n🏢 *Brand Focus:* ${category}\n\nCan you please confirm if this slot is available? Thank you!`;
-    const encodedMessage = encodeURIComponent(message);
-    const link = `https://wa.me/919982219222?text=${encodedMessage}`;
-
-    setWhatsappLink(link);
-    setIsSuccess(true);
   };
 
   return (
@@ -839,131 +779,6 @@ export default function Showroom() {
             />
           </div>
         ))}
-      </div>
-
-      {/* SHOWROOM BOOKING PLATE & DIRECTIONS */}
-      <div className="showroom-booking-plate-v8">
-        {/* Left Column: Details & GPS */}
-        <div className="booking-info-col-v8">
-          <h3>Plan Your <span className="italic text-[#C9A227] font-serif font-medium">Showroom Visit</span></h3>
-          <p className="subtitle-v8">
-            Experience the materials, test the ergonomics, and receive professional consultations from our chief design consultants.
-          </p>
-
-          <div className="showroom-detail-item-v8">
-            <div className="detail-icon-wrapper-v8" aria-hidden="true">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current stroke-2">
-                <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
-                <circle cx="12" cy="10" r="3"/>
-              </svg>
-            </div>
-            <div className="detail-text-v8">
-              <h4>Showroom Address</h4>
-              <p>Uniq Decor and Furniture, 2nd Floor, Gokul Tower, F Block near CA Circle, Hiran Magri, Sector 14, Udaipur Rajasthan (313001)</p>
-            </div>
-          </div>
-
-          <div className="showroom-detail-item-v8">
-            <div className="detail-icon-wrapper-v8" aria-hidden="true">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current stroke-2">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-              </svg>
-            </div>
-            <div className="detail-text-v8">
-              <h4>Showroom Operating Hours</h4>
-              <p>Monday - Saturday: 10:00 AM - 8:30 PM (Sunday Closed)</p>
-            </div>
-          </div>
-
-          <a href="https://maps.google.com/?q=Uniq+Decor+Furniture+Udaipur" 
-             className="btn-directions-v8 cursor-hover" 
-             target="_blank" 
-             rel="noopener noreferrer"
-             aria-label="Get Google Maps navigation directions to Uniq Decor Showroom">
-            <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-none stroke-current stroke-2 mr-2.5" aria-hidden="true">
-              <polygon points="3 11 22 2 13 21 11 13 3 11"/>
-            </svg>
-            Get Navigation Directions
-          </a>
-        </div>
-
-        {/* Right Column: Appointment Form Card */}
-        <div className="booking-form-card-v8">
-          {/* SUCCESS BOX OVERLAY */}
-          <div className={`booking-success-v8 ${isSuccess ? "active-success-v8" : ""}`}>
-            <div className="success-icon-v8">
-              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <h5>Appointment Request Logged!</h5>
-            <p>Your request has been successfully registered. Confirm instantly with our showroom manager on WhatsApp.</p>
-            <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="btn-whatsapp-confirm-v8 cursor-hover">
-              <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-current mr-2"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-              Confirm On WhatsApp
-            </a>
-          </div>
-
-          <h4>Schedule A Consultation</h4>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group-v8">
-              <label className="form-label-v8" htmlFor="booking-name-v8">Your Name</label>
-              <input
-                type="text"
-                id="booking-name-v8"
-                className="form-input-v8"
-                placeholder="e.g. Anirudh Sharma"
-                value={formData.name}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-
-            <div className="form-group-v8">
-              <label className="form-label-v8" htmlFor="booking-phone-v8">WhatsApp Number</label>
-              <input
-                type="tel"
-                id="booking-phone-v8"
-                className="form-input-v8"
-                placeholder="e.g. +91 99822 19222"
-                value={formData.phone}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-
-            <div className="form-group-v8">
-              <label className="form-label-v8" htmlFor="booking-date-v8">Preferred Date</label>
-              <input
-                type="date"
-                id="booking-date-v8"
-                className="form-input-v8"
-                value={formData.date}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-
-            <div className="form-group-v8">
-              <label className="form-label-v8" htmlFor="booking-cat-v8">Interest Category</label>
-              <select
-                id="booking-cat-v8"
-                className="form-select-v8"
-                value={formData.category}
-                onChange={handleFormChange}
-                required
-              >
-                <option value="" disabled>Select category of interest</option>
-                <option value="ROSERRO Bespoke Furniture">ROSERRO Bespoke Furniture</option>
-                <option value="D'DECOR Premium Fabrics">D'DECOR Premium Fabrics</option>
-                <option value="GEEKEN Office Furniture">GEEKEN Ergonomic Workspaces</option>
-                <option value="LAXREE Boutique Linens">LAXREE Boutique Hotel Bedding</option>
-                <option value="Full Space Consultation">Full Home Consultation</option>
-              </select>
-            </div>
-
-            <button type="submit" className="btn-submit-booking-v8 cursor-hover">Request Appointment</button>
-          </form>
-        </div>
       </div>
     </section>
   );

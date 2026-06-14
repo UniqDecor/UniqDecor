@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HOSPITALITY_DATA } from "../../hospitalityData";
 import { Check, ChevronRight, Phone, MapPin, Clock, Mail } from "lucide-react";
+import ShowroomVisit from "@/components/sections/homepage/ShowroomVisit";
 
 // Generate static routes for compilation
 export async function generateStaticParams() {
@@ -209,55 +210,8 @@ export default async function HospitalityPage({ params }) {
           ))}
         </div>
       </section>
-
-      {/* NAP & GPS MAPS SECTION */}
-      <section className="py-20 px-4 md:px-12 bg-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-5 flex flex-col gap-6">
-            <span className="text-xs uppercase tracking-[0.25em] text-[#8B4513] font-bold">Showroom Contact</span>
-            <h2 className="font-serif text-3xl font-bold text-[#2D2A26]">Visit Uniq Decor Store</h2>
-            <p className="text-[#6B6560] text-xs md:text-sm leading-relaxed">
-              Step inside our physical store in Udaipur to experience the actual shades, weight, and hand-feel of our D'Decor fabrics in person.
-            </p>
-            
-            <address className="not-italic flex flex-col gap-4 text-xs md:text-sm text-[#6B6560]">
-              <div className="flex gap-3.5 items-start">
-                <MapPin className="w-5 h-5 text-[#B8860B] shrink-0 mt-0.5" />
-                <span>D'Decor - Uniq Decor and Furniture, 2nd Floor, Gokul Tower, F Block near CA Circle, Hiran Magri, Sector 14, Udaipur Rajasthan (313001)</span>
-              </div>
-              <div className="flex gap-3.5 items-center">
-                <Phone className="w-4 h-4 text-[#B8860B] shrink-0" />
-                <a href="tel:+919982219222" className="hover:text-[#B8860B] transition-colors">+91 99822 19222</a>
-              </div>
-              <div className="flex gap-3.5 items-center">
-                <Mail className="w-4 h-4 text-[#B8860B] shrink-0" />
-                <a href="mailto:info@uniqdecor.com" className="hover:text-[#B8860B] transition-colors">info@uniqdecor.com</a>
-              </div>
-              <div className="flex gap-3.5 items-start">
-                <Clock className="w-4 h-4 text-[#B8860B] shrink-0 mt-0.5" />
-                <div>
-                  <span>Monday - Saturday: 10:00 AM - 8:00 PM</span>
-                  <br />
-                  <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Sunday Closed</span>
-                </div>
-              </div>
-            </address>
-          </div>
-
-          <div className="lg:col-span-7 h-[350px] rounded-2xl overflow-hidden border border-[#8B4513]/10 shadow-md relative bg-[#F5F0E8]">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3627.8483863481235!2d73.70959441113063!3d24.59434857800938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3967e56214555555%3A0x7d6a4c28f114b0b1!2sUniq%20Decor%20%26%20Furniture!5e0!3m2!1sen!2sin!4v1718000000000!5m2!1sen!2sin"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Google Map location of Uniq Decor Udaipur Showroom"
-            ></iframe>
-          </div>
-        </div>
-      </section>
+      {/* SHOWROOM VISIT SECTION */}
+      <ShowroomVisit />
 
       {/* INTERNAL LINKING / BROWSE OTHER NICHES */}
       <section className="py-16 bg-[#F5F0E8] border-t border-[#8B4513]/10">
