@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Styles & Reset Rules */
+html {
+  scroll-padding-top: 100px;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  background: #FAF9F6;
+  color: #1A1A1A;
+}
+
+#main-content {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Elegant Minimalist Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF9F6;
+}
+::-webkit-scrollbar-thumb {
+  background: #1B4332;
+  border-radius: 3px;
+}
+
+/* Page-level Theme Scopes */
+.theme-homepage {
+  --color-bg-primary: #FAF9F6;
+  --color-bg-secondary: #F5F3EE;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A4A4A;
+  --color-accent-primary: #1B4332;
+  --color-accent-hover: #142d22;
+  --color-accent-gold: #C5A059;
+  --color-accent-gold-hover: #AA853E;
+  --color-whatsapp: #25D366;
+  --color-border: #E5E5E5;
+}
+
+.theme-ddecor {
+  --color-bg-primary: #FAF9F6;
+  --color-bg-secondary: #F5F0E8;
+  --color-text-primary: #2D2A26;
+  --color-text-secondary: #6B6560;
+  --color-accent-primary: #8B4513; /* Brown */
+  --color-accent-hover: #70360f;
+  --color-accent-gold: #B8860B; /* Gold */
+  --color-accent-gold-hover: #966f07;
+  --color-whatsapp: #25D366;
+  --color-border: #E8E2D9;
+}
+
+.theme-geeken {
+  --color-bg-primary: #FAF9F6;
+  --color-bg-secondary: #E9ECEF;
+  --color-text-primary: #1A202C;
+  --color-text-secondary: #4A5568;
+  --color-accent-primary: #2C5282; /* Blue */
+  --color-accent-hover: #2A4365;
+  --color-accent-gold: #C9A227; /* Gold */
+  --color-accent-gold-hover: #ab891f;
+  --color-whatsapp: #25D366;
+  --color-border: #E2E8F0;
+}
+
+.theme-roserro {
+  --color-bg-primary: #FAF9F6;
+  --color-bg-secondary: #E9EFEA;
+  --color-text-primary: #0F1E19;
+  --color-text-secondary: #354F44;
+  --color-accent-primary: #1C3F30; /* Emerald */
+  --color-accent-hover: #122B20;
+  --color-accent-gold: #D4AF37; /* Gold */
+  --color-accent-gold-hover: #bda02b;
+  --color-whatsapp: #25D366;
+  --color-border: #D8E2D9;
+}
+
+.theme-laxree {
+  --color-bg-primary: #FAF9F5;
+  --color-bg-secondary: #F3F3F3;
+  --color-text-primary: #1E2022;
+  --color-text-secondary: #4A4E51;
+  --color-accent-primary: #D97706; /* Amber */
+  --color-accent-hover: #B45309;
+  --color-accent-gold: #C5A059; /* Gold */
+  --color-accent-gold-hover: #AA853E;
+  --color-whatsapp: #25D366;
+  --color-border: #E5E7EB;
+}
+
+.theme-laxree-amenities {
+  --color-bg-primary: #FAF9F6;
+  --color-bg-secondary: #EBF1ED;
+  --color-text-primary: #1C3328;
+  --color-text-secondary: #4A6055;
+  --color-accent-primary: #2E5A44; /* Emerald forest */
+  --color-accent-hover: #1C3328;
+  --color-accent-gold: #A3704C; /* Gold/Bronze */
+  --color-accent-gold-hover: #855b3c;
+  --color-whatsapp: #25D366;
+  --color-border: #D0DED5;
+}
+
+
+/* Premium 3D Perspective & Motion Utilities */
+.perspective-wrap { 
+  perspective: 1000px; 
+  transform-style: preserve-3d; 
+}
+.z-item { 
+  transform-style: preserve-3d; 
+  will-change: transform, opacity; 
+}
+.iso-container { 
+  perspective: 1500px; 
+  overflow: hidden; 
+}
+.iso-plane { 
+  transform-style: preserve-3d; 
+  transform: rotateX(50deg) rotateZ(-20deg) skewX(10deg); 
+  width: 150%; 
+  margin-left: -25%; 
+}
+.accordion-panel { 
+  transition: flex 0.8s cubic-bezier(0.25, 1, 0.5, 1); 
+}
+.helix-container { 
+  transform-style: preserve-3d; 
+}
+.turbine-scene { 
+  perspective: 2000px; 
+  overflow: hidden; 
+}
+.turbine-wheel { 
+  transform-style: preserve-3d; 
+  width: 300px; 
+  height: 400px; 
+  position: relative; 
+}
+.turbine-item { 
+  position: absolute; 
+  width: 100%; 
+  height: 100%; 
+  left: 0; 
+  top: 0; 
+  backface-visibility: hidden; 
+}
+.chaos-container { 
+  perspective: 1000px; 
+}
+
+/* Spectral Fan Utilities */
+.fan-scene { 
+  perspective: 1200px; 
+  overflow: hidden; 
+}
+.fan-card { 
+  transform-origin: 50% 200%; /* Pivot point far below card */
+  will-change: transform;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* Scrollbar Hiding Utilities */
+.scroll-none::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scroll-none,
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
