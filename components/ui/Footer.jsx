@@ -241,9 +241,11 @@ export default function Footer() {
           <span>&copy; {new Date().getFullYear()} Uniq Decor Udaipur. All Rights Reserved.</span>
         </div>
         
-        <div className="flex items-center gap-6 justify-center">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 justify-center">
           <Link href="/privacy" className="hover:text-[var(--color-accent-gold)] transition-colors">Privacy Policy</Link>
           <Link href="/terms" className="hover:text-[var(--color-accent-gold)] transition-colors">Terms of Service</Link>
+          <a href="/robots.txt" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-accent-gold)] transition-colors">Robots.txt</a>
+          <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-accent-gold)] transition-colors">Sitemap</a>
           <span className="text-white/10 hidden sm:inline">|</span>
           <span className="text-gray-500">Curation by <strong className="text-white font-semibold">AARTIQ ITECH</strong></span>
         </div>
