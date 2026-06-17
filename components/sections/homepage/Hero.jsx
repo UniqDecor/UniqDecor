@@ -71,7 +71,6 @@ export default function Hero() {
       }, "-=0.2");
 
     tl.from(".hero-visual-col", { 
-      x: 40, 
       opacity: 0, 
       duration: 0.9,
       ease: "power2.out"
@@ -86,20 +85,19 @@ export default function Hero() {
     }, 0.6);
 
     tl.from(mainImgRef.current, {
-      scale: 1.08,
+      scale: 1.05,
       opacity: 0,
       duration: 1.2,
       ease: "power2.out"
     }, 0.3);
 
-    // Continuous floating animation
+    // Continuous subtle zoom animation (Ken Burns effect)
     gsap.to(mainImgRef.current, {
-      y: 3,
-      duration: 3,
+      scale: 1.03,
+      duration: 8,
       repeat: -1,
       yoyo: true,
-      ease: "sine.inOut",
-      delay: 1.5
+      ease: "sine.inOut"
     });
   }, { scope: containerRef });
 
@@ -128,23 +126,31 @@ export default function Hero() {
     const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
     tl.to([mainImgRef.current, brandNameRef.current, brandTaglineRef.current], {
       opacity: 0,
-      y: 15,
       duration: 0.25,
-      stagger: 0.05
+      stagger: 0.03
     })
     .call(() => {
       setCurrentIndex(index);
     })
-    .fromTo([mainImgRef.current, brandNameRef.current, brandTaglineRef.current],
-      { opacity: 0, y: -15, scale: 1.03 },
+    .fromTo(mainImgRef.current,
+      { opacity: 0, scale: 1.05 },
+      {
+        opacity: 1,
+        scale: 1.03,
+        duration: 0.5,
+        ease: "power2.out"
+      }
+    )
+    .fromTo([brandNameRef.current, brandTaglineRef.current],
+      { opacity: 0, y: 10 },
       {
         opacity: 1,
         y: 0,
-        scale: 1,
-        duration: 0.5,
-        stagger: 0.06,
+        duration: 0.4,
+        stagger: 0.05,
         ease: "power3.out"
-      }
+      },
+      "-=0.3"
     );
   };
 
@@ -161,26 +167,23 @@ export default function Hero() {
     <section ref={containerRef} className="uniq-hero-v3 min-h-[90vh] md:min-h-screen" id="hero" aria-label="Uniq Decor Furniture Hero">
       <style dangerouslySetInnerHTML={{__html: `
         .uniq-hero-v3 {
-          display: grid;
-          grid-template-columns: 32% 68%;
-          background: var(--color-bg-primary);
-          overflow: hidden;
           position: relative;
-          isolation: isolate;
-          padding-top: 130px;
+          min-height: 100vh;
+          width: 100%;
+          overflow: hidden;
           box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          background: #000;
         }
 
         .uniq-hero-v3::before {
           content: '';
           position: absolute;
-          top: -20%;
-          right: -10%;
-          width: 60%;
-          height: 140%;
-          background: radial-gradient(ellipse at center, rgba(27, 67, 50, 0.03) 0%, transparent 70%);
+          inset: 0;
+          background: radial-gradient(circle at 30% 50%, rgba(27, 67, 50, 0.15) 0%, transparent 60%);
           pointer-events: none;
-          z-index: 0;
+          z-index: 1;
         }
 
         .hero-text-col {
@@ -189,8 +192,10 @@ export default function Hero() {
           justify-content: center;
           padding: 4rem 3rem 4rem 12%;
           position: relative;
-          z-index: 2;
-          background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
+          z-index: 10;
+          width: 100%;
+          max-width: 650px;
+          background: transparent;
         }
 
         .btn-hero-v3 {
@@ -235,48 +240,56 @@ export default function Hero() {
         .btn-hero-primary-v3:hover {
           background: var(--color-accent-hover);
           transform: translateY(-2px);
-          box-shadow: 0 30px 80px rgba(27, 67, 50, 0.25);
+          box-shadow: 0 15px 35px rgba(27, 67, 50, 0.3);
         }
 
         .btn-hero-whatsapp-v3 {
-          background: transparent;
-          color: var(--color-text-primary);
-          border: 1.5px solid var(--color-border);
+          background: rgba(255, 255, 255, 0.05);
+          color: #FFFFFF !important;
+          border: 1.5px solid rgba(255, 255, 255, 0.25);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
         }
 
         .btn-hero-whatsapp-v3 svg {
           width: 18px;
           height: 18px;
-          fill: var(--color-whatsapp);
+          fill: #25D366;
           flex-shrink: 0;
         }
 
         .btn-hero-whatsapp-v3:hover {
-          border-color: var(--color-whatsapp);
-          color: var(--color-whatsapp);
+          border-color: #25D366;
+          color: #25D366 !important;
+          background: rgba(37, 211, 102, 0.05);
           transform: translateY(-2px);
         }
 
         .hero-gst-v3 {
           font-family: var(--font-serif);
           font-size: 0.75rem;
-          color: #717171;
+          color: rgba(255, 255, 255, 0.6) !important;
           font-style: italic;
           letter-spacing: 0.05em;
           padding-top: 1rem;
-          border-top: 1px solid #F0F0F0;
+          border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+          margin-top: 1.5rem;
         }
 
         .hero-visual-col {
-          position: relative;
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
           overflow: hidden;
-          background: rgba(10, 10, 10, 0.85);
+          background: #000;
         }
 
         .brand-tag-overlay {
           position: absolute;
-          top: 2rem;
-          left: 2rem;
+          top: 140px;
+          right: 4%;
           z-index: 10;
           display: flex;
           gap: 0.5rem;
@@ -286,12 +299,12 @@ export default function Hero() {
 
         .brand-pill {
           padding: 6px 16px;
-          background: rgba(255, 255, 255, 0.12);
+          background: rgba(255, 255, 255, 0.08);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 50px;
-          color: rgba(255, 255, 255, 0.92);
+          color: rgba(255, 255, 255, 0.85);
           font-size: 0.7rem;
           font-weight: 600;
           text-transform: uppercase;
@@ -303,8 +316,9 @@ export default function Hero() {
 
         .brand-pill:hover,
         .brand-pill.active-pill {
-          background: rgba(255, 255, 255, 0.25);
-          border-color: rgba(255, 255, 255, 0.4);
+          background: rgba(255, 255, 255, 0.2);
+          border-color: rgba(255, 255, 255, 0.35);
+          color: #FFFFFF;
           transform: translateY(-1px);
         }
 
@@ -312,58 +326,44 @@ export default function Hero() {
           position: relative;
           width: 100%;
           height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          perspective: 1000px;
         }
 
         .carousel-main {
-          position: relative;
-          width: 70%;
-          height: 75%;
-          z-index: 5;
-          will-change: transform, opacity;
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
         }
 
         .carousel-main-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          border-radius: 12px;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-          display: block;
-        }
-
-        .carousel-main:hover .carousel-main-img {
-          transform: scale(1.02);
         }
 
         .carousel-main::after {
           content: '';
           position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 50%;
-          background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 40%, transparent 100%);
-          border-radius: 0 0 12px 12px;
+          inset: 0;
+          background: linear-gradient(to right, rgba(8, 13, 9, 0.95) 0%, rgba(8, 13, 9, 0.75) 45%, rgba(0, 0, 0, 0.25) 100%);
+          z-index: 2;
           pointer-events: none;
         }
 
         .carousel-brand-label {
           position: absolute;
-          bottom: 1.5rem;
-          left: 1.5rem;
+          bottom: 3.5rem;
+          right: 4%;
           z-index: 6;
           color: #FFFFFF;
           pointer-events: none;
+          text-align: right;
         }
 
         .carousel-brand-label .brand-name {
           font-family: var(--font-serif);
-          font-size: 1.8rem;
+          font-size: 2.2rem;
           font-weight: 700;
           margin-bottom: 0.25rem;
           text-shadow: 0 2px 12px rgba(0,0,0,0.4);
@@ -371,71 +371,25 @@ export default function Hero() {
         }
 
         .carousel-brand-label .brand-tagline {
-          font-size: 0.8rem;
+          font-size: 0.9rem;
           text-transform: uppercase;
           letter-spacing: 0.18em;
           opacity: 0.92;
           font-weight: 500;
-        }
-
-        .carousel-side {
-          position: absolute;
-          width: 18%;
-          height: 50%;
-          opacity: 0.35;
-          transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-          cursor: pointer;
-          border-radius: 12px;
-          overflow: hidden;
-          will-change: transform, opacity;
-        }
-
-        .carousel-side::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to top, rgba(0,0,0,0.3), transparent 60%);
-          pointer-events: none;
-        }
-
-        .carousel-side:hover {
-          opacity: 0.7;
-          transform: scale(1.03) !important;
-          z-index: 7;
-        }
-
-        .carousel-side img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 12px;
-          transition: transform 0.35s ease;
-        }
-
-        .carousel-side:hover img {
-          transform: scale(1.08);
-        }
-
-        .carousel-side.prev {
-          left: 3%;
-          transform: translateX(-25%) scale(0.88);
-        }
-
-        .carousel-side.next {
-          right: 3%;
-          transform: translateX(25%) scale(0.88);
+          color: var(--color-accent-gold);
         }
 
         .carousel-dots {
           position: absolute;
-          bottom: 2rem;
+          bottom: 3.5rem;
           left: 50%;
           transform: translateX(-50%);
           display: flex;
           gap: 0.75rem;
           z-index: 10;
           padding: 8px 16px;
-          background: rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.15);
           border-radius: 50px;
           backdrop-filter: blur(8px);
         }
@@ -443,7 +397,7 @@ export default function Hero() {
         .carousel-dot {
           width: 36px;
           height: 3px;
-          background: rgba(255,255,255,0.25);
+          background: rgba(255,255,255,0.2);
           border-radius: 2px;
           cursor: pointer;
           transition: 0.35s ease;
@@ -454,11 +408,11 @@ export default function Hero() {
         }
 
         .carousel-dot:hover {
-          background: rgba(255,255,255,0.4);
+          background: rgba(255,255,255,0.35);
         }
 
         .carousel-dot.active-dot {
-          background: rgba(255,255,255,0.6);
+          background: rgba(255,255,255,0.5);
         }
 
         .carousel-dot .progress-bar {
@@ -481,29 +435,29 @@ export default function Hero() {
 
         @media (max-width: 1024px) {
           .uniq-hero-v3 {
-            grid-template-columns: 1fr;
-            min-height: auto;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 140px;
+            padding-bottom: 100px;
           }
 
           .hero-text-col {
-            padding: 2.2rem 5% 2.5rem;
-            order: 2;
-            text-align: center;
-            align-items: center;
-          }
-
-          .hero-label {
-            justify-content: center;
-          }
-
-          .hero-headline {
-            font-size: clamp(1.8rem, 5vw, 2.4rem);
-            text-align: center;
-          }
-
-          .hero-sub {
+            padding: 3rem 6%;
             max-width: 100%;
             text-align: center;
+            align-items: center;
+            z-index: 10;
+          }
+
+          .hero-headline-el {
+            font-size: clamp(2rem, 6vw, 3rem) !important;
+            text-align: center;
+          }
+
+          .hero-sub-el {
+            max-width: 100%;
+            text-align: center;
+            font-size: 1rem;
           }
 
           .hero-actions-v3 {
@@ -521,55 +475,35 @@ export default function Hero() {
 
           .hero-gst-v3 {
             text-align: center;
+            width: 100%;
           }
 
-          .hero-visual-col {
-            height: 55vh;
-            order: 1;
-          }
-
-          .carousel-main {
-            width: 94%;
-            height: 86%;
-          }
-
-          .carousel-side {
-            display: none;
-          }
-
-          .carousel-brand-label .brand-name {
-            font-size: 1.4rem;
-          }
-
-          .carousel-brand-label .brand-tagline {
-            font-size: 0.7rem;
+          .carousel-main::after {
+            background: linear-gradient(to bottom, rgba(8, 13, 9, 0.85) 0%, rgba(8, 13, 9, 0.9) 100%);
           }
 
           .brand-tag-overlay {
-            top: 1rem;
+            top: auto;
+            bottom: 6.5rem;
             left: 50%;
             transform: translateX(-50%);
             justify-content: center;
+            width: 100%;
+            max-width: 90%;
           }
 
-          .brand-pill {
-            font-size: 0.65rem;
-            padding: 5px 12px;
+          .carousel-dots {
+            bottom: 2rem;
+          }
+
+          .carousel-brand-label {
+            display: none;
           }
         }
 
         @media (max-width: 480px) {
           .hero-text-col {
-            padding: 1.5rem 4% 2rem;
-          }
-
-          .hero-headline {
-            font-size: 1.7rem;
-          }
-
-          .hero-sub {
-            font-size: 0.95rem;
-            line-height: 1.6;
+            padding: 2rem 4% 1.5rem;
           }
 
           .btn-hero-v3 {
@@ -577,18 +511,12 @@ export default function Hero() {
             font-size: 0.88rem;
           }
 
-          .carousel-main {
-            width: 95%;
-            height: 86%;
+          .brand-tag-overlay {
+            bottom: 5.5rem;
           }
 
           .carousel-dots {
-            bottom: 1.2rem;
-            gap: 0.5rem;
-          }
-
-          .carousel-dot {
-            width: 28px;
+            bottom: 1.5rem;
           }
         }
       `}} />
@@ -662,55 +590,20 @@ export default function Hero() {
         {/* Carousel Stage */}
         <div className="carousel-stage" id="heroCarousel" role="tabpanel" aria-roledescription="carousel" aria-label="Featured brands">
           
-          {/* Side Preview: Prev */}
-          <div 
-            className="carousel-side prev max-[1024px]:hidden" 
-            role="button" 
-            tabIndex={0}
-            onClick={() => handleGoToSlide(prevIndex, true)}
-            aria-label={`View ${BRANDS[prevIndex].name} brand`}
-          >
-            <Image 
-              src={BRANDS[prevIndex].image} 
-              alt={BRANDS[prevIndex].alt}
-              width={200}
-              height={300}
-              className="w-full h-full object-cover rounded-xl"
-            />
-          </div>
-
           {/* Main Active Slide */}
           <div className="carousel-main" role="group" aria-roledescription="slide" aria-label={`Slide ${currentIndex + 1} of ${BRANDS.length}: ${activeBrand.name}`}>
             <Image 
               ref={mainImgRef}
               src={activeBrand.image} 
               alt={activeBrand.alt}
-              width={600}
-              height={750}
-              priority={currentIndex === 0}
+              fill
+              priority
               className="carousel-main-img"
             />
             <div className="carousel-brand-label">
               <div ref={brandNameRef} className="brand-name">{activeBrand.name}</div>
               <div ref={brandTaglineRef} className="brand-tagline">{activeBrand.tagline}</div>
             </div>
-          </div>
-
-          {/* Side Preview: Next */}
-          <div 
-            className="carousel-side next max-[1024px]:hidden" 
-            role="button" 
-            tabIndex={0}
-            onClick={() => handleGoToSlide(nextIndex, true)}
-            aria-label={`View ${BRANDS[nextIndex].name} brand`}
-          >
-            <Image 
-              src={BRANDS[nextIndex].image} 
-              alt={BRANDS[nextIndex].alt}
-              width={200}
-              height={300}
-              className="w-full h-full object-cover rounded-xl"
-            />
           </div>
 
         </div>
