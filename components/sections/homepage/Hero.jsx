@@ -11,28 +11,32 @@ const BRANDS = [
     tagline: "India's #1 Home Fabrics",
     image: "/photos/rr01 (2).webp",
     alt: "DDecor designer curtains and luxury home fabrics",
-    whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in DDecor home fabrics & curtains. Could you share your catalog and pricing for Udaipur?"
+    whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in DDecor home fabrics & curtains. Could you share your catalog and pricing for Udaipur?",
+    logo: "/logos/DDecor-logo.png"
   },
   {
     name: "Geeken",
     tagline: "Office & Institutional Furniture",
     image: "/photos/Gemini_Generated_Image_ksdm8sksdm8sksdm.webp",
     alt: "Geeken ergonomic office chairs, desks and workstations",
-    whatsappMsg: "Hi Uniq Decor! 👋 I'd like to know more about Geeken office furniture for my workspace. Please share details and pricing."
+    whatsappMsg: "Hi Uniq Decor! 👋 I'd like to know more about Geeken office furniture for my workspace. Please share details and pricing.",
+    logo: "/logos/geeken-logo.png"
   },
   {
     name: "Roserro",
     tagline: "Hotel & Spa Linen",
     image: "/photos/HOMEPAGE IMAGE/LUXURY BED LINEN ROSERRO.webp",
     alt: "Roserro luxury hotel bed sheets, towels and spa linen",
-    whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in Roserro hotel linen for my property. Could you send your product catalog and bulk pricing?"
+    whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in Roserro hotel linen for my property. Could you send your product catalog and bulk pricing?",
+    logo: "/logos/roserro-logo-1.png"
   },
   {
     name: "LaxRee",
     tagline: "Hospitality Supplies",
     image: "/photos/bedding-2 (2).webp",
     alt: "LaxRee hotel lobby furniture, amenities and hospitality solutions",
-    whatsappMsg: "Hi Uniq Decor! 👋 I need LaxRee hospitality supplies for my hotel. Please share your range and quotation for Rajasthan."
+    whatsappMsg: "Hi Uniq Decor! 👋 I need LaxRee hospitality supplies for my hotel. Please share your range and quotation for Rajasthan.",
+    logo: "/logos/laxree-logo.png"
   }
 ];
 
@@ -169,6 +173,7 @@ export default function Hero() {
           display: flex;
           align-items: center;
           background: #000;
+          padding-top: 130px;
         }
 
         .uniq-hero-v3::before {
@@ -294,28 +299,42 @@ export default function Hero() {
         }
 
         .brand-pill {
-          padding: 6px 16px;
-          background: rgba(255, 255, 255, 0.08);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 50px;
-          color: rgba(255, 255, 255, 0.85);
-          font-size: 0.7rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
+          padding: 8px 18px;
+          background: rgba(255, 255, 255, 0.9) !important;
+          border: 1px solid rgba(255, 255, 255, 0.25) !important;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           transition: 0.35s ease;
           cursor: pointer;
           user-select: none;
+          height: 48px;
+          width: 120px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .brand-pill img {
+          max-height: 28px;
+          width: auto;
+          object-fit: contain;
+          filter: grayscale(100%);
+          opacity: 0.6;
+          transition: all 0.3s ease;
+        }
+
+        .brand-pill:hover img,
+        .brand-pill.active-pill img {
+          filter: none;
+          opacity: 1;
         }
 
         .brand-pill:hover,
         .brand-pill.active-pill {
-          background: rgba(255, 255, 255, 0.2);
-          border-color: rgba(255, 255, 255, 0.35);
-          color: #FFFFFF;
-          transform: translateY(-1px);
+          background: #FFFFFF !important;
+          border-color: var(--color-accent-gold) !important;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(0,0,0,0.25);
         }
 
         .carousel-stage {
@@ -564,7 +583,13 @@ export default function Hero() {
               onClick={() => handleGoToSlide(idx, true)}
               tabIndex={idx === currentIndex ? 0 : -1}
             >
-              {brand.name}
+              <Image
+                src={brand.logo}
+                alt={`${brand.name} official logo`}
+                width={100}
+                height={30}
+                className="object-contain"
+              />
             </button>
           ))}
         </div>
