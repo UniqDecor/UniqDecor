@@ -53,8 +53,7 @@ export default function Hero() {
   useGSAP(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    tl.from(".hero-label-el", { x: -30, opacity: 0, duration: 0.6 })
-      .from(".hero-headline-el", { x: -25, opacity: 0, duration: 0.7 }, "-=0.45")
+    tl.from(".hero-headline-el", { x: -25, opacity: 0, duration: 0.7 })
       .from(".hero-sub-el", { x: -20, opacity: 0, duration: 0.6 }, "-=0.45")
       .from(".btn-hero-el", { 
         y: 15, 
@@ -63,12 +62,7 @@ export default function Hero() {
         stagger: 0.1,
         ease: "back.out(1.4)",
         clearProps: "opacity,transform"
-      }, "-=0.35")
-      .from(".hero-gst-el", { 
-        opacity: 0, 
-        duration: 0.4,
-        clearProps: "opacity"
-      }, "-=0.2");
+      }, "-=0.35");
 
     tl.from(".hero-visual-col", { 
       opacity: 0, 
@@ -525,9 +519,6 @@ export default function Hero() {
 
       {/* LEFT: TEXT COLUMN */}
       <div className="hero-text-col">
-        <div className="hero-label-el text-[var(--color-accent-gold)] font-serif text-[0.75rem] font-semibold uppercase tracking-[0.25em] mb-6 flex items-center gap-3 before:content-[''] before:w-8 before:h-[1px] before:bg-[var(--color-accent-gold)] before:shrink-0 max-[1024px]:before:hidden max-[1024px]:justify-center">
-          Udaipur, Rajasthan
-        </div>
         
         <h1 className="hero-headline-el font-serif text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.15] text-white mb-5 tracking-tight max-[1024px]:text-center">
           Premium <em className="italic text-[var(--color-accent-gold)] font-bold font-serif">Furniture</em> & Hospitality Supplies
@@ -556,11 +547,6 @@ export default function Hero() {
             </svg>
             WhatsApp
           </a>
-        </div>
-        
-        {/* GST & Trust Badge */}
-        <div className="hero-gst-el hero-gst-v3 text-xs md:text-sm uppercase max-[1024px]:text-center">
-          GST: 08ABCPG1457G2ZX &middot; Rajasthan &middot; PAN India Delivery
         </div>
       </div>
 

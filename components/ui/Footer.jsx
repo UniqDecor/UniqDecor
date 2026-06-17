@@ -237,8 +237,9 @@ export default function Footer() {
           </button>
         </div>
 
-        <div className="text-center md:text-left">
+        <div className="text-center md:text-left flex flex-col gap-1.5">
           <span>&copy; {new Date().getFullYear()} Uniq Decor Udaipur. All Rights Reserved.</span>
+          <span className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">GST: 08ABCPG1457G2ZX &middot; Rajasthan &middot; PAN India Delivery</span>
         </div>
         
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 justify-center">
