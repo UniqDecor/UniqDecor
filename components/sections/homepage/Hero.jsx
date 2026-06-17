@@ -196,6 +196,8 @@ export default function Hero() {
           width: 100%;
           max-width: 650px;
           background: transparent;
+          margin-top: auto;
+          margin-bottom: auto;
         }
 
         .btn-hero-v3 {
@@ -244,11 +246,11 @@ export default function Hero() {
         }
 
         .btn-hero-whatsapp-v3 {
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba(255, 255, 255, 0.05) !important;
           color: #FFFFFF !important;
-          border: 1.5px solid rgba(255, 255, 255, 0.25);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
+          border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
+          backdrop-filter: blur(8px) !important;
+          -webkit-backdrop-filter: blur(8px) !important;
         }
 
         .btn-hero-whatsapp-v3 svg {
@@ -523,15 +525,15 @@ export default function Hero() {
 
       {/* LEFT: TEXT COLUMN */}
       <div className="hero-text-col">
-        <div className="hero-label-el text-[var(--color-accent-primary)] font-serif text-[0.75rem] font-semibold uppercase tracking-[0.25em] mb-6 flex items-center gap-3 before:content-[''] before:w-8 before:h-[1px] before:bg-[var(--color-accent-primary)] before:shrink-0 max-[1024px]:before:hidden max-[1024px]:justify-center">
+        <div className="hero-label-el text-[var(--color-accent-gold)] font-serif text-[0.75rem] font-semibold uppercase tracking-[0.25em] mb-6 flex items-center gap-3 before:content-[''] before:w-8 before:h-[1px] before:bg-[var(--color-accent-gold)] before:shrink-0 max-[1024px]:before:hidden max-[1024px]:justify-center">
           Udaipur, Rajasthan
         </div>
         
-        <h1 className="hero-headline-el font-serif text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.15] text-[var(--color-text-primary)] mb-5 tracking-tight max-[1024px]:text-center">
-          Premium <em className="italic text-[var(--color-accent-primary)] font-bold font-serif">Furniture</em> & Hospitality Supplies
+        <h1 className="hero-headline-el font-serif text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.15] text-white mb-5 tracking-tight max-[1024px]:text-center">
+          Premium <em className="italic text-[var(--color-accent-gold)] font-bold font-serif">Furniture</em> & Hospitality Supplies
         </h1>
         
-        <p className="hero-sub-el text-sm md:text-base text-[var(--color-text-secondary)] leading-relaxed mb-9 max-w-sm max-[1024px]:text-center max-[1024px]:max-w-none">
+        <p className="hero-sub-el text-sm md:text-base text-[#D1DCD4] leading-relaxed mb-9 max-w-sm max-[1024px]:text-center max-[1024px]:max-w-none">
           Four trusted brands under one roof. Serving hotels, hospitals, offices, and homes across India since 2010.
         </p>
         
