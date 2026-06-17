@@ -614,13 +614,13 @@ export default function Hero() {
               className="carousel-main-img"
             />
             <div className="carousel-brand-label">
-              <div ref={brandNameRef} className="mb-2 flex justify-end">
+              <div ref={brandNameRef} className="mb-3 flex justify-end">
                 <Image 
                   src={activeBrand.logo} 
                   alt={`${activeBrand.name} Logo`} 
-                  width={130} 
-                  height={38} 
-                  className="object-contain max-h-[38px] w-auto bg-white/95 px-3 py-1.5 rounded-lg shadow-md"
+                  width={200} 
+                  height={60} 
+                  className="object-contain max-h-[60px] w-auto"
                 />
               </div>
               <div ref={brandTaglineRef} className="brand-tagline">{activeBrand.tagline}</div>
