@@ -127,26 +127,42 @@ export default function GeekenSummary() {
     const track = trackRef.current;
     if (!track) return;
 
-    // Calculate dimensions
-    const items = track.querySelectorAll(".office-card");
-    const itemWidth = 340 + 24; // width + gap (1.5rem = 24px)
-    const originalItemsCount = PRODUCTS.length;
-    const totalWidth = itemWidth * originalItemsCount;
-    const speed = 35; // px per second
+    // Calculate carousel widths and handle orientation/resizes dynamically
+    const updateTimeline = () => {
+      const firstItem = track.querySelector(".office-card");
+      if (!firstItem) return;
 
-    const timeline = gsap.to(track, {
-      x: -totalWidth,
-      duration: totalWidth / speed,
-      repeat: -1,
-      ease: "none",
-      modifiers: {
-        x: gsap.utils.unitize((x) => {
-          return parseFloat(x) % totalWidth;
-        }),
-      },
-    });
+      const computed = window.getComputedStyle(firstItem);
+      const width = parseFloat(computed.width) || 340;
+      const computedTrack = window.getComputedStyle(track);
+      const gap = parseFloat(computedTrack.gap) || 24;
+      const itemWidth = width + gap;
+      const originalItemsCount = PRODUCTS.length;
+      const totalWidth = itemWidth * originalItemsCount;
+      const speed = 35; // px per second
 
-    timelineRef.current = timeline;
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+
+      timelineRef.current = gsap.to(track, {
+        x: -totalWidth,
+        duration: totalWidth / speed,
+        repeat: -1,
+        ease: "none",
+        modifiers: {
+          x: gsap.utils.unitize((x) => {
+            return parseFloat(x) % totalWidth;
+          }),
+        },
+      });
+    };
+
+    updateTimeline();
+    window.addEventListener("resize", updateTimeline);
+    return () => {
+      window.removeEventListener("resize", updateTimeline);
+    };
   }, { scope: containerRef });
 
   const handleMouseEnter = () => {
@@ -433,13 +449,49 @@ export default function GeekenSummary() {
           }
           .office-carousel-wrapper::before,
           .office-carousel-wrapper::after {
-            width: 60px;
+            width: 20px;
+          }
+          .office-carousel-track {
+            gap: 12px;
           }
           .office-card {
-            width: 280px;
+            width: calc(50vw - 18px);
+            min-width: 145px;
+            max-width: 280px;
           }
           .office-card-img {
-            height: 220px;
+            height: 130px;
+          }
+          .office-card-badge {
+            top: 0.5rem;
+            left: 0.5rem;
+            padding: 3px 8px;
+            font-size: 0.6rem;
+          }
+          .office-card-number {
+            top: 0.25rem;
+            right: 0.5rem;
+            font-size: 2rem;
+          }
+          .office-card-content {
+            padding: 0.8rem;
+          }
+          .office-card-title {
+            font-size: 0.95rem;
+            line-height: 1.25;
+            margin-bottom: 0.35rem;
+          }
+          .office-card-arrow {
+            font-size: 0.95rem;
+          }
+          .office-card-desc {
+            font-size: 0.72rem;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+            min-height: auto;
+          }
+          .office-card-link {
+            font-size: 0.72rem;
           }
         }
       `}} />

@@ -125,26 +125,42 @@ export default function Hospitality() {
     const track = trackRef.current;
     if (!track) return;
 
-    // Calculate carousel widths
-    const items = track.querySelectorAll(".carousel-item-v3");
-    const itemWidth = 340 + 24; // width + gap (1.5rem = 24px)
-    const originalItemsCount = CARDS.length;
-    const totalWidth = itemWidth * originalItemsCount;
-    const speed = 40; // pixels per second
+    // Calculate carousel widths and handle orientation/resizes dynamically
+    const updateTimeline = () => {
+      const firstItem = track.querySelector(".carousel-item-v3");
+      if (!firstItem) return;
 
-    const timeline = gsap.to(track, {
-      x: -totalWidth,
-      duration: totalWidth / speed,
-      repeat: -1,
-      ease: "none",
-      modifiers: {
-        x: gsap.utils.unitize((x) => {
-          return parseFloat(x) % totalWidth;
-        })
+      const computed = window.getComputedStyle(firstItem);
+      const width = parseFloat(computed.width) || 340;
+      const computedTrack = window.getComputedStyle(track);
+      const gap = parseFloat(computedTrack.gap) || 24;
+      const itemWidth = width + gap;
+      const originalItemsCount = CARDS.length;
+      const totalWidth = itemWidth * originalItemsCount;
+      const speed = 40; // pixels per second
+
+      if (timelineRef.current) {
+        timelineRef.current.kill();
       }
-    });
 
-    timelineRef.current = timeline;
+      timelineRef.current = gsap.to(track, {
+        x: -totalWidth,
+        duration: totalWidth / speed,
+        repeat: -1,
+        ease: "none",
+        modifiers: {
+          x: gsap.utils.unitize((x) => {
+            return parseFloat(x) % totalWidth;
+          })
+        }
+      });
+    };
+
+    updateTimeline();
+    window.addEventListener("resize", updateTimeline);
+    return () => {
+      window.removeEventListener("resize", updateTimeline);
+    };
   }, { scope: containerRef });
 
   const handleMouseEnter = () => {
@@ -349,10 +365,21 @@ export default function Hospitality() {
 
         @media (max-width: 768px) {
           .uniq-hospitality-v3 { padding: 3rem 0; }
-          .carousel-item-v3 { width: 280px; }
-          .item-img-v3 { height: 220px; }
+          .carousel-track-v3 { gap: 12px; }
+          .carousel-item-v3 { 
+            width: calc(50vw - 18px); 
+            min-width: 145px; 
+            max-width: 280px; 
+          }
+          .item-img-v3 { height: 130px; }
           .carousel-wrapper-v3::before,
-          .carousel-wrapper-v3::after { width: 60px; }
+          .carousel-wrapper-v3::after { width: 20px; }
+          .item-content-v3 { padding: 0.8rem; }
+          .item-title-v3 { font-size: 0.95rem; line-height: 1.25; margin-bottom: 0.35rem; }
+          .item-desc-v3 { font-size: 0.72rem; line-height: 1.4; margin-bottom: 0.75rem; }
+          .item-link-v3 { font-size: 0.72rem; }
+          .item-badge-v3 { top: 0.5rem; left: 0.5rem; padding: 3px 8px; font-size: 0.6rem; }
+          .item-number-v3 { top: 0.25rem; right: 0.5rem; font-size: 2rem; }
         }
       `}} />
 

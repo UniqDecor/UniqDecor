@@ -18,6 +18,7 @@ const BRANDS = [
     image: "/photos/bedding-2 (2).webp",
     alt: "DDecor luxury bedding and designer curtains showroom at Uniq Decor Udaipur",
     href: "/ddecor",
+    logo: "/logos/DDecor-logo.png",
   },
   {
     id: "brand-geeken-title",
@@ -28,6 +29,7 @@ const BRANDS = [
     image: "/photos/Gemini_Generated_Image_ksdm8sksdm8sksdm.webp",
     alt: "Geeken ergonomic office furniture, chairs, and modular workstations showroom Udaipur",
     href: "/geeken",
+    logo: "/logos/geeken-logo.png",
   },
   {
     id: "brand-roserro-title",
@@ -38,6 +40,7 @@ const BRANDS = [
     image: "/photos/rr01 (2).webp",
     alt: "Roserro luxury hotel bed linen, bedsheets, and spa towels supplier Udaipur Rajasthan",
     href: "/roserro",
+    logo: "/logos/roserro-logo-1.png",
   },
   {
     id: "brand-laxree-title",
@@ -48,6 +51,7 @@ const BRANDS = [
     image: "/photos/lxslideb1.webp",
     alt: "LaxRee premium hotel furniture and hospitality amenities showroom Udaipur Rajasthan",
     href: "/laxree-amenities",
+    logo: "/logos/laxree-logo.png",
   },
 ];
 
@@ -481,7 +485,13 @@ export default function BrandHub() {
 
             <div className="brand-content-v3">
               <h3 className="brand-name-v3" id={brand.id}>
-                {brand.name}
+                <Image
+                  src={brand.logo}
+                  alt={`${brand.name} Logo`}
+                  width={130}
+                  height={30}
+                  className="object-contain max-h-[22px] md:max-h-[30px] w-auto"
+                />
                 <span className="brand-arrow-v3" aria-hidden="true">
                   →
                 </span>

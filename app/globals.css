@@ -4,7 +4,7 @@
 
 /* Global Styles & Reset Rules */
 html {
-  scroll-padding-top: 100px;
+  scroll-padding-top: 95px;
   scroll-behavior: smooth;
   overflow-x: hidden;
   width: 100%;

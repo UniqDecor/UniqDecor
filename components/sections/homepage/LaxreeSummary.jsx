@@ -82,26 +82,42 @@ export default function LaxreeSummary() {
     const track = trackRef.current;
     if (!track) return;
 
-    // Calculate dimensions
-    const items = track.querySelectorAll(".laxree-card");
-    const itemWidth = 340 + 24; // width + gap
-    const originalItemsCount = PRODUCTS.length;
-    const totalWidth = itemWidth * originalItemsCount;
-    const speed = 35; // px per second
+    // Calculate carousel widths and handle orientation/resizes dynamically
+    const updateTimeline = () => {
+      const firstItem = track.querySelector(".laxree-card");
+      if (!firstItem) return;
 
-    const timeline = gsap.to(track, {
-      x: -totalWidth,
-      duration: totalWidth / speed,
-      repeat: -1,
-      ease: "none",
-      modifiers: {
-        x: gsap.utils.unitize((x) => {
-          return parseFloat(x) % totalWidth;
-        }),
-      },
-    });
+      const computed = window.getComputedStyle(firstItem);
+      const width = parseFloat(computed.width) || 340;
+      const computedTrack = window.getComputedStyle(track);
+      const gap = parseFloat(computedTrack.gap) || 24;
+      const itemWidth = width + gap;
+      const originalItemsCount = PRODUCTS.length;
+      const totalWidth = itemWidth * originalItemsCount;
+      const speed = 35; // px per second
 
-    timelineRef.current = timeline;
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+
+      timelineRef.current = gsap.to(track, {
+        x: -totalWidth,
+        duration: totalWidth / speed,
+        repeat: -1,
+        ease: "none",
+        modifiers: {
+          x: gsap.utils.unitize((x) => {
+            return parseFloat(x) % totalWidth;
+          }),
+        },
+      });
+    };
+
+    updateTimeline();
+    window.addEventListener("resize", updateTimeline);
+    return () => {
+      window.removeEventListener("resize", updateTimeline);
+    };
   }, { scope: containerRef });
 
   const handleMouseEnter = () => {
@@ -381,13 +397,49 @@ export default function LaxreeSummary() {
           }
           .laxree-carousel-wrapper::before,
           .laxree-carousel-wrapper::after {
-            width: 40px;
+            width: 20px;
+          }
+          .laxree-carousel-track {
+            gap: 12px;
           }
           .laxree-card {
-            width: 280px;
+            width: calc(50vw - 18px);
+            min-width: 145px;
+            max-width: 280px;
           }
           .laxree-card-img {
-            height: 220px;
+            height: 130px;
+          }
+          .laxree-card-badge {
+            top: 0.5rem;
+            left: 0.5rem;
+            padding: 3px 8px;
+            font-size: 0.6rem;
+          }
+          .laxree-card-number {
+            top: 0.25rem;
+            right: 0.5rem;
+            font-size: 2rem;
+          }
+          .laxree-card-content {
+            padding: 0.8rem;
+          }
+          .laxree-card-title {
+            font-size: 0.95rem;
+            line-height: 1.25;
+            margin-bottom: 0.35rem;
+          }
+          .laxree-card-arrow {
+            font-size: 0.95rem;
+          }
+          .laxree-card-desc {
+            font-size: 0.72rem;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+            min-height: auto;
+          }
+          .laxree-card-link {
+            font-size: 0.72rem;
           }
         }
       `}} />

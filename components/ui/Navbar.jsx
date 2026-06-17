@@ -25,7 +25,7 @@ export default function Navbar() {
   // Scroll listener
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 40);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -76,7 +76,7 @@ export default function Navbar() {
         e.preventDefault();
         const element = document.getElementById(targetId);
         if (element) {
-          const offset = isScrolled ? 70 : 100;
+          const offset = isScrolled ? 54 : 94;
           const bodyRect = document.body.getBoundingClientRect().top;
           const elementRect = element.getBoundingClientRect().top;
           const elementPosition = elementRect - bodyRect;
@@ -95,7 +95,7 @@ export default function Navbar() {
     <>
       {/* Red Promo Banner */}
       <div
-        className="fixed top-0 left-0 w-full h-[40px] bg-[#D32F2F] text-white flex items-center justify-center z-[100000] font-sans text-[11px] md:text-xs font-bold tracking-wider uppercase px-4 text-center border-b border-black/15 shadow-md"
+        className="absolute lg:fixed top-0 left-0 w-full h-[40px] bg-[#D32F2F] text-white flex items-center justify-center z-[100000] font-sans text-[11px] md:text-xs font-bold tracking-wider uppercase px-4 text-center border-b border-black/15 shadow-md"
         role="banner"
       >
         🔥 Premium Brands Showroom in Udaipur — Authorized Dealer for D'Decor, Geeken & LaxRee
@@ -105,8 +105,8 @@ export default function Navbar() {
       <header
         className={`fixed left-0 w-full flex items-center justify-between px-[5%] z-[99999] transition-all duration-400 font-sans border-b border-[var(--color-accent-gold)]/15 ${
           isScrolled
-            ? "top-[40px] h-[70px] bg-white shadow-md border-b-[var(--color-border)]"
-            : "top-[40px] h-[90px] bg-white"
+            ? "top-0 lg:top-[40px] h-[48px] md:h-[54px] bg-white shadow-md border-b-[var(--color-border)]"
+            : "top-[40px] h-[60px] md:h-[70px] bg-white"
         }`}
         aria-label="Main Navigation"
       >
@@ -119,9 +119,11 @@ export default function Navbar() {
           <Image
             src="/logos/uniq-logo.png"
             alt="Uniq Decor Logo"
-            width={140}
-            height={38}
-            className="h-[38px] w-auto object-contain"
+            width={180}
+            height={50}
+            className={`w-auto object-contain transition-all duration-400 ${
+              isScrolled ? "h-[40px] md:h-[46px]" : "h-[48px] md:h-[58px]"
+            }`}
             priority
           />
         </Link>

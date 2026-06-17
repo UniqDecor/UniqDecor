@@ -5,40 +5,105 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import Image from "next/image";
 
-const BRANDS = [
+const SLIDES = [
   {
     name: "DDecor",
     tagline: "India's #1 Home Fabrics",
-    image: "/photos/rr01 (2).webp",
-    alt: "DDecor designer curtains and luxury home fabrics",
+    image: "/photos/hero-images/ddecor- hero-1.webp",
+    alt: "DDecor designer curtains and luxury home fabrics - Slide 1",
+    whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in DDecor home fabrics & curtains. Could you share your catalog and pricing for Udaipur?",
+    logo: "/logos/DDecor-logo.png"
+  },
+  {
+    name: "DDecor",
+    tagline: "India's #1 Home Fabrics",
+    image: "/photos/hero-images/ddecor- hero-2.webp",
+    alt: "DDecor designer curtains and luxury home fabrics - Slide 2",
+    whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in DDecor home fabrics & curtains. Could you share your catalog and pricing for Udaipur?",
+    logo: "/logos/DDecor-logo.png"
+  },
+  {
+    name: "DDecor",
+    tagline: "India's #1 Home Fabrics",
+    image: "/photos/hero-images/ddecor- hero-3.webp",
+    alt: "DDecor designer curtains and luxury home fabrics - Slide 3",
+    whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in DDecor home fabrics & curtains. Could you share your catalog and pricing for Udaipur?",
+    logo: "/logos/DDecor-logo.png"
+  },
+  {
+    name: "DDecor",
+    tagline: "India's #1 Home Fabrics",
+    image: "/photos/hero-images/ddecor- hero-4.webp",
+    alt: "DDecor designer curtains and luxury home fabrics - Slide 4",
+    whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in DDecor home fabrics & curtains. Could you share your catalog and pricing for Udaipur?",
+    logo: "/logos/DDecor-logo.png"
+  },
+  {
+    name: "DDecor",
+    tagline: "India's #1 Home Fabrics",
+    image: "/photos/hero-images/ddecor- hero-5.webp",
+    alt: "DDecor designer curtains and luxury home fabrics - Slide 5",
     whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in DDecor home fabrics & curtains. Could you share your catalog and pricing for Udaipur?",
     logo: "/logos/DDecor-logo.png"
   },
   {
     name: "Geeken",
     tagline: "Office & Institutional Furniture",
-    image: "/photos/Gemini_Generated_Image_ksdm8sksdm8sksdm.webp",
-    alt: "Geeken ergonomic office chairs, desks and workstations",
+    image: "/photos/hero-images/geeken- hero-6.webp",
+    alt: "Geeken ergonomic office chairs, desks and workstations - Slide 6",
+    whatsappMsg: "Hi Uniq Decor! 👋 I'd like to know more about Geeken office furniture for my workspace. Please share details and pricing.",
+    logo: "/logos/geeken-logo.png"
+  },
+  {
+    name: "Geeken",
+    tagline: "Office & Institutional Furniture",
+    image: "/photos/hero-images/geeken- hero-7.webp",
+    alt: "Geeken ergonomic office chairs, desks and workstations - Slide 7",
+    whatsappMsg: "Hi Uniq Decor! 👋 I'd like to know more about Geeken office furniture for my workspace. Please share details and pricing.",
+    logo: "/logos/geeken-logo.png"
+  },
+  {
+    name: "Geeken",
+    tagline: "Office & Institutional Furniture",
+    image: "/photos/hero-images/geeken- hero-8.webp",
+    alt: "Geeken ergonomic office chairs, desks and workstations - Slide 8",
     whatsappMsg: "Hi Uniq Decor! 👋 I'd like to know more about Geeken office furniture for my workspace. Please share details and pricing.",
     logo: "/logos/geeken-logo.png"
   },
   {
     name: "Roserro",
     tagline: "Hotel & Spa Linen",
-    image: "/photos/HOMEPAGE IMAGE/LUXURY BED LINEN ROSERRO.webp",
-    alt: "Roserro luxury hotel bed sheets, towels and spa linen",
+    image: "/photos/hero-images/roserro- hero-9.webp",
+    alt: "Roserro luxury hotel bed sheets, towels and spa linen - Slide 9",
+    whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in Roserro hotel linen for my property. Could you send your product catalog and bulk pricing?",
+    logo: "/logos/roserro-logo-1.png"
+  },
+  {
+    name: "Roserro",
+    tagline: "Hotel & Spa Linen",
+    image: "/photos/hero-images/roserro- hero-10.webp",
+    alt: "Roserro luxury hotel bed sheets, towels and spa linen - Slide 10",
     whatsappMsg: "Hi Uniq Decor! 👋 I'm interested in Roserro hotel linen for my property. Could you send your product catalog and bulk pricing?",
     logo: "/logos/roserro-logo-1.png"
   },
   {
     name: "LaxRee",
     tagline: "Hospitality Supplies",
-    image: "/photos/bedding-2 (2).webp",
-    alt: "LaxRee hotel lobby furniture, amenities and hospitality solutions",
+    image: "/photos/hero-images/laxree- hero-11.webp",
+    alt: "LaxRee premium hospitality supplies - Slide 11",
+    whatsappMsg: "Hi Uniq Decor! 👋 I need LaxRee hospitality supplies for my hotel. Please share your range and quotation for Rajasthan.",
+    logo: "/logos/laxree-logo.png"
+  },
+  {
+    name: "LaxRee",
+    tagline: "Hospitality Supplies",
+    image: "/photos/hero-images/laxree- hero-12.webp",
+    alt: "LaxRee premium hospitality supplies - Slide 12",
     whatsappMsg: "Hi Uniq Decor! 👋 I need LaxRee hospitality supplies for my hotel. Please share your range and quotation for Rajasthan.",
     logo: "/logos/laxree-logo.png"
   }
 ];
+
 
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -74,13 +139,6 @@ export default function Hero() {
       ease: "power2.out"
     }, 0.1);
 
-    tl.from(".brand-pill-el", {
-      y: -12,
-      opacity: 0,
-      duration: 0.4,
-      stagger: 0.08,
-      ease: "back.out(1.7)"
-    }, 0.6);
 
     tl.from(mainImgRef.current, {
       scale: 1.05,
@@ -103,7 +161,7 @@ export default function Hero() {
   useEffect(() => {
     if (!isUserInteracting) {
       autoPlayRef.current = setInterval(() => {
-        handleGoToSlide((currentIndex + 1) % BRANDS.length);
+        handleGoToSlide((currentIndex + 1) % SLIDES.length);
       }, intervalTime);
     }
     return () => {
@@ -118,7 +176,7 @@ export default function Hero() {
       setIsUserInteracting(true);
     }
 
-    const brand = BRANDS[index];
+    const brand = SLIDES[index];
 
     // GSAP Transition
     const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
@@ -152,9 +210,9 @@ export default function Hero() {
     );
   };
 
-  const activeBrand = BRANDS[currentIndex];
-  const prevIndex = (currentIndex - 1 + BRANDS.length) % BRANDS.length;
-  const nextIndex = (currentIndex + 1) % BRANDS.length;
+  const activeBrand = SLIDES[currentIndex];
+  const prevIndex = (currentIndex - 1 + SLIDES.length) % SLIDES.length;
+  const nextIndex = (currentIndex + 1) % SLIDES.length;
 
   const getWhatsAppLink = (brand) => {
     const encodedMsg = encodeURIComponent(brand.whatsappMsg + ` [Brand: ${brand.name}]`);
@@ -173,7 +231,7 @@ export default function Hero() {
           display: flex;
           align-items: center;
           background: #000;
-          padding-top: 130px;
+          padding-top: 110px;
         }
 
         .uniq-hero-v3::before {
@@ -361,15 +419,16 @@ export default function Hero() {
           content: '';
           position: absolute;
           inset: 0;
-          background: linear-gradient(to right, rgba(8, 13, 9, 0.95) 0%, rgba(8, 13, 9, 0.75) 45%, rgba(0, 0, 0, 0.25) 100%);
+          background: linear-gradient(to right, rgba(8, 13, 9, 0.9) 0%, rgba(8, 13, 9, 0.6) 35%, rgba(0, 0, 0, 0) 55%);
           z-index: 2;
           pointer-events: none;
         }
 
         .carousel-brand-label {
           position: absolute;
-          bottom: 3.5rem;
-          right: 4%;
+          top: 50%;
+          transform: translateY(-50%);
+          right: 6%;
           z-index: 6;
           color: #FFFFFF;
           pointer-events: none;
@@ -400,9 +459,9 @@ export default function Hero() {
           left: 50%;
           transform: translateX(-50%);
           display: flex;
-          gap: 0.75rem;
+          gap: 0.5rem;
           z-index: 10;
-          padding: 8px 16px;
+          padding: 8px 14px;
           background: rgba(255,255,255,0.08);
           border: 1px solid rgba(255,255,255,0.15);
           border-radius: 50px;
@@ -410,7 +469,7 @@ export default function Hero() {
         }
 
         .carousel-dot {
-          width: 36px;
+          width: 20px;
           height: 3px;
           background: rgba(255,255,255,0.2);
           border-radius: 2px;
@@ -451,87 +510,108 @@ export default function Hero() {
         @media (max-width: 1024px) {
           .uniq-hero-v3 {
             flex-direction: column;
-            justify-content: center;
-            padding-top: 140px;
-            padding-bottom: 100px;
+            align-items: stretch;
+            height: 66vh;
+            min-height: 400px;
+            padding-top: 100px;
+            padding-bottom: 0;
+            justify-content: flex-end;
+          }
+
+          .hero-visual-col {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
           }
 
           .hero-text-col {
-            padding: 3rem 6%;
+            position: relative;
+            padding: 0 1.5rem 3rem;
             max-width: 100%;
             text-align: center;
             align-items: center;
             z-index: 10;
+            background: transparent !important;
+            margin-top: auto;
+            margin-bottom: 0;
           }
 
-          .hero-headline-el {
-            font-size: clamp(2rem, 6vw, 3rem) !important;
-            text-align: center;
-          }
-
+          .hero-headline-el,
           .hero-sub-el {
-            max-width: 100%;
-            text-align: center;
-            font-size: 1rem;
+            display: none !important;
           }
 
           .hero-actions-v3 {
-            width: 100%;
-            max-width: 320px;
-            flex-direction: column;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center;
             align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            max-width: 100%;
           }
 
           .btn-hero-v3 {
-            width: 100%;
+            flex: 1;
+            max-width: 180px;
             min-width: auto;
             justify-content: center;
-          }
-
-          .hero-gst-v3 {
-            text-align: center;
-            width: 100%;
+            padding: 10px 16px;
+            font-size: 0.8rem;
           }
 
           .carousel-main::after {
-            background: linear-gradient(to bottom, rgba(8, 13, 9, 0.85) 0%, rgba(8, 13, 9, 0.9) 100%);
+            background: linear-gradient(to bottom, rgba(8, 13, 9, 0.45) 0%, rgba(8, 13, 9, 0.25) 50%, rgba(8, 13, 9, 0.8) 100%);
           }
 
-          .brand-tag-overlay {
-            top: auto;
-            bottom: 6.5rem;
-            left: 50%;
-            transform: translateX(-50%);
+          .carousel-dots {
+            bottom: 1rem;
+            gap: 0.35rem;
+            padding: 6px 12px;
+          }
+
+          .carousel-dot {
+            width: 12px;
+          }
+
+          .carousel-brand-label {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            bottom: auto;
+            right: auto;
+            z-index: 6;
+            text-align: center;
             width: 100%;
             max-width: 90%;
           }
 
-          .carousel-dots {
-            bottom: 2rem;
-          }
-
-          .carousel-brand-label {
-            display: none;
+          .carousel-brand-label .brand-tagline {
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            text-align: center;
           }
         }
 
         @media (max-width: 480px) {
+          .carousel-dots {
+            bottom: 0.88rem;
+          }
+
           .hero-text-col {
-            padding: 2rem 4% 1.5rem;
+            padding: 0 1rem 2.75rem;
           }
 
           .btn-hero-v3 {
-            padding: 13px 24px;
-            font-size: 0.88rem;
-          }
-
-          .brand-tag-overlay {
-            bottom: 5.5rem;
-          }
-
-          .carousel-dots {
-            bottom: 1.5rem;
+            padding: 9px 12px;
+            font-size: 0.75rem;
           }
         }
       `}} />
@@ -539,8 +619,8 @@ export default function Hero() {
       {/* LEFT: TEXT COLUMN */}
       <div className="hero-text-col">
         
-        <h1 className="hero-headline-el font-serif text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.15] text-white mb-5 tracking-tight max-[1024px]:text-center">
-          Premium <em className="italic text-[var(--color-accent-gold)] font-bold font-serif">Furniture</em> & Hospitality Supplies
+        <h1 className="hero-headline-el font-serif text-2xl md:text-4xl lg:text-5xl font-bold leading-[1.2] text-white mb-5 tracking-tight max-[1024px]:text-center">
+          Home Furnishing, Office Furniture, <em className="italic text-[var(--color-accent-gold)] font-bold font-serif">Hospitality Supplies</em>, Roofing Solutions & more
         </h1>
         
         <p className="hero-sub-el text-sm md:text-base text-[#D1DCD4] leading-relaxed mb-9 max-w-sm max-[1024px]:text-center max-[1024px]:max-w-none">
@@ -572,27 +652,7 @@ export default function Hero() {
       {/* RIGHT: BRAND CAROUSEL COLUMN */}
       <div className="hero-visual-col flex justify-center items-center" role="region" aria-label="Brand showcase carousel">
         
-        {/* Brand Pills */}
-        <div className="brand-tag-overlay" role="tablist" aria-label="Select a brand">
-          {BRANDS.map((brand, idx) => (
-            <button
-              key={brand.name}
-              className={`brand-pill brand-pill-el ${idx === currentIndex ? "active-pill" : ""}`}
-              role="tab"
-              aria-selected={idx === currentIndex}
-              onClick={() => handleGoToSlide(idx, true)}
-              tabIndex={idx === currentIndex ? 0 : -1}
-            >
-              <Image
-                src={brand.logo}
-                alt={`${brand.name} official logo`}
-                width={100}
-                height={30}
-                className="object-contain"
-              />
-            </button>
-          ))}
-        </div>
+
 
         {/* Auto-play Status */}
         <div className="absolute top-8 right-8 z-10 flex items-center gap-2 text-white/60 text-[10px] uppercase tracking-widest max-[1024px]:hidden" aria-live="polite">
@@ -604,7 +664,7 @@ export default function Hero() {
         <div className="carousel-stage" id="heroCarousel" role="tabpanel" aria-roledescription="carousel" aria-label="Featured brands">
           
           {/* Main Active Slide */}
-          <div className="carousel-main" role="group" aria-roledescription="slide" aria-label={`Slide ${currentIndex + 1} of ${BRANDS.length}: ${activeBrand.name}`}>
+          <div className="carousel-main" role="group" aria-roledescription="slide" aria-label={`Slide ${currentIndex + 1} of ${SLIDES.length}: ${activeBrand.name}`}>
             <Image 
               ref={mainImgRef}
               src={activeBrand.image} 
@@ -614,13 +674,13 @@ export default function Hero() {
               className="carousel-main-img"
             />
             <div className="carousel-brand-label">
-              <div ref={brandNameRef} className="mb-3 flex justify-end">
+              <div ref={brandNameRef} className="mb-3 flex justify-end max-[1024px]:justify-center">
                 <Image 
                   src={activeBrand.logo} 
                   alt={`${activeBrand.name} Logo`} 
-                  width={200} 
-                  height={60} 
-                  className="object-contain max-h-[60px] w-auto"
+                  width={300} 
+                  height={90} 
+                  className="object-contain max-h-[40px] min-[480px]:max-h-[50px] md:max-h-[90px] w-auto"
                 />
               </div>
               <div ref={brandTaglineRef} className="brand-tagline">{activeBrand.tagline}</div>
@@ -631,13 +691,13 @@ export default function Hero() {
 
         {/* Navigation Dots */}
         <div className="carousel-dots" role="tablist" aria-label="Carousel navigation">
-          {BRANDS.map((brand, idx) => (
+          {SLIDES.map((slide, idx) => (
             <button
-              key={brand.name}
+              key={`${slide.name}-${idx}`}
               className={`carousel-dot ${idx === currentIndex ? "active-dot" : ""}`}
               role="tab"
               aria-selected={idx === currentIndex}
-              aria-label={`Go to slide ${idx + 1}: ${brand.name}`}
+              aria-label={`Go to slide ${idx + 1}: ${slide.name}`}
               onClick={() => handleGoToSlide(idx, true)}
               tabIndex={idx === currentIndex ? 0 : -1}
             >

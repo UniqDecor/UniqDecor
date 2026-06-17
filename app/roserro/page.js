@@ -576,9 +576,35 @@ export default function RoserroPage() {
         }
         @keyframes scrollOriginsMarquee {
           0% { transform: translate3d(0, 0, 0); }
-          100% { transform: translate3d(-3440px, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
         }
         @media (max-width: 768px) {
+          .origins-carousel-track {
+            gap: 12px;
+          }
+          .roserro-origin-card-v2 {
+            width: calc(50vw - 18px);
+            min-width: 145px;
+            max-width: 280px;
+          }
+          .roserro-origin-card-v2 .h-48 {
+            height: 120px !important;
+          }
+          .roserro-origin-card-v2 .p-6 {
+            padding: 0.8rem !important;
+          }
+          .roserro-origin-card-v2 h3 {
+            font-size: 0.95rem !important;
+          }
+          .roserro-origin-card-v2 p {
+            font-size: 10px !important;
+            margin-top: 4px !important;
+            line-height: 1.3 !important;
+          }
+          .roserro-origin-card-v2 .mt-4 {
+            margin-top: 0.5rem !important;
+            padding-top: 0.5rem !important;
+          }
           .animate-origins-scroll {
             animation-duration: 35s;
           }
