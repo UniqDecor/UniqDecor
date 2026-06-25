@@ -1176,7 +1176,7 @@ export default function SeoDashboardClient() {
     );
   }
 
-  const handleCopyFixErrors = () => {
+  function handleCopyFixErrors() {
     if (!selectedFix || !data) return;
 
     let reportStr = "";
