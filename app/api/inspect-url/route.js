@@ -77,30 +77,34 @@ export async function GET(request) {
     let speedIndex = "1.8 s";
     let isSpeedSimulated = true;
 
-    try {
-      const targetUrl = `https://uniqdecorfurniture.in${pathParam}`;
-      const psiUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(targetUrl)}&strategy=mobile`;
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout to keep it fast
+    const gscOnly = searchParams.get("gscOnly") === "true";
 
-      const res = await fetch(psiUrl, { signal: controller.signal });
-      clearTimeout(timeoutId);
+    if (!gscOnly) {
+      try {
+        const targetUrl = `https://uniqdecorfurniture.in${pathParam}`;
+        const psiUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(targetUrl)}&strategy=mobile`;
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout to keep it fast
 
-      if (res.ok) {
-        const data = await res.json();
-        const lh = data.lighthouseResult;
-        if (lh) {
-          speedScore = Math.round((lh.categories?.performance?.score || 0.95) * 100);
-          fcp = lh.audits?.["first-contentful-paint"]?.displayValue || fcp;
-          lcp = lh.audits?.["largest-contentful-paint"]?.displayValue || lcp;
-          cls = lh.audits?.["cumulative-layout-shift"]?.displayValue || cls;
-          speedIndex = lh.audits?.["speed-index"]?.displayValue || speedIndex;
-          isSpeedSimulated = false;
+        const res = await fetch(psiUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          const data = await res.json();
+          const lh = data.lighthouseResult;
+          if (lh) {
+            speedScore = Math.round((lh.categories?.performance?.score || 0.95) * 100);
+            fcp = lh.audits?.["first-contentful-paint"]?.displayValue || fcp;
+            lcp = lh.audits?.["largest-contentful-paint"]?.displayValue || lcp;
+            cls = lh.audits?.["cumulative-layout-shift"]?.displayValue || cls;
+            speedIndex = lh.audits?.["speed-index"]?.displayValue || speedIndex;
+            isSpeedSimulated = false;
+          }
         }
+      } catch (err) {
+        console.warn("PageSpeed Insights API request timed out or failed, falling back to simulated scores:", err.message);
       }
-    } catch (err) {
-      console.warn("PageSpeed Insights API request timed out or failed, falling back to simulated scores:", err.message);
     }
 
     return NextResponse.json({

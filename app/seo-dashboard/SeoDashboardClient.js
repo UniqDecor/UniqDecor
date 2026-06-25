@@ -48,6 +48,8 @@ export default function SeoDashboardClient() {
   const [copiedKeywords, setCopiedKeywords] = useState({});
   const [copiedAllKeywords, setCopiedAllKeywords] = useState(false);
   const [auditProgress, setAuditProgress] = useState(0);
+  const [bulkInspecting, setBulkInspecting] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState(0);
   // Trigger full crawl
   const runFullAudit = async () => {
     setLoading(true);
@@ -118,7 +120,7 @@ export default function SeoDashboardClient() {
       setReScraping(prev => ({ ...prev, [path]: false }));
     }
   };
-
+  
   const runLiveInspection = async (path) => {
     setInspections(prev => ({
       ...prev,
@@ -138,6 +140,41 @@ export default function SeoDashboardClient() {
         [path]: { loading: false, data: null, error: err.message }
       }));
     }
+  };
+
+  const bulkVerifyGoogleIndex = async () => {
+    if (!data?.pages || bulkInspecting) return;
+    setBulkInspecting(true);
+    setBulkProgress(0);
+    
+    let count = 0;
+    for (const page of data.pages) {
+      setInspections(prev => ({
+        ...prev,
+        [page.path]: { ...prev[page.path], loading: true, error: null }
+      }));
+      
+      try {
+        const res = await fetch(`/api/inspect-url?path=${encodeURIComponent(page.path)}&gscOnly=true`, { cache: "no-store" });
+        if (!res.ok) throw new Error("GSC API query failed.");
+        const result = await res.json();
+        setInspections(prev => ({
+          ...prev,
+          [page.path]: { loading: false, data: result, error: null }
+        }));
+      } catch (err) {
+        setInspections(prev => ({
+          ...prev,
+          [page.path]: { loading: false, data: null, error: err.message }
+        }));
+      }
+      
+      count++;
+      setBulkProgress(count);
+      await new Promise(r => setTimeout(r, 150)); // small delay of 150ms to prevent request flooding
+    }
+    
+    setBulkInspecting(false);
   };
 
   const togglePageExpand = (path) => {
@@ -610,6 +647,21 @@ export default function SeoDashboardClient() {
                 )}
               </button>
 
+              <button
+                disabled={bulkInspecting}
+                onClick={bulkVerifyGoogleIndex}
+                className="inline-flex items-center gap-2 px-3.5 py-2.5 border border-indigo-200 hover:border-indigo-400 bg-indigo-50/50 hover:bg-indigo-50 text-indigo-700 font-bold text-xs uppercase tracking-wider rounded-lg transition-all cursor-pointer shadow-sm active:scale-95 shrink-0"
+                title="Bulk verify GSC Indexation status for all pages sequentially"
+              >
+                <Globe className={`w-3.5 h-3.5 ${bulkInspecting ? 'animate-spin' : 'text-[#C5A059]'}`} />
+                <span>
+                  {bulkInspecting 
+                    ? `Verifying index (${bulkProgress}/${data.pages.length})...` 
+                    : "Verify All Google Indexes"
+                  }
+                </span>
+              </button>
+
               <div className="relative w-full lg:w-[350px]">
                 <input 
                   type="text" 
@@ -715,13 +767,28 @@ export default function SeoDashboardClient() {
 
                 {/* Real GSC index inspection status */}
                 {inspections[page.path]?.data ? (
-                  <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border ${
-                    inspections[page.path].data.inspection.isIndexed
-                      ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                      : "bg-amber-50 text-amber-700 border-amber-100"
-                  }`} title={inspections[page.path].data.inspection.coverage}>
-                    Google Verified Index: {inspections[page.path].data.inspection.isIndexed ? "Indexed ✅" : "Not Indexed ⚠️"}
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border ${
+                      inspections[page.path].data.inspection.isIndexed
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                        : "bg-amber-50 text-amber-700 border-amber-100"
+                    }`} title={inspections[page.path].data.inspection.coverage}>
+                      Google Verified Index: {inspections[page.path].data.inspection.isIndexed ? "Indexed ✅" : "Not Indexed ⚠️"}
+                    </span>
+                    {!inspections[page.path].data.inspection.isIndexed && (
+                      <a
+                        href={`https://search.google.com/search-console/inspect?resource_id=sc-domain:uniqdecorfurniture.in&id=https://uniqdecorfurniture.in${page.path}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 transition-all flex items-center gap-1 cursor-pointer"
+                        title="Open this URL directly in Google Search Console to request manual indexing"
+                      >
+                        <ExternalLink className="w-2.5 h-2.5 text-amber-600" />
+                        <span>Request Indexing</span>
+                      </a>
+                    )}
+                  </div>
                 ) : (
                   <button
                     onClick={(e) => {
