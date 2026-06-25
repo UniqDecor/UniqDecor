@@ -44,22 +44,31 @@ export default function AnalyticsDashboardClient() {
         setAuditProgress(prev => (prev >= 90 ? 90 : prev + 15));
       }, 300);
 
+      // Run both fetches but don't let events failure block the whole dashboard
       const [seoRes, eventsRes] = await Promise.all([
         fetch("/api/seo-audit", { cache: "no-store" }),
-        fetch("/api/events", { cache: "no-store" })
+        fetch("/api/events", { cache: "no-store" }).catch(() => null)
       ]);
 
       clearInterval(interval);
       setAuditProgress(100);
 
       if (!seoRes.ok) throw new Error("Failed to load SEO audit data.");
-      if (!eventsRes.ok) throw new Error("Failed to load events data.");
 
       const seoResult = await seoRes.json();
-      const eventsResult = await eventsRes.json();
-
       setSeoData(seoResult);
-      setEventsData(eventsResult);
+
+      // Events data is optional - use empty defaults if unavailable
+      if (eventsRes && eventsRes.ok) {
+        try {
+          const eventsResult = await eventsRes.json();
+          setEventsData(eventsResult);
+        } catch (e) {
+          setEventsData(null); // graceful fallback
+        }
+      } else {
+        setEventsData(null); // no events tracking yet (Vercel filesystem limitation)
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -69,6 +78,7 @@ export default function AnalyticsDashboardClient() {
       }, 500);
     }
   };
+
 
   useEffect(() => {
     fetchData();

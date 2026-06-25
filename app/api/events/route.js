@@ -6,23 +6,59 @@ const DATA_DIR = path.join(process.cwd(), "data");
 const EVENTS_FILE = path.join(DATA_DIR, "events.json");
 const AGGREGATES_FILE = path.join(DATA_DIR, "aggregates.json");
 
+const EMPTY_AGGREGATES = {
+  totalSessions: 0,
+  totalPageviews: 0,
+  totalWhatsAppClicks: 0,
+  totalPhoneClicks: 0,
+  totalShowroomClicks: 0,
+  totalFormSubmissions: 0,
+  totalErrors: 0,
+  totalDuration: 0,
+  referrers: {},
+  devices: {},
+  pages: {},
+  daily: {}
+};
+
+const IS_VERCEL = process.env.VERCEL === '1' || !process.env.NODE_ENV || process.env.VERCEL_ENV;
+
 function ensureFilesExist() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(EVENTS_FILE)) fs.writeFileSync(EVENTS_FILE, JSON.stringify([]), "utf8");
-  if (!fs.existsSync(AGGREGATES_FILE)) fs.writeFileSync(AGGREGATES_FILE, JSON.stringify({
-    totalSessions: 0,
-    totalPageviews: 0,
-    totalWhatsAppClicks: 0,
-    totalPhoneClicks: 0,
-    totalShowroomClicks: 0,
-    totalFormSubmissions: 0,
-    totalErrors: 0,
-    totalDuration: 0,
-    referrers: {},
-    devices: {},
-    pages: {},
-    daily: {}
-  }), "utf8");
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    if (!fs.existsSync(EVENTS_FILE)) fs.writeFileSync(EVENTS_FILE, JSON.stringify([]), "utf8");
+    if (!fs.existsSync(AGGREGATES_FILE)) fs.writeFileSync(AGGREGATES_FILE, JSON.stringify(EMPTY_AGGREGATES), "utf8");
+  } catch (e) {
+    // Vercel or read-only filesystem — skip file creation
+  }
+}
+
+function readEventsFile() {
+  try {
+    if (!fs.existsSync(EVENTS_FILE)) return [];
+    return JSON.parse(fs.readFileSync(EVENTS_FILE, "utf8"));
+  } catch (e) { return []; }
+}
+
+function readAggregatesFile() {
+  try {
+    if (!fs.existsSync(AGGREGATES_FILE)) return { ...EMPTY_AGGREGATES };
+    return JSON.parse(fs.readFileSync(AGGREGATES_FILE, "utf8"));
+  } catch (e) { return { ...EMPTY_AGGREGATES }; }
+}
+
+function writeEventsFile(events) {
+  try {
+    fs.writeFileSync(EVENTS_FILE, JSON.stringify(events, null, 2), "utf8");
+    return true;
+  } catch (e) { return false; }
+}
+
+function writeAggregatesFile(data) {
+  try {
+    fs.writeFileSync(AGGREGATES_FILE, JSON.stringify(data, null, 2), "utf8");
+    return true;
+  } catch (e) { return false; }
 }
 
 function getNormalizedPath(p) {
@@ -46,12 +82,8 @@ export async function POST(request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Read existing events
-    let events = [];
-    try {
-      const data = fs.readFileSync(EVENTS_FILE, "utf8");
-      events = JSON.parse(data);
-    } catch (err) { events = []; }
+    // Read existing events (safe - returns [] if file doesn't exist)
+    let events = readEventsFile();
 
     // Filter events older than 7 days (keep longer for trend analysis)
     const thresholdTime = Date.now() - 7 * 24 * 60 * 60 * 1000;
@@ -86,12 +118,12 @@ export async function POST(request) {
 
     events.push(newEvent);
 
-    // Write events back
-    fs.writeFileSync(EVENTS_FILE, JSON.stringify(events, null, 2), "utf8");
+    // Write events back (safe - no-op on read-only filesystem)
+    writeEventsFile(events);
 
     // Update aggregates in real-time
     try {
-      const aggData = JSON.parse(fs.readFileSync(AGGREGATES_FILE, "utf8"));
+      const aggData = readAggregatesFile();
       const today = new Date().toISOString().split("T")[0];
 
       if (!aggData.daily[today]) {
@@ -165,7 +197,7 @@ export async function POST(request) {
       if (newEvent.event === "click" && newEvent.target === "showroom_cta") aggData.pages[normPath].showroom++;
       if (newEvent.event === "form_submit") aggData.pages[normPath].forms++;
 
-      fs.writeFileSync(AGGREGATES_FILE, JSON.stringify(aggData, null, 2), "utf8");
+      writeAggregatesFile(aggData);
     } catch (err) {
       console.error("Failed to update aggregates:", err.message);
     }
@@ -181,8 +213,8 @@ export async function GET(request) {
   try {
     ensureFilesExist();
 
-    const events = JSON.parse(fs.readFileSync(EVENTS_FILE, "utf8"));
-    const aggregates = JSON.parse(fs.readFileSync(AGGREGATES_FILE, "utf8"));
+    const events = readEventsFile();
+    const aggregates = readAggregatesFile();
 
     // Compute live stats from recent 5 minutes
     const fiveMinsAgo = Date.now() - 5 * 60 * 1000;
