@@ -1,0 +1,32 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Arial;}{\f1\fnil\fcharset0 Arial Bold;}}
+{\colortbl ;\red197\green160\blue89;\red8\green13\blue9;\red107\green101\blue96;}
+\viewkind4\uc1\pard\qc\b\f0\fs32 Uniq Decor SEO Dashboard - API Design Documentation\b0\fs24\par
+\pard\sb100\sa100\par
+\b 1. Overview & Business Use Case\b0\par
+The "Uniq Decor SEO Dashboard" is a private, in-house business tool designed exclusively for the internal marketing team of Uniq Decor (uniqdecorfurniture.in), a premium furniture and home decor showroom based in Udaipur, India.\par
+The tool allows our marketing team to monitor search query impressions, CTR, and search volume to optimize our landing page SEO metadata (titles, descriptions, and H1 tags).\par
+\par
+\b 2. Google Ads API Integration Scope\b0\par
+Our application uses the Google Ads API strictly for Keyword Planning historical metrics. The tool does not manage ads, budgets, or write campaigns. It only performs read-only operations to fetch keyword volume data:\par
+- API Version: v24\par
+- Endpoint: generateKeywordHistoricalMetrics\par
+- Targeting: GeoTarget India (geoTargetConstants/2356), Language English (languageConstants/1000)\par
+\par
+\b 3. User Access and Security\b0\par
+- Access to the dashboard is restricted to internal employees (marketing and content team members).\par
+- There are no external clients or public access.\par
+- Credentials (Developer Token, Client ID, Client Secret, and Refresh Token) are stored securely in a server-side environment file (.env.local) and are never exposed to the client-side browser bundle.\par
+\par
+\b 4. API Data Flow and Architecture\b0\par
+1. The user logs into the dashboard.\par
+2. The server-side route (/api/seo-audit) checks the cache for keyword volume data.\par
+3. If cache is expired or missing, the server exchanges the OAuth 2.0 Refresh Token for an Access Token via: https://oauth2.googleapis.com/token\par
+4. The server calls the Google Ads API: https://googleads.googleapis.com/v24/customers/[Customer_ID]:generateKeywordHistoricalMetrics\par
+5. The retrieved average monthly searches are combined with Google Search Console impressions and displayed in a dashboard table.\par
+\par
+\b 5. Dashboard User Interface Details\b0\par
+The user interface features:\par
+- Status Badges: A top header status badge showing "Google Ads (Keyword Planner): Connected" once Basic Access is granted.\par
+- Performance Grid: Display of monthly search volume alongside GSC clicks, GSC impressions, and SEO optimization score for each of our website's 37 pages (e.g. /, /ddecor, /geeken).\par
+- SEO Audit: On-page keyword checklist validation.\par
+}

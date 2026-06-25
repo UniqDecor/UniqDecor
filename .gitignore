@@ -25,9 +25,17 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# seo & content planning docs
+content.md
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# credentials & temp files
+uniqdecor-seo-dashboard-*.json
+*.tmp
+

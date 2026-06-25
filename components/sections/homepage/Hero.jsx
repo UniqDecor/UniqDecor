@@ -620,11 +620,11 @@ export default function Hero() {
       <div className="hero-text-col">
         
         <h1 className="hero-headline-el font-serif text-2xl md:text-4xl lg:text-5xl font-bold leading-[1.2] text-white mb-5 tracking-tight max-[1024px]:text-center">
-          Home Furnishing, Office Furniture, <em className="italic text-[var(--color-accent-gold)] font-bold font-serif">Hospitality Supplies</em>, Roofing Solutions & more
+          Premium Furniture Showroom Udaipur <span className="font-sans font-light text-white/50">&bull;</span> <em className="italic text-[var(--color-accent-gold)] font-bold font-serif">Home, Office & Hospitality</em>
         </h1>
         
         <p className="hero-sub-el text-sm md:text-base text-[#D1DCD4] leading-relaxed mb-9 max-w-sm max-[1024px]:text-center max-[1024px]:max-w-none">
-          Four trusted brands under one roof. Serving hotels, hospitals, offices, and homes across India since 2010.
+          Visit the premier Premium Furniture Showroom Udaipur. Four trusted brands under one roof, serving hotels, hospitals, offices, and homes since 2010.
         </p>
         
         <div className="hero-actions-v3 flex gap-4 max-[1024px]:flex-col max-[1024px]:w-full max-[1024px]:max-w-[320px] max-[1024px]:items-center mb-8">

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://uniqdecorfurniture.in/</loc>
+    <image:image>
+      <image:loc>https://uniqdecorfurniture.in/photos/UNIQ-DECOR-Logo.webp</image:loc>
+      <image:title>UNIQ Decor Logo</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://uniqdecorfurniture.in/photos/HOMEPAGE%20IMAGE/STONE%20COATED%20ROOFING.jpg</image:loc>
+      <image:title>Stone Coated Roofing Tiles Showcase</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://uniqdecorfurniture.in/ddecor</loc>
+    <image:image>
+      <image:loc>https://uniqdecorfurniture.in/photos/luxury-hotel-curtains-udaipur.webp</image:loc>
+      <image:title>D'Decor Premium Curtain Fabrics</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://uniqdecorfurniture.in/geeken</loc>
+    <image:image>
+      <image:loc>https://uniqdecorfurniture.in/photos/geeken-high-back-chair1.webp</image:loc>
+      <image:title>Geeken Ergonomic Office Chairs</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://uniqdecorfurniture.in/roserro</loc>
+    <image:image>
+      <image:loc>https://uniqdecorfurniture.in/photos/hotel-bedding-set-udaipur.webp</image:loc>
+      <image:title>Roserro Luxury Hotel Linens</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://uniqdecorfurniture.in/laxree-amenities</loc>
+    <image:image>
+      <image:loc>https://uniqdecorfurniture.in/photos/HOMEPAGE%20IMAGE/IN-ROOM%20AMENITIES.webp</image:loc>
+      <image:title>LaxRee Hotel Room Amenities</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://uniqdecorfurniture.in/laxree-roofing</loc>
+    <image:image>
+      <image:loc>https://uniqdecorfurniture.in/photos/roofing-tile-installation-udaipur.webp</image:loc>
+      <image:title>LaxRee Roofing Solutions</image:title>
+    </image:image>
+  </url>
+</urlset>

@@ -36,6 +36,11 @@ export async function generateMetadata({ params }) {
       url: `https://uniqdecorfurniture.in/ddecor/materials/${material}`,
       type: "website",
     },
+    twitter: {
+      card: "summary_large_image",
+      title: data.metaTitle,
+      description: data.metaDesc,
+    },
   };
 }
 
@@ -58,14 +63,46 @@ export default async function MaterialPage({ params }) {
       "@type": "Brand",
       "name": "D'Decor"
     },
+    "hasCertification": { "@type": "Certification", "name": "ISO 9001:2015 Certified", "description": "Manufactured in ISO 9001 certified facilities." },
     "offers": {
       "@type": "AggregateOffer",
       "priceCurrency": "INR",
       "lowPrice": "499",
       "highPrice": "6999",
       "offerCount": "80",
-      "priceRange": "$$-$$$"
+      "priceRange": "$$-$$$",
+      "seller": {
+        "@type": "LocalBusiness",
+        "@id": "https://uniqdecorfurniture.in/#store",
+        "name": "UNIQ Decor Showroom Udaipur",
+        "telephone": "+919982219222",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "2nd Floor, Gokul Tower, F Block near CA Circle, Hiran Magri, Sector 14",
+          "addressLocality": "Udaipur",
+          "addressRegion": "Rajasthan",
+          "postalCode": "313001",
+          "addressCountry": "IN"
+        },
+        "sameAs": [
+          "https://www.facebook.com/uniqdecor",
+        "https://www.instagram.com/uniqdecor",
+        "https://www.linkedin.com/company/uniqdecor",
+        "https://www.youtube.com/@uniqdecor"
+      ]
+      }
     }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://uniqdecorfurniture.in/" },
+      { "@type": "ListItem", "position": 2, "name": "D'Decor", "item": "https://uniqdecorfurniture.in/ddecor" },
+      { "@type": "ListItem", "position": 3, "name": "Materials", "item": "https://uniqdecorfurniture.in/ddecor/materials" },
+      { "@type": "ListItem", "position": 4, "name": data.materialName, "item": `https://uniqdecorfurniture.in/ddecor/materials/${material}` }
+    ]
   };
 
   const whatsappBase = "919982219222";
@@ -80,6 +117,10 @@ export default async function MaterialPage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       {styleTag}

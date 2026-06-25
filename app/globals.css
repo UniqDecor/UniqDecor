@@ -4,11 +4,16 @@
 
 /* Global Styles & Reset Rules */
 html {
-  scroll-padding-top: 95px;
-  scroll-behavior: smooth;
+  scroll-padding-top: 105px;
   overflow-x: hidden;
   width: 100%;
   max-width: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -36,6 +41,46 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #1B4332;
   border-radius: 3px;
+}
+
+/* Focus-visible: keyboard focus indicator for all interactive elements */
+:focus-visible {
+  outline: 2px solid #1B4332;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Skip-to-content link (visually hidden until focused) */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 1000000;
+  padding: 8px 16px;
+  background: #1B4332;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: top 0.1s;
+}
+.skip-to-content:focus {
+  top: 0;
+  outline: 2px solid #C9A227;
+  outline-offset: 2px;
+}
+
+/* Screen-reader-only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Page-level Theme Scopes */

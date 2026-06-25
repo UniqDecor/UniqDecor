@@ -57,6 +57,7 @@ export default function Footer() {
               width={160}
               height={44}
               className="h-[44px] w-auto object-contain"
+              style={{ width: 'auto', height: 'auto' }}
             />
           </Link>
           <p className="text-[#D1DCD4] text-sm leading-relaxed mb-6 max-w-sm">
@@ -65,13 +66,13 @@ export default function Footer() {
           
           {/* Social Icons */}
           <div className="flex gap-3">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/2 text-[#EAEFF2] transition-all duration-300 hover:text-black hover:bg-[var(--color-accent-gold)] hover:border-[var(--color-accent-gold)] hover:-translate-y-1 hover:shadow-lg" aria-label="Uniq Decor Instagram">
+            <a href="https://www.instagram.com/uniqdecor" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/2 text-[#EAEFF2] transition-all duration-300 hover:text-black hover:bg-[var(--color-accent-gold)] hover:border-[var(--color-accent-gold)] hover:-translate-y-1 hover:shadow-lg" aria-label="Uniq Decor Instagram">
               <Instagram className="w-4 h-4" />
             </a>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/2 text-[#EAEFF2] transition-all duration-300 hover:text-black hover:bg-[var(--color-accent-gold)] hover:border-[var(--color-accent-gold)] hover:-translate-y-1 hover:shadow-lg" aria-label="Uniq Decor Facebook">
+            <a href="https://www.facebook.com/uniqdecor" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/2 text-[#EAEFF2] transition-all duration-300 hover:text-black hover:bg-[var(--color-accent-gold)] hover:border-[var(--color-accent-gold)] hover:-translate-y-1 hover:shadow-lg" aria-label="Uniq Decor Facebook">
               <Facebook className="w-4 h-4" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/2 text-[#EAEFF2] transition-all duration-300 hover:text-black hover:bg-[var(--color-accent-gold)] hover:border-[var(--color-accent-gold)] hover:-translate-y-1 hover:shadow-lg" aria-label="Uniq Decor LinkedIn">
+            <a href="https://www.linkedin.com/company/uniqdecor" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/2 text-[#EAEFF2] transition-all duration-300 hover:text-black hover:bg-[var(--color-accent-gold)] hover:border-[var(--color-accent-gold)] hover:-translate-y-1 hover:shadow-lg" aria-label="Uniq Decor LinkedIn">
               <Linkedin className="w-4 h-4" />
             </a>
           </div>
@@ -108,6 +109,11 @@ export default function Footer() {
                 LaxRee Premium Roofing
               </Link>
             </li>
+            <li>
+              <Link href="/about" className="text-[#D1DCD4] hover:text-[var(--color-accent-gold)] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
+                About Us
+              </Link>
+            </li>
           </ul>
         </div>
 
@@ -142,11 +148,45 @@ export default function Footer() {
                 FAQ Accordions
               </Link>
             </li>
+            <li>
+              <Link href="/about" className="text-[#D1DCD4] hover:text-[var(--color-accent-gold)] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
+                About Us
+              </Link>
+            </li>
           </ul>
         </div>
 
-        {/* Column 4: Official Brands */}
+        {/* Column 4: Showrooms */}
         <div className="lg:col-span-2 footer-block">
+          <h3 className="text-xs font-extrabold uppercase tracking-widest text-[var(--color-accent-gold)] mb-6 relative after:content-[''] after:absolute after:-bottom-1.5 after:left-0 after:w-7 after:h-0.5 after:bg-[var(--color-accent-gold)]">
+            Our Showrooms
+          </h3>
+          <ul className="flex flex-col gap-3.5 list-none p-0 m-0 text-sm">
+            <li>
+              <Link href="/roserro/locations" className="text-[#D1DCD4] hover:text-[var(--color-accent-gold)] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
+                Roserro Showroom
+              </Link>
+            </li>
+            <li>
+              <Link href="/geeken/locations" className="text-[#D1DCD4] hover:text-[var(--color-accent-gold)] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
+                Geeken Showroom
+              </Link>
+            </li>
+            <li>
+              <Link href="/laxree-amenities/locations" className="text-[#D1DCD4] hover:text-[var(--color-accent-gold)] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
+                LaxRee Amenities Showroom
+              </Link>
+            </li>
+            <li>
+              <Link href="/laxree-roofing/locations" className="text-[#D1DCD4] hover:text-[var(--color-accent-gold)] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
+                LaxRee Roofing Showroom
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Column 5: Official Brands */}
+        <div className="lg:col-span-1 footer-block">
           <h3 className="text-xs font-extrabold uppercase tracking-widest text-[var(--color-accent-gold)] mb-6 relative after:content-[''] after:absolute after:-bottom-1.5 after:left-0 after:w-7 after:h-0.5 after:bg-[var(--color-accent-gold)]">
             Official Links
           </h3>
@@ -179,8 +219,8 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 5: Address Block */}
-        <div className="lg:col-span-3 footer-block">
+        {/* Column 6: Address Block */}
+        <div className="lg:col-span-2 footer-block">
           <h3 className="text-xs font-extrabold uppercase tracking-widest text-[var(--color-accent-gold)] mb-6 relative after:content-[''] after:absolute after:-bottom-1.5 after:left-0 after:w-7 after:h-0.5 after:bg-[var(--color-accent-gold)]">
             Udaipur Showroom
           </h3>
@@ -223,6 +263,28 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Trust Badges — Certifications */}
+      <div className="relative z-10 py-8 border-b border-white/5 footer-block">
+        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+          <div className="flex items-center gap-2 text-[11px] text-[#D1DCD4] uppercase tracking-wider font-semibold">
+            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-[var(--color-accent-gold)]">BIFMA</span>
+            BIFMA Certified — Geeken
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-[#D1DCD4] uppercase tracking-wider font-semibold">
+            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-[var(--color-accent-gold)]">ISO</span>
+            ISO 9001 — D'Decor, Roserro, LaxRee
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-[#D1DCD4] uppercase tracking-wider font-semibold">
+            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-[var(--color-accent-gold)]">CE</span>
+            CE & RoHS — LaxRee Amenities
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-[#D1DCD4] uppercase tracking-wider font-semibold">
+            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-[var(--color-accent-gold)]">ASTM</span>
+            ASTM E108 — LaxRee Roofing
+          </div>
+        </div>
+      </div>
+
       {/* Bottom Utility Strip */}
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-center py-8 text-xs text-[#D1DCD4] gap-4 bg-[#050806] mx-[-4.3%] px-[4%] mt-4">
         
@@ -243,8 +305,10 @@ export default function Footer() {
         </div>
         
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 justify-center">
+          <Link href="/about" className="hover:text-[var(--color-accent-gold)] transition-colors">About Us</Link>
           <Link href="/privacy" className="hover:text-[var(--color-accent-gold)] transition-colors">Privacy Policy</Link>
           <Link href="/terms" className="hover:text-[var(--color-accent-gold)] transition-colors">Terms of Service</Link>
+          <a href="https://www.youtube.com/@uniqdecor" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-accent-gold)] transition-colors">YouTube</a>
           <a href="/robots.txt" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-accent-gold)] transition-colors">Robots.txt</a>
           <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-accent-gold)] transition-colors">Sitemap</a>
           <span className="text-white/10 hidden sm:inline">|</span>

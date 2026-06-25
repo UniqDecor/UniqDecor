@@ -1,0 +1,23 @@
+# Humans.txt — Uniq Decor Udaipur
+# www.uniqdecorfurniture.in
+
+## Team
+    Developer: Anirudh (Full-Stack Developer)
+    Design: Anirudh
+    Content: Uniq Decor Team
+    Business: Uniq Decor Showroom
+
+## Site
+    Technology: Next.js, React, Tailwind CSS
+    Hosting: Vercel
+    Fonts: Inter, Playfair Display (Google Fonts)
+    CMS: Headless (data-driven pages)
+    Last update: 2026-06-25
+
+## Contact
+    Email: info@uniqdecor.com
+    Phone: +91 99822 19222
+    Location: Hiran Magri, Udaipur, Rajasthan
+
+## Thanks
+    Thanks to all our customers, partners, and the open-source community.

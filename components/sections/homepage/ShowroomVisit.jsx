@@ -212,7 +212,8 @@ export default function ShowroomVisit() {
 
         .form-input-v9:focus,
         .form-select-v9:focus {
-          outline: none;
+          outline: 2px solid #C9A227;
+          outline-offset: 2px;
           border-color: #C9A227;
           box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
         }

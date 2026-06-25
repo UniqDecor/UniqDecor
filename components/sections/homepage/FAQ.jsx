@@ -514,18 +514,24 @@ export default function FAQ() {
                 key={idx} 
                 className={`faq-item-v10 ${openIdx === idx ? "is-open-v10" : ""}`}
               >
-                <div 
+                <button 
                   className="faq-summary-v10"
                   onClick={() => toggleAccordion(idx)}
+                  aria-expanded={openIdx === idx}
+                  aria-controls={`faq-answer-${idx}`}
+                  id={`faq-button-${idx}`}
                 >
                   <h3>{item.question}</h3>
                   <div className="faq-chevron-wrapper-v10" aria-hidden="true">
                     <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-none stroke-current stroke-2"><polyline points="6 9 12 15 18 9"/></svg>
                   </div>
-                </div>
+                </button>
                 <div 
                   ref={(el) => (accordionRefs.current[idx] = el)} 
                   className="faq-answer-wrapper-v10"
+                  id={`faq-answer-${idx}`}
+                  role="region"
+                  aria-labelledby={`faq-button-${idx}`}
                 >
                   <div className="faq-answer-content-v10">
                     {item.answer}

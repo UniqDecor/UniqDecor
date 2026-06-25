@@ -212,7 +212,14 @@ export default function Journey() {
           align-items: center;
           text-align: center;
           position: relative;
-          outline: none;
+          outline: 2px solid transparent;
+          outline-offset: 2px;
+        }
+
+        .journey-card-v9:focus-visible {
+          outline: 2px solid #C9A227;
+          outline-offset: 2px;
+          border-radius: 16px;
         }
 
         .journey-node-v9 {

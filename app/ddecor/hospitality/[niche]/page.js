@@ -36,6 +36,11 @@ export async function generateMetadata({ params }) {
       url: `https://uniqdecorfurniture.in/ddecor/hospitality/${niche}`,
       type: "website",
     },
+    twitter: {
+      card: "summary_large_image",
+      title: data.metaTitle,
+      description: data.metaDesc,
+    },
   };
 }
 
@@ -56,6 +61,7 @@ export default async function HospitalityPage({ params }) {
     "description": data.metaDesc,
     "provider": {
       "@type": "LocalBusiness",
+      "@id": "https://uniqdecorfurniture.in/#store",
       "name": "UNIQ Decor Showroom Udaipur",
       "telephone": "+919982219222",
       "address": {
@@ -70,12 +76,29 @@ export default async function HospitalityPage({ params }) {
         "@type": "GeoCoordinates",
         "latitude": 24.5420,
         "longitude": 73.6964
-      }
+      },
+      "sameAs": [
+        "https://www.facebook.com/uniqdecor",
+        "https://www.instagram.com/uniqdecor",
+        "https://www.linkedin.com/company/uniqdecor",
+        "https://www.youtube.com/@uniqdecor"
+      ]
     },
     "areaServed": {
-      "@type": "State",
+      "@type": "AdministrativeArea",
       "name": "Rajasthan"
     }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://uniqdecorfurniture.in/" },
+      { "@type": "ListItem", "position": 2, "name": "D'Decor", "item": "https://uniqdecorfurniture.in/ddecor" },
+      { "@type": "ListItem", "position": 3, "name": "Hospitality", "item": "https://uniqdecorfurniture.in/ddecor/hospitality" },
+      { "@type": "ListItem", "position": 4, "name": data.nicheName, "item": `https://uniqdecorfurniture.in/ddecor/hospitality/${niche}` }
+    ]
   };
 
   const whatsappBase = "919982219222";
@@ -90,6 +113,10 @@ export default async function HospitalityPage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       {styleTag}

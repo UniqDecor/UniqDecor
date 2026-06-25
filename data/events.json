@@ -1,0 +1,698 @@
+[
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:34:23.838Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "pageview",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:34:23.838Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:34:23.907Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "pageview",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:34:23.907Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "scroll",
+    "path": "/",
+    "target": "25%",
+    "label": null,
+    "timestamp": "2026-06-24T19:34:29.501Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "click",
+    "path": "/",
+    "target": "general_link",
+    "label": "BLOG",
+    "timestamp": "2026-06-24T19:34:31.514Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:34:55.218Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "pageview",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:34:55.219Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:34:55.237Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "click",
+    "path": "/",
+    "target": "general_link",
+    "label": "BLOG",
+    "timestamp": "2026-06-24T19:34:42.045Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "pageview",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:34:55.237Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "scroll",
+    "path": "/blog",
+    "target": "25%",
+    "label": null,
+    "timestamp": "2026-06-24T19:34:58.243Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "scroll",
+    "path": "/blog",
+    "target": "50%",
+    "label": null,
+    "timestamp": "2026-06-24T19:34:59.934Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "scroll",
+    "path": "/blog",
+    "target": "75%",
+    "label": null,
+    "timestamp": "2026-06-24T19:35:00.388Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "scroll",
+    "path": "/blog",
+    "target": "100%",
+    "label": null,
+    "timestamp": "2026-06-24T19:35:00.739Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "click",
+    "path": "/blog",
+    "target": "general_link",
+    "label": "D'DECOR\n2026-06-20\nUNIQ DECOR ",
+    "timestamp": "2026-06-24T19:35:05.337Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "click",
+    "path": "/blog",
+    "target": "general_link",
+    "label": "D'DECOR\n2026-06-20\nUNIQ DECOR ",
+    "timestamp": "2026-06-24T19:35:07.266Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "click",
+    "path": "/blog",
+    "target": "general_link",
+    "label": "D'DECOR\n2026-06-20\nUNIQ DECOR ",
+    "timestamp": "2026-06-24T19:35:07.485Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "pageview",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:35:07.762Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "pageview",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:35:08.133Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "scroll",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": "25%",
+    "label": null,
+    "timestamp": "2026-06-24T19:35:08.843Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:35:09.076Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "scroll",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": "50%",
+    "label": null,
+    "timestamp": "2026-06-24T19:35:09.285Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "scroll",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": "75%",
+    "label": null,
+    "timestamp": "2026-06-24T19:35:10.272Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "scroll",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": "100%",
+    "label": null,
+    "timestamp": "2026-06-24T19:35:17.193Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "click",
+    "path": "/blog",
+    "target": "general_link",
+    "label": "GEEKEN\n2026-06-22\nUNIQ DECOR T",
+    "timestamp": "2026-06-24T19:35:19.883Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "click",
+    "path": "/blog",
+    "target": "general_link",
+    "label": "GEEKEN\n2026-06-22\nUNIQ DECOR T",
+    "timestamp": "2026-06-24T19:35:20.102Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "pageview",
+    "path": "/blog/best-ergonomic-office-chairs-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:35:20.292Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "scroll",
+    "path": "/blog/best-ergonomic-office-chairs-udaipur",
+    "target": "25%",
+    "label": null,
+    "timestamp": "2026-06-24T19:35:21.254Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "scroll",
+    "path": "/blog/best-ergonomic-office-chairs-udaipur",
+    "target": "50%",
+    "label": null,
+    "timestamp": "2026-06-24T19:35:21.434Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "scroll",
+    "path": "/blog/best-ergonomic-office-chairs-udaipur",
+    "target": "75%",
+    "label": null,
+    "timestamp": "2026-06-24T19:35:21.829Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:35:41.210Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:35:54.083Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:36:26.079Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:36:39.095Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "scroll",
+    "path": "/blog/best-ergonomic-office-chairs-udaipur",
+    "target": "100%",
+    "label": null,
+    "timestamp": "2026-06-24T19:36:47.146Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "click",
+    "path": "/blog/best-ergonomic-office-chairs-udaipur",
+    "target": "general_link",
+    "label": "SITEMAP",
+    "timestamp": "2026-06-24T19:36:49.994Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "click",
+    "path": "/blog/best-ergonomic-office-chairs-udaipur",
+    "target": "general_link",
+    "label": "SITEMAP",
+    "timestamp": "2026-06-24T19:36:51.687Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "click",
+    "path": "/blog/best-ergonomic-office-chairs-udaipur",
+    "target": "general_link",
+    "label": "SITEMAP",
+    "timestamp": "2026-06-24T19:36:51.904Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "pageview",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:37:01.759Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:37:04.799Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "pageview",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:37:04.800Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:37:04.825Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "pageview",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:37:04.825Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:37:14.844Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:37:31.471Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:37:49.827Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:38:01.814Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:38:34.826Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:38:41.083Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:39:19.828Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:39:27.628Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:40:04.830Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:40:12.001Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:40:49.826Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:40:58.237Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:41:34.828Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:42:19.840Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:48:19.839Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:47:54.095Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:48:42.215Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "pageview",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:48:42.215Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:48:42.381Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "pageview",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:48:42.382Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:48:54.094Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:49:04.830Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:49:28.100Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:49:49.832Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:49:54.079Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:50:13.083Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:50:34.834Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:50:54.081Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:50:58.087Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:51:19.826Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:51:43.083Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:51:54.084Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:52:04.833Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:52:28.080Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:52:49.829Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:52:54.079Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:53:13.088Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:53:34.832Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:53:54.078Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:54:19.833Z"
+  },
+  {
+    "sessionId": "session_n1qq7f5ezx6kpo4oqqche",
+    "event": "heartbeat",
+    "path": "/",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:54:54.090Z"
+  },
+  {
+    "sessionId": "session_bnux82cfax93p1v7zxkvly",
+    "event": "heartbeat",
+    "path": "/blog/curtain-fabrics-guide-udaipur",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:54:54.091Z"
+  },
+  {
+    "sessionId": "session_r9tbstn4k12861fr5p4ew",
+    "event": "heartbeat",
+    "path": "/sitemap",
+    "target": null,
+    "label": null,
+    "timestamp": "2026-06-24T19:55:04.829Z"
+  }
+]

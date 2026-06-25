@@ -359,7 +359,7 @@ export default function Testimonials() {
           background: linear-gradient(135deg, #6f4e37 0%, #C9A227 100%);
         }
 
-        .author-info-v7 h4 {
+        .author-info-v7 h3 {
           font-size: 0.92rem;
           font-weight: 700;
           color: #1A1A1A;
@@ -570,7 +570,7 @@ export default function Testimonials() {
               <div className="testimonial-author-v7">
                 <div className="author-avatar-v7" aria-hidden="true">{review.avatar}</div>
                 <div className="author-info-v7">
-                  <h4>{review.name}</h4>
+                  <h3>{review.name}</h3>
                   <p>{review.company}</p>
                   <span className="author-tag-v7">{review.tag}</span>
                 </div>
@@ -601,7 +601,7 @@ export default function Testimonials() {
               <div className="testimonial-author-v7">
                 <div className="author-avatar-v7" aria-hidden="true">{review.avatar}</div>
                 <div className="author-info-v7">
-                  <h4>{review.name}</h4>
+                  <h3>{review.name}</h3>
                   <p>{review.company}</p>
                   <span className="author-tag-v7">{review.tag}</span>
                 </div>

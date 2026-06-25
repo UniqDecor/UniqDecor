@@ -93,6 +93,12 @@ export default function TermsOfServicePage() {
               <span>✉️ info@uniqdecor.com</span>
               <span>📍 Sector 14 Hiran Magri, Udaipur</span>
             </div>
+            {/* Last Updated */}
+            <div className="mt-8 pt-6 border-t border-black/5">
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider font-medium text-center">
+                Last updated: June 25, 2026
+              </p>
+            </div>
           </div>
         </div>
       </div>

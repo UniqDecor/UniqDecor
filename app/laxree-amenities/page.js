@@ -1,213 +1,22 @@
 "use client";
 
-import { useState, useRef } from "react";
-import Image from "next/image";
+import { useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { 
-  Check, 
   ChevronRight, 
   ChevronDown, 
-  VolumeX, 
-  Tag, 
-  KeyRound,
   ShieldCheck,
   Star,
-  Hotel,
   Package,
-  Map,
-  MessageSquareMore,
-  MapPin
 } from "lucide-react";
 import ShowroomVisit from "@/components/sections/homepage/ShowroomVisit";
-
-// Product categories dataset matching updated specs
-const AMENITIES_PRODUCTS = {
-  room: {
-    id: "laxree-room-amenities",
-    title: "Room Amenities",
-    tag: "Category 01",
-    desc: "Noiseless minibars, safety kettles, smart safes, and anti-theft hangers built for luxury guest suites.",
-    items: [
-      {
-        title: "Minibar",
-        img: "/photos/Minibar.webp",
-        desc: "No-compressor noiseless cooling (0 dB) with auto-defrost and LED lighting. Available in 30L / 40L capacities."
-      },
-      {
-        title: "Kettle",
-        img: "/photos/Kettle.webp",
-        desc: "Food-grade SS304 or borosilicate glass kettles with double-wall insulation and auto shut-off safety."
-      },
-      {
-        title: "Safebox",
-        img: "/photos/Safebox.webp",
-        desc: "Fits up to 15\" laptops. Features secure ADA digital keypads, internal LED lights, and manual override keys."
-      },
-      {
-        title: "Wooden Hanger",
-        img: "/photos/Hanger.webp",
-        desc: "Solid lotus wood hangers featuring anti-theft security rings, locking pant hooks, and non-slip bars."
-      }
-    ]
-  },
-  washroom: {
-    id: "laxree-washroom-amenities",
-    title: "Wash Room Amenities",
-    tag: "Category 02",
-    desc: "Wall-mounted safety hairdryers, LED magnifying vanity mirrors, and premium soap dispensers.",
-    items: [
-      {
-        title: "Hair Dryer",
-        img: "/photos/AMT/hair dryer.webp",
-        desc: "Wall-mounted style with safety auto-off pressure switch, dual heat speed controls, and low noise ventilation.",
-        spec: "1200W - 1600W rating"
-      },
-      {
-        title: "Magnifying Mirror",
-        img: "/photos/AMT/magnifying mirror.webp",
-        desc: "Wall-mounted double-sided LED magnifying vanity mirror featuring 3x/5x magnification options and a 360-degree brass swivel arm.",
-        spec: "LED Lighted - Brass Base"
-      },
-      {
-        title: "Soap Dispenser",
-        img: "/photos/AMT/soap dispenser.webp",
-        desc: "Available in automatic smart infrared sensor or manual steel/acrylic styles. Completely leak-proof and refillable.",
-        spec: "Liquid / Gel / Foam"
-      }
-    ]
-  },
-  lobby: {
-    id: "laxree-lobby-amenities",
-    title: "Lobby Amenities",
-    tag: "Category 03",
-    desc: "Heavy-duty luggage trolleys, commercial digital signage totems, and premium lobby dustbins.",
-    items: [
-      {
-        title: "Luggage Trolley",
-        img: "/photos/AMT/luggage trolley.webp",
-        badge: "Stainless Steel",
-        desc: "Polished gold or silver titanium SS304 tube frames, complete with a luxury wrap-around carpeted base, protective bumper, and mute heavy-duty wheels.",
-        spec: "Hotel Lobby Spec"
-      },
-      {
-        title: "Digital Signage",
-        img: "/photos/AMT/digital signage.webp",
-        badge: "LED Display",
-        desc: "Slim interactive or commercial-grade digital totem display stand, built with high-definition IPS panels and integrated Android media player.",
-        spec: "43\" - 55\" Screen"
-      },
-      {
-        title: "Lobby Dustbin",
-        img: "/photos/AMT/lobby dutbin.webp",
-        badge: "Stainless Steel",
-        desc: "Elegant stainless steel or titanium lobby waste bin featuring a built-in ash urn top, perfect for hotel entrances, elevator bays, and hallways.",
-        spec: "SS304 - Ash Urn Top"
-      }
-    ]
-  },
-  restaurant: {
-    id: "laxree-restaurant-furniture",
-    title: "Restaurant Furniture",
-    tag: "Category 04",
-    desc: "Elegant dining chairs, tables, and custom-upholstered dining sofas built for hotel restaurants.",
-    items: [
-      {
-        title: "Restaurant Chair",
-        img: "/photos/AMT/restaurant chair.webp",
-        desc: "Solid ashwood or steel frames upholstered in stain-resistant fabrics with premium ergonomic seating."
-      },
-      {
-        title: "Restaurant Table",
-        img: "/photos/AMT/retaurangt table.webp",
-        desc: "Premium quartz, marble, or solid oak wood tabletops with heavy cast-iron or steel support bases."
-      },
-      {
-        title: "Sofa",
-        img: "/photos/AMT/sofa.webp",
-        desc: "Custom-upholstered banquet bench sofas and luxury tufted booths designed to optimize restaurant dining layout."
-      }
-    ]
-  },
-  banquet: {
-    id: "laxree-banquet-furniture",
-    title: "Banquet Furniture",
-    tag: "Category 05",
-    desc: "High-strength banquet chairs, foldable tables, and speaker podiums.",
-    items: [
-      {
-        title: "Banquet Chair",
-        img: "/photos/AMT/banquet chair.webp",
-        desc: "Stackable high-tensile steel or alloy frames. Thick fire-retardant foam cushioning."
-      },
-      {
-        title: "Banquet Table",
-        img: "/photos/HOMEPAGE IMAGE/BANQUET LINEN ROSERRO.jpg",
-        desc: "Heavy-duty folding round or rectangular tables. Structural legs lock tight for events."
-      },
-      {
-        title: "Podium Lectern",
-        img: "/photos/Podium.webp",
-        desc: "Premium wood, metal, or acrylic lecterns with built-in mic ports and branding zones."
-      }
-    ]
-  },
-  outdoor: {
-    id: "laxree-outdoor-furniture",
-    title: "Outdoor & Garden Furniture",
-    tag: "Category 06",
-    desc: "Heavy-duty weather-proof FRP furniture, all-weather rattan dining chairs, and UV-resistant outdoor tables.",
-    items: [
-      {
-        title: "FRP Furniture",
-        img: "/photos/AMT/outdoor furniure.webp",
-        badge: "FRP Composite",
-        desc: "Fiber-reinforced plastic sun loungers, benches, and outdoor planters built to survive harsh rains and direct UV sunlight."
-      },
-      {
-        title: "Rattan Chair",
-        img: "/photos/AMT/outdoor wicker furniture.webp",
-        badge: "Synthetic Rattan",
-        desc: "Powder-coated aluminum structural frames woven with high-density synthetic PE rattan fibers for high durability."
-      },
-      {
-        title: "Garden Table",
-        img: "/photos/lxslideb1.webp",
-        badge: "UV Guard",
-        desc: "All-weather composite wood or tempered glass garden dining tables with anti-rust steel leg assemblies."
-      }
-    ]
-  },
-  pods: {
-    id: "laxree-space-pods",
-    title: "Domes & Space Pods",
-    tag: "Category 07",
-    desc: "Prefabricated luxury outdoor glamping capsule pods and geodesic resort domes built with advanced insulation and structural integrity.",
-    items: [
-      {
-        title: "Space Pods",
-        img: "/photos/AMT/space pods.webp",
-        badge: "Flagship Pod",
-        titleBadge: "Turnkey Prefab",
-        desc: "Our luxury glamping space pods are premium modular capsule units designed for immediate resort site placement. Featuring high-grade steel internal framing, heat/sound insulation layers, double-glazed smart glass panels, integrated LED ceiling profiles, air conditioning vents, and pre-fitted luxury bathrooms. Re-defines organic eco-tourism with cutting-edge comfort."
-      },
-      {
-        title: "Domes",
-        img: "/photos/AMT/glamping dome.webp",
-        badge: "Geodesic Design",
-        titleBadge: "Resort Dome",
-        desc: "High-tensile geodesic dome structures wrapped in thick weather-proof PVC/polycarbonate covers. Fully insulated with dynamic bay window panoramic views."
-      }
-    ]
-  }
-};
-
+import { AMENITIES_CATEGORIES_DATA as LAXREE_AMENITIES_CATEGORIES_DATA } from "./laxreeAmenitiesCategoriesData";
 
 
 export default function LaxreeAmenitiesPage() {
-  const [activeTab, setActiveTab] = useState("laxree-room-amenities");
 
 
   const containerRef = useRef(null);
@@ -247,28 +56,6 @@ export default function LaxreeAmenitiesPage() {
       });
     }
 
-    // Scroll active category tracker
-    const sections = [
-      "laxree-room-amenities",
-      "laxree-washroom-amenities",
-      "laxree-lobby-amenities",
-      "laxree-restaurant-furniture",
-      "laxree-banquet-furniture",
-      "laxree-outdoor-furniture",
-      "laxree-space-pods"
-    ];
-    sections.forEach((secId) => {
-      ScrollTrigger.create({
-        trigger: `#${secId}`,
-        start: "top 180px",
-        end: "bottom 180px",
-        onToggle: (self) => {
-          if (self.isActive) {
-            setActiveTab(secId);
-          }
-        }
-      });
-    });
 
     // Consultation reveal
     gsap.from("#laxree-amenities-consultation .max-w-4xl", {
@@ -303,7 +90,7 @@ export default function LaxreeAmenitiesPage() {
     "name": "LaxRee Hotel Amenities & Guest Room Supplies Udaipur - Uniq Decor and Furniture",
     "description": "High-quality hotel amenities, silent minibars, safes, guest room supplies in Udaipur by Uniq Decor.",
     "image": [
-      "https://uniqdecorfurniture.in/wp-content/uploads/2024/01/stone-coated-roofing.jpg"
+      "https://uniqdecorfurniture.in/photos/Minibar.webp"
     ],
     "url": "https://uniqdecorfurniture.in/laxree-amenities",
     "telephone": "+919982219222",
@@ -343,22 +130,6 @@ export default function LaxreeAmenitiesPage() {
       },
       {
         "@type": "Question",
-        "name": "Are LaxRee space pods and geodesic domes prefabricated and easy to install?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes, our luxury glamping space pods and resort domes are fully prefabricated turnkey units. They are delivered with pre-fitted internal steel framing, thick heat and sound insulation, double-glazed smart glass, dynamic LED lighting, integrated AC ducts, and pre-wired bathrooms. They are ready for immediate plug-and-play installation on your site."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What safety features are integrated into LaxRee hotel kettles and hairdryers?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Safety is our highest priority. LaxRee in-room kettles are built using food-grade SS304 stainless steel or borosilicate glass with double-wall cool-touch insulation and automatic steam shut-off. Our wall-mounted hotel hairdryers feature automatic pressure-sensitive safety off-switches on the handle to prevent hazards."
-        }
-      },
-      {
-        "@type": "Question",
         "name": "Can we customize the luggage trolleys and lobby bins with our hotel logo?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -367,10 +138,10 @@ export default function LaxreeAmenitiesPage() {
       },
       {
         "@type": "Question",
-        "name": "What is the structural material used for LaxRee outdoor and garden furniture?",
+        "name": "What is the minimum order quantity for LaxRee hotel amenities?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Our outdoor collections are built to withstand extreme weather. We utilize high-density fiber-reinforced composite plastics (FRP) and powder-coated aluminum frames hand-woven with UV-resistant synthetic PE rattan fibers that do not fade or crack under harsh sun or monsoon rains."
+          "text": "We accommodate orders of all sizes. Small boutique hotels can order individual units, while large chains benefit from bulk B2B contract rates. Custom-branded items typically have a minimum quantity, and our team provides flexible solutions based on your project requirements."
         }
       }
     ]
@@ -430,14 +201,14 @@ export default function LaxreeAmenitiesPage() {
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <span id="laxree-amenities-hero-tag" className="inline-block text-xs uppercase tracking-[0.3em] text-[#A3704C] font-bold mb-4">Premium Room Comfort & Guest Supplies</span>
           <h1 id="laxree-amenities-hero-title" className="font-serif text-5xl md:text-8xl text-white font-bold tracking-tight leading-none mb-6">
-            LAXREE <br/><span className="text-[#EBF1ED] font-normal italic font-serif">Amenities</span>
+            LAXREE <br/><span className="text-[#EBF1ED] font-normal italic font-serif text-3xl md:text-5xl block mt-4">Hotel Amenities Udaipur</span>
           </h1>
           <p id="laxree-amenities-hero-desc" className="text-[#FAF9F6]/90 text-sm md:text-lg font-light tracking-wide max-w-2xl mx-auto leading-relaxed">
-            Welcome your hotel guests with premium silent minibars, digital safes, stainless steel luggage racks, and custom-branded herbal toiletry kits.
+            Welcome your hotel guests with premium LaxRee Hotel Amenities Udaipur. We supply silent minibars, digital safes, stainless steel luggage racks, and custom-branded toiletries.
           </p>
           <div id="laxree-amenities-hero-scroll-btn" className="mt-12">
-            <a href="#laxree-amenities-portfolio-nav" className="inline-flex flex-col items-center gap-2 text-xs uppercase tracking-widest text-[#FAF9F6]/80 hover:text-white transition-colors cursor-hover">
-              <span>Explore Portfolio</span>
+            <a href="#laxree-amenities-categories" className="inline-flex flex-col items-center gap-2 text-xs uppercase tracking-widest text-[#FAF9F6]/80 hover:text-white transition-colors cursor-hover">
+              <span>Explore Range</span>
               <ChevronDown className="w-4 h-4 animate-bounce" />
             </a>
           </div>
@@ -490,89 +261,48 @@ export default function LaxreeAmenitiesPage() {
         </div>
       </section>
 
-      {/* STICKY CATEGORIES NAV */}
-      <div id="laxree-amenities-portfolio-nav" className="sticky top-[73px] z-40 bg-[#EBF1ED]/95 backdrop-blur-md border-b border-[#2E5A44]/10 py-4 shadow-sm transition-all">
-        <div className="max-w-6xl mx-auto px-4 flex justify-start md:justify-center items-center overflow-x-auto gap-8 scroll-none">
-          {Object.entries(AMENITIES_PRODUCTS).map(([key, sec]) => (
-            <a
-              key={key}
-              href={`#${sec.id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(sec.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-                setActiveTab(sec.id);
-              }}
-              className={`laxree-category-tab flex-shrink-0 text-xs uppercase tracking-widest pb-1 border-b-2 border-transparent font-semibold transition-colors cursor-hover ${
-                activeTab === sec.id 
-                  ? "active border-b-2" 
-                  : "text-[#4A6055] hover:text-[#2E5A44]"
-              }`}
-            >
-              {sec.title}
-            </a>
-          ))}
-        </div>
-      </div>
+      {/* EXPLORE OUR RANGE - CATEGORY CARDS */}
+      <section className="py-20 px-6 md:px-12 bg-[#EBF1ED]/30 border-b border-[#2E5A44]/10" id="laxree-amenities-categories">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-xs uppercase tracking-[0.2em] font-bold text-[#A3704C]">Browse Collections</span>
+            <h2 className="font-serif text-3xl md:text-5xl font-bold mt-2 text-[#1C3328]">Explore Our Range</h2>
+            <p className="text-[#4A6055] text-xs md:text-sm mt-3">Discover LaxRee's complete range of hotel amenities, furniture, and glamping solutions available at our Udaipur showroom.</p>
+          </div>
 
-      {/* PRODUCT LISTS */}
-      <div className="py-10">
-        {Object.entries(AMENITIES_PRODUCTS).map(([key, sec]) => (
-          <section key={key} id={sec.id} className="scroll-mt-36 py-16 border-b border-[#2E5A44]/10">
-            <div className="max-w-6xl mx-auto px-6">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
-                <div>
-                  <span className="text-xs uppercase tracking-widest text-[#A3704C] font-bold">{sec.tag}</span>
-                  <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1C3328] mt-1">{sec.title}</h2>
-                  <p className="text-[#4A6055] text-xs md:text-sm mt-2 max-w-xl">{sec.desc}</p>
-                </div>
-              </div>
-
-              <div className={`grid grid-cols-1 ${sec.items.length === 2 ? 'md:grid-cols-2' : sec.items.length === 3 ? 'md:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-4'} gap-6`}>
-                {sec.items.map((item, idx) => (
-                  <div 
-                    key={idx} 
-                    className="laxree-amenities-card group cursor-hover"
-                  >
-                    <div className="aspect-square w-full overflow-hidden relative bg-[#EBF1ED]">
-                      <Image 
-                        src={item.img || "/assets/laxree_roofing.png"} 
-                        alt={item.title} 
-                        fill 
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      {item.badge && (
-                        <span className="absolute top-4 left-4 bg-white/95 px-3 py-1 text-[9px] uppercase tracking-widest text-[#2E5A44] font-bold rounded-full shadow-sm">
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className="font-serif text-base font-bold text-[#1C3328]">{item.title}</h3>
-                        {item.titleBadge && (
-                          <span className="bg-[#A3704C]/10 text-[#A3704C] px-2.5 py-0.5 rounded text-[8px] uppercase tracking-widest font-extrabold whitespace-nowrap">
-                            {item.titleBadge}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-[#4A6055] mt-2 leading-relaxed">{item.desc}</p>
-                      {item.spec && (
-                        <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-                          <span className="text-[10px] uppercase tracking-widest text-[#A3704C] font-bold">{item.spec}</span>
-                          <ChevronRight className="w-4 h-4 text-[#2E5A44] group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      )}
-                    </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {Object.entries(LAXREE_AMENITIES_CATEGORIES_DATA).map(([slug, cat]) => (
+              <Link
+                key={slug}
+                href={`/laxree-amenities/${cat.slug}`}
+                className="group relative overflow-hidden rounded-2xl border border-[#2E5A44]/10 bg-white p-6 md:p-8 flex flex-col justify-between min-h-[280px] transition-all duration-500 hover:shadow-xl hover:-translate-y-2 hover:border-[#A3704C]/30"
+              >
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className="mb-4">
+                    <span className="inline-block px-3 py-1 bg-[#2E5A44]/5 text-[#2E5A44] border border-[#2E5A44]/10 rounded-full text-[9px] uppercase font-bold tracking-widest">
+                      {cat.categoryName}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        ))}
-
-      </div>
-
-
+                  <h3 className="font-serif text-xl md:text-2xl font-bold text-[#1C3328] group-hover:text-[#2E5A44] transition-colors">{cat.categoryName}</h3>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    <span className="text-[10px] text-[#4A6055] uppercase tracking-wider">{cat.items.length} Products</span>
+                  </div>
+                  <p className="text-[#4A6055] text-[11px] mt-3 leading-relaxed flex-1">{cat.tagline}</p>
+                  <div className="mt-4 pt-4 border-t border-[#2E5A44]/10 flex items-center justify-between">
+                    <span className="text-[9px] uppercase tracking-widest text-[#2E5A44] font-bold group-hover:text-[#A3704C] transition-colors">
+                      View Collection
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-[#2E5A44] group-hover:translate-x-1 transition-transform group-hover:text-[#A3704C]" />
+                  </div>
+                </div>
+                <div className="absolute bottom-0 right-0 w-32 h-32 opacity-[0.03] pointer-events-none">
+                  <div className="w-full h-full rounded-full bg-[#2E5A44]" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* REVIEWS & MARQUEE */}
       <section className="py-20 bg-white" id="laxree-amenities-reviews">
@@ -670,41 +400,21 @@ export default function LaxreeAmenitiesPage() {
 
             <details className="group border border-[#2E5A44]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(28,63,48,0.02)]">
               <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1C3328] cursor-pointer list-none select-none">
-                <span>Are LaxRee space pods and geodesic domes prefabricated and easy to install?</span>
+                <span>Can we customize LaxRee products with our hotel branding and logo?</span>
                 <span className="text-[#A3704C] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
               </summary>
               <p className="text-xs md:text-sm text-[#4A6055] leading-relaxed mt-3 pl-1">
-                Yes, our luxury glamping space pods and resort domes are fully prefabricated turnkey units. They are delivered with pre-fitted internal steel framing, thick heat and sound insulation layers, double-glazed smart glass, dynamic LED lighting, integrated AC ducts, and pre-wired bathrooms. They are ready for immediate plug-and-play installation on your site.
+                Yes, Uniq Decor provides custom branding and logo placement services for B2B contract orders. Luggage trolleys, lobby waste bins, bathroom amenities, and room accessories can be customized with high-precision laser engraving or metal embossing to match your hotel's brand identity.
               </p>
             </details>
 
             <details className="group border border-[#2E5A44]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(28,63,48,0.02)]">
               <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1C3328] cursor-pointer list-none select-none">
-                <span>What safety features are integrated into LaxRee hotel kettles and hairdryers?</span>
+                <span>What is the minimum order quantity for LaxRee hotel amenities?</span>
                 <span className="text-[#A3704C] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
               </summary>
               <p className="text-xs md:text-sm text-[#4A6055] leading-relaxed mt-3 pl-1">
-                Safety is our highest priority. LaxRee in-room kettles are built using food-grade SS304 stainless steel or borosilicate glass with double-wall cool-touch insulation and automatic steam shut-off. Our wall-mounted hotel hairdryers feature automatic pressure-sensitive safety off-switches on the handle to prevent hazards.
-              </p>
-            </details>
-
-            <details className="group border border-[#2E5A44]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(28,63,48,0.02)]">
-              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1C3328] cursor-pointer list-none select-none">
-                <span>Can we customize the luggage trolleys and lobby bins with our hotel logo?</span>
-                <span className="text-[#A3704C] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
-              </summary>
-              <p className="text-xs md:text-sm text-[#4A6055] leading-relaxed mt-3 pl-1">
-                Yes, Uniq Decor provides custom branding and logo placement services for B2B contract orders. Luggage trolleys, lobby waste bins, and room amenities like leatherette trays and tissue boxes can be customized with high-precision laser engraving or metal embossing.
-              </p>
-            </details>
-
-            <details className="group border border-[#2E5A44]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(28,63,48,0.02)]">
-              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1C3328] cursor-pointer list-none select-none">
-                <span>What is the structural material used for LaxRee outdoor and garden furniture?</span>
-                <span className="text-[#A3704C] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
-              </summary>
-              <p className="text-xs md:text-sm text-[#4A6055] leading-relaxed mt-3 pl-1">
-                Our outdoor collections are built to withstand extreme weather. We utilize high-density fiber-reinforced composite plastics (FRP) and powder-coated aluminum frames hand-woven with UV-resistant synthetic PE rattan fibers that do not fade or crack under harsh sun or monsoon rains.
+                We accommodate orders of all sizes. Small boutique hotels can order individual units, while large chains benefit from competitive bulk B2B contract rates. Custom-branded items typically have a minimum quantity, and our team provides flexible solutions based on your project requirements.
               </p>
             </details>
           </div>

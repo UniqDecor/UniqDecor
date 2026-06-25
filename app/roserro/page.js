@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
@@ -8,7 +8,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { 
   Check, 
-  ChevronRight, 
   ChevronDown, 
   Award, 
   Leaf, 
@@ -16,6 +15,7 @@ import {
   Star 
 } from "lucide-react";
 import ShowroomVisit from "@/components/sections/homepage/ShowroomVisit";
+import { ROSERRO_CATEGORIES_DATA } from "./roserroCategoriesData";
 
 // Sourcing Nodes
 const ROSERRO_PRODUCTS_SHOWCASE = [
@@ -105,161 +105,9 @@ const ROSERRO_PRODUCTS_SHOWCASE = [
 
 
 
-// Product Sheets Data
-const PRODUCT_SHEETS = {
-  bedding: {
-    id: "roserro-bedding",
-    title: "Luxury Bed Linens",
-    tag: "Category 01",
-    desc: "Premium thread-count sheets, all-season duvet inserts, customized pillows, and protective mattress layers designed for elite guest sleep.",
-    badges: ["T-200 to T-500", "Custom Embroidery"],
-    items: [
-      {
-        title: "Bespoke Bed Sheets",
-        img: "/photos/HOMEPAGE IMAGE/LUXURY BED LINEN ROSERRO.webp",
-        badge: "Percale & Sateen",
-        desc: "Crisp Percale (T-200 to T-500) and smooth Sateen (T-300 to T-500) sheets. Woven in 100% combed cotton or durable poly-cotton blends.",
-        spec: "T-200 to T-500 Thread Count"
-      },
-      {
-        title: "Luxury Duvet Inserts & Covers",
-        img: "/photos/HOMEPAGE IMAGE/LUXURY BED LINEN.webp",
-        badge: "All-Season Weight",
-        desc: "All-season microfiber inserts (150-600 GSM) and natural down-feather duvets. Box-stitch quilting ensures even fill distribution.",
-        spec: "Microfiber / Down Fill"
-      },
-      {
-        title: "Hotel Standard Pillows",
-        img: "/photos/pillow.webp",
-        badge: "Custom Sleepers",
-        desc: "Tailored comfort styles (Microfiber, Conjugate Cluster Fibers, Down Alternative, and Down Feather) built for back, side, or stomach sleep.",
-        spec: "Custom Firmness Options"
-      },
-      {
-        title: "Mattress & Pillow Protectors",
-        img: "/photos/mattress.webp",
-        badge: "Sanitary Barrier",
-        desc: "Cotton quilted protectors (150 GSM), waterproof breathable Terry surface protectors, and premium microfiber toppers.",
-        spec: "2\"-3\" Mattress Toppers"
-      }
-    ]
-  },
-  bath: {
-    id: "roserro-bath",
-    title: "Spa Bath Linens",
-    tag: "Category 02",
-    desc: "Plush ring-spun cotton towels, signature bath mats, pool wraps, and custom-collared robes woven for premium guest experiences.",
-    badges: ["400 to 700+ GSM", "Plush Ring-Spun"],
-    items: [
-      {
-        title: "Essential & Premium Towels",
-        img: "/photos/HOMEPAGE IMAGE/BATH AND SPA LINEN ROSERRO.jpg",
-        badge: "Essential",
-        desc: "Plush 100% ring-spun cotton towels ranging from Everyday Essential (400-500 GSM) to high-density commercial Premium (500-600 GSM).",
-        spec: "Double-Ply Pile"
-      },
-      {
-        title: "Luxury & Indulgence Bath Sheets",
-        img: "/photos/Towel_new_17062025.webp",
-        badge: "Ultra Plush",
-        desc: "Heavy-density Turkish-style long-staple cotton bath sheets. Available in Luxury (600-700 GSM) and Indulgence (700+ GSM) collections.",
-        spec: "600 to 700+ GSM"
-      },
-      {
-        title: "Signature Bath Mats & Pool Towels",
-        img: "/photos/Bath.webp",
-        badge: "Reversible",
-        desc: "Quilted reversible cotton mats (20\" x 30\") and Plunge pool towels (36\" x 72\") featuring vat-dyed anti-fade stripes.",
-        spec: "Vat-Dyed Stripe"
-      },
-      {
-        title: "Premium Hotel Bathrobes",
-        img: "/photos/Bathrobe.webp",
-        badge: "Waffle / Terry",
-        desc: "Classic Waffle textured robes (with elegant velour trims) and Traditional Terry cotton velour robes in Shawl or Kimono collar cuts.",
-        spec: "Shawl or Kimono Cut"
-      }
-    ]
-  },
-  banquet: {
-    id: "roserro-banquet",
-    title: "Elegant Banquet Linens",
-    tag: "Category 03",
-    desc: "Seamless tablecloths, pleated skirting, stretch spandex chair covers, and mercerized satin napkins for elite wedding and event tables.",
-    badges: ["Event Grade", "Spill Resistant"],
-    items: [
-      {
-        title: "Tablecloths & Underlays",
-        img: "/photos/HOMEPAGE IMAGE/BANQUET LINEN ROSERRO.jpg",
-        badge: "Spun Polyester",
-        desc: "Seamless table covers and heavy-duty underlays/overlays made of premium spill-resistant spun polyester. Designed for quick turnarounds.",
-        spec: "Spill & Stain Release"
-      },
-      {
-        title: "Table Runners & Skirting",
-        img: "/photos/HOMEPAGE IMAGE/BANQUET AND EVENT LINEN.webp",
-        badge: "High Lustre",
-        desc: "High-sheen satin table runners paired with classic pleated event table skirting and decorative frills for stage setups.",
-        spec: "Satin / Pleated Spec"
-      },
-      {
-        title: "Stretch Spandex Chair Covers",
-        img: "/photos/HOMEPAGE IMAGE/RESTAURANT LINEN.webp",
-        badge: "200 GSM Spandex",
-        desc: "Heavyweight stretch spandex event chair covers featuring reinforced elastic leg pockets. Available with custom decorative bows.",
-        spec: "Reinforced Foot Pockets"
-      },
-      {
-        title: "Table Napkins & Place Mats",
-        img: "/photos/DDECOR/THROWS.webp",
-        badge: "Mercerized",
-        desc: "Snag-resistant mercerized poly-cotton dinner napkins and elegant jacquard woven heat-resistant table place mats.",
-        spec: "Snag-Resistant Finish"
-      }
-    ]
-  },
-  healthcare: {
-    id: "roserro-healthcare",
-    title: "Healthcare Linens",
-    tag: "Category 04",
-    desc: "Hospital-grade bedsheets, pillows, pillow covers, and cellular thermal blankets engineered for clinical durability and sanitation.",
-    badges: ["Sanitized Spec", "Boil Washable"],
-    items: [
-      {
-        title: "Bedsheets",
-        img: "/photos/ROSERRO/roserro-healthcare-bedsheet.webp",
-        badge: "Boil Washable",
-        desc: "Flat and fitted medical ward sheets built to endure high-temperature sanitizing wash cycles. Highly resistant to chlorine bleach and shrinking.",
-        spec: "Pre-Shrunk Cotton/Poly"
-      },
-      {
-        title: "Pillow",
-        img: "/photos/ROSERRO/roserro-healthcare-pillow.webp",
-        badge: "Clinical Spec",
-        desc: "Hypoallergenic pillows featuring firm-support cluster fills. Available with fluid-resistant and wipe-clean hospital-grade encasements.",
-        spec: "Hypoallergenic Fill"
-      },
-      {
-        title: "Pillow Cover",
-        img: "/photos/ROSERRO/roserro-healthcare-pillow-cover.webp",
-        badge: "Envelope Style",
-        desc: "Antimicrobial and soil-resistant pillow covers featuring secure overlap envelope flaps, designed for heavy institutional laundry runs.",
-        spec: "Antimicrobial Shield"
-      },
-      {
-        title: "Blanket",
-        img: "/photos/ROSERRO/roserro-healthcare-blanket.webp",
-        badge: "Honeycomb",
-        desc: "Breathable pure cotton thermal blankets woven with a honeycomb cellular structure to trap body warmth efficiently in patient rooms.",
-        spec: "100% Cotton Cellular"
-      }
-    ]
-  }
-};
+
 
 export default function RoserroPage() {
-  const [activeTab, setActiveTab] = useState("roserro-bedding");
-
   const containerRef = useRef(null);
   const marqueeTrackRef = useRef(null);
 
@@ -296,21 +144,6 @@ export default function RoserroPage() {
         repeat: -1
       });
     }
-
-    // Scroll active category tracker
-    const sections = ["roserro-bedding", "roserro-bath", "roserro-banquet", "roserro-healthcare"];
-    sections.forEach((secId) => {
-      ScrollTrigger.create({
-        trigger: `#${secId}`,
-        start: "top 180px",
-        end: "bottom 180px",
-        onToggle: (self) => {
-          if (self.isActive) {
-            setActiveTab(secId);
-          }
-        }
-      });
-    });
 
     // Origins loop card anim setup
     gsap.from("#roserro-origins .max-w-2xl", {
@@ -373,7 +206,7 @@ export default function RoserroPage() {
     "name": "Roserro Luxury Bed Linens Udaipur - Uniq Decor and Furniture",
     "description": "Premium Roserro hotel linens and spa sheets supplier in Udaipur. Authorized showroom at Gokul Tower, Hiran Magri.",
     "image": [
-      "https://uniqdecorfurniture.in/wp-content/uploads/2024/01/roserro-bed-linen.jpg"
+      "https://uniqdecorfurniture.in/photos/HOMEPAGE%20IMAGE/LUXURY%20BED%20LINEN%20ROSERRO.webp"
     ],
     "url": "https://uniqdecorfurniture.in/roserro",
     "telephone": "+919982219222",
@@ -446,6 +279,19 @@ export default function RoserroPage() {
     ]
   };
 
+  const aggregateRatingSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Roserro Luxury Linens Udaipur - Uniq Decor",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "78",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  };
+
   return (
     <div ref={containerRef} className="theme-roserro bg-[#FAF9F6] text-[#0F1E19] min-h-screen">
       <script
@@ -455,6 +301,10 @@ export default function RoserroPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateRatingSchema) }}
       />
       <style dangerouslySetInnerHTML={{__html: `
         .roserro-category-tab.active {
@@ -619,10 +469,10 @@ export default function RoserroPage() {
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <span id="roserro-hero-tag" className="inline-block text-xs uppercase tracking-[0.3em] text-[#D4AF37] font-bold mb-4">Premium Hotel Linens & Teak Beds</span>
           <h1 id="roserro-hero-title" className="font-serif text-5xl md:text-8xl text-white font-bold tracking-tight leading-none mb-6">
-            ROSERRO <br/><span className="text-[#E9EFEA] font-normal italic font-serif">Hospitality</span>
+            ROSERRO <br/><span className="text-[#E9EFEA] font-normal italic font-serif text-3xl md:text-5xl block mt-4">Mattress Udaipur & Hospitality</span>
           </h1>
           <p id="roserro-hero-desc" className="text-[#FAF9F6]/90 text-sm md:text-lg font-light tracking-wide max-w-2xl mx-auto leading-relaxed">
-            Furnish your boutique resorts and luxury hotel suites with premium 300+ TC bed sheets, high-density spa bathrobes, drapes, and bespoke carved solid teakwood structural furniture.
+            Authorized partner for Roserro Mattress Udaipur. Furnish your luxury hotel suites with premium 300+ TC bed sheets, high-density spa bathrobes, and bespoke carved teakwood furniture.
           </p>
           <div id="roserro-hero-scroll-btn" className="mt-12">
             <a href="#roserro-portfolio-nav" className="inline-flex flex-col items-center gap-2 text-xs uppercase tracking-widest text-[#FAF9F6]/80 hover:text-white transition-colors cursor-hover">
@@ -737,82 +587,48 @@ export default function RoserroPage() {
         </div>
       </section>
 
-      {/* STICKY CATEGORIES NAV */}
-      <div id="roserro-portfolio-nav" className="sticky top-[73px] z-40 bg-[#E9EFEA]/90 backdrop-blur-md border-b border-[#1C3F30]/10 py-4 shadow-sm transition-all">
-        <div className="max-w-6xl mx-auto px-4 flex justify-start md:justify-center items-center overflow-x-auto gap-8 scroll-none">
-          {Object.entries(PRODUCT_SHEETS).map(([key, sec]) => (
-            <a
-              key={key}
-              href={`#${sec.id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(sec.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-                setActiveTab(sec.id);
-              }}
-              className={`roserro-category-tab flex-shrink-0 text-xs uppercase tracking-widest pb-1 border-b-2 border-transparent font-semibold transition-colors cursor-hover ${
-                activeTab === sec.id 
-                  ? "active border-b-2" 
-                  : "text-[#354F44] hover:text-[#D4AF37]"
-              }`}
-            >
-              {sec.title}
-            </a>
-          ))}
-        </div>
-      </div>
+      {/* EXPLORE CATEGORIES - LINKS TO SUB-PAGES */}
+      <section className="py-20 px-6 md:px-12 bg-[#E9EFEA] border-b border-[#1C3F30]/10" id="roserro-categories">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-xs uppercase tracking-[0.2em] font-bold text-[#B45A3C]">Browse Collections</span>
+            <h2 className="font-serif text-3xl md:text-5xl font-bold mt-2 text-[#0F1E19]">Explore Our Range</h2>
+            <p className="text-[#354F44] text-xs md:text-sm mt-3">Discover Roserro's complete range of luxury hospitality and healthcare linens available at our Udaipur showroom.</p>
+          </div>
 
-      {/* PRODUCT LISTS */}
-      <div className="py-10">
-        {Object.entries(PRODUCT_SHEETS).map(([key, sec]) => (
-          <section key={key} id={sec.id} className="scroll-mt-36 py-16 border-b border-[#1C3F30]/10">
-            <div className="max-w-6xl mx-auto px-6">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
-                <div>
-                  <span className="text-xs uppercase tracking-widest text-[#B45A3C] font-bold">{sec.tag}</span>
-                  <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#0F1E19] mt-1">{sec.title}</h2>
-                  <p className="text-[#354F44] text-xs md:text-sm mt-2 max-w-xl">{sec.desc}</p>
-                </div>
-                <div className="flex gap-2">
-                  {sec.badges.map((b, i) => (
-                    <span key={i} className="px-3 py-1 bg-[#0B4F4A]/5 text-[#0B4F4A] border border-[#0B4F4A]/10 rounded-full text-[10px] uppercase font-bold">{b}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {sec.items.map((item, idx) => (
-                  <div 
-                    key={idx} 
-                    className="bg-white border border-[#283f30]/8 rounded-[20px] overflow-hidden shadow-[0_10px_30px_rgba(28,63,48,0.04)] transition-all duration-400 cubic-bezier(0.165,0.84,0.44,1) hover:translate-y-[-8px] hover:shadow-[0_20px_40px_rgba(28,63,48,0.12)] hover:border-[#283f30]/20 group cursor-hover"
-                  >
-                    <div className="aspect-square w-full overflow-hidden relative bg-stone-100">
-                      <Image 
-                        src={item.img} 
-                        alt={item.title} 
-                        fill 
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      {item.badge && (
-                        <span className="absolute top-4 left-4 bg-white/95 px-3 py-1 text-[9px] uppercase tracking-widest text-[#0B4F4A] font-bold rounded-full shadow-sm">
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-serif text-lg font-bold text-[#0F1E19]">{item.title}</h3>
-                      <p className="text-xs text-[#354F44] mt-2 leading-relaxed">{item.desc}</p>
-                      <div className="mt-4 flex items-center justify-between">
-                        <span className="text-[10px] uppercase tracking-widest text-[#B45A3C] font-bold">{item.spec}</span>
-                        <ChevronRight className="w-4 h-4 text-[#0B4F4A] group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {Object.entries(ROSERRO_CATEGORIES_DATA).map(([slug, cat]) => (
+              <Link
+                key={slug}
+                href={`/roserro/${slug}`}
+                className="group relative overflow-hidden rounded-2xl border border-[#1C3F30]/10 bg-white p-6 md:p-8 flex flex-col justify-between min-h-[280px] transition-all duration-500 hover:shadow-xl hover:-translate-y-2 hover:border-[#D4AF37]/30"
+              >
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className="mb-4">
+                    <span className="inline-block px-3 py-1 bg-[#0B4F4A]/5 text-[#0B4F4A] border border-[#0B4F4A]/10 rounded-full text-[9px] uppercase font-bold tracking-widest">
+                      {slug === "bed-linen" ? "Category 01" : slug === "bath-linen" ? "Category 02" : slug === "banquet-linen" ? "Category 03" : "Category 04"}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        ))}
-      </div>
+                  <h3 className="font-serif text-xl md:text-2xl font-bold text-[#0F1E19] group-hover:text-[#D4AF37] transition-colors">{cat.categoryName}</h3>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    <span className="text-[10px] text-[#354F44] uppercase tracking-wider">{cat.items.length} Products</span>
+                  </div>
+                  <p className="text-[#354F44] text-[11px] mt-3 leading-relaxed flex-1">{cat.tagline}</p>
+                  <div className="mt-4 pt-4 border-t border-[#1C3F30]/10 flex items-center justify-between">
+                    <span className="text-[9px] uppercase tracking-widest text-[#0B4F4A] font-bold group-hover:text-[#D4AF37] transition-colors">
+                      View Collection
+                    </span>
+                    <span className="text-[#0B4F4A] group-hover:translate-x-1 transition-transform group-hover:text-[#D4AF37]">&rarr;</span>
+                  </div>
+                </div>
+                <div className="absolute bottom-0 right-0 w-32 h-32 opacity-[0.03] pointer-events-none">
+                  <div className="w-full h-full rounded-full bg-[#0B4F4A]" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* SECTION 1: CUSTOM EMBROIDERY & HOTEL BRANDING SHOWCASE */}
       <section id="roserro-branding-showcase" className="py-20 px-6 md:px-12 bg-white border-b border-[#1C3F30]/10 scroll-mt-36">
@@ -834,7 +650,7 @@ export default function RoserroPage() {
                 <div className="flex gap-4 items-start">
                   <div className="w-6 h-6 rounded-full bg-[#0B4F4A]/5 flex items-center justify-center text-[#0B4F4A] font-bold flex-shrink-0 mt-0.5">1</div>
                   <div>
-                    <h4 className="font-bold text-[#0B4F4A] text-sm">Single, Double & Triple Line Borders</h4>
+                    <h3 className="font-bold text-[#0B4F4A] text-sm">Single, Double & Triple Line Borders</h3>
                     <p className="text-[#6E6860] mt-1">Classic hotel border configurations. Parallel colored thread cords are stitched directly on duvet covers and pillow flanges for immediate elegance.</p>
                   </div>
                 </div>
@@ -842,7 +658,7 @@ export default function RoserroPage() {
                 <div className="flex gap-4 items-start">
                   <div className="w-6 h-6 rounded-full bg-[#0B4F4A]/5 flex items-center justify-center text-[#0B4F4A] font-bold flex-shrink-0 mt-0.5">2</div>
                   <div>
-                    <h4 className="font-bold text-[#0B4F4A] text-sm">Textured Cable & Dotted Stitching</h4>
+                    <h3 className="font-bold text-[#0B4F4A] text-sm">Textured Cable & Dotted Stitching</h3>
                     <p className="text-[#6E6860] mt-1">Artisanal stitching patterns that add premium surface depth and design details to flat sheet coordinates and spa bed covers.</p>
                   </div>
                 </div>
@@ -850,7 +666,7 @@ export default function RoserroPage() {
                 <div className="flex gap-4 items-start">
                   <div className="w-6 h-6 rounded-full bg-[#0B4F4A]/5 flex items-center justify-center text-[#0B4F4A] font-bold flex-shrink-0 mt-0.5">3</div>
                   <div>
-                    <h4 className="font-bold text-[#0B4F4A] text-sm">Precision Logo Monogramming</h4>
+                    <h3 className="font-bold text-[#0B4F4A] text-sm">Precision Logo Monogramming</h3>
                     <p className="text-[#6E6860] mt-1">High-density embroidery for towels, bathrobes, slippers, and laundry bags. Resists fading and thread pull under high-turnover wash cycles.</p>
                   </div>
                 </div>
@@ -1024,7 +840,7 @@ export default function RoserroPage() {
       <section className="py-20 px-6 md:px-12 bg-[#FAF9F6] border-t border-[#1C3F30]/10" id="roserro-faq">
         <div className="max-w-4xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs uppercase tracking-[0.2em] font-bold text-[#B45A3C]">Got Questions?</span>
+            <span className="text-xs uppercase tracking-[0.2em] font-bold text-[#B45A3C">Got Questions?</span>
             <h2 className="font-serif text-3xl md:text-5xl font-bold mt-2 text-[#0B4F4A]">Frequently Asked Questions</h2>
             <p className="text-[#3A3631] text-xs md:text-sm mt-3">Common inquiries from hotel owners, purchase managers, and clinical administrators regarding Roserro linens.</p>
           </div>
@@ -1052,27 +868,7 @@ export default function RoserroPage() {
 
             <details className="group border border-[#1C3F30]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(28,63,48,0.02)]">
               <summary className="flex justify-between items-center font-serif text-base font-bold text-[#0F1E19] cursor-pointer list-none select-none">
-                <span>How do I select the right towel GSM weight for my spa or pool rooms?</span>
-                <span className="text-[#B45A3C] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
-              </summary>
-              <p className="text-xs md:text-sm text-[#354F44] leading-relaxed mt-3 pl-1">
-                We recommend 400-500 GSM lightweight towels for B2B procurement for gymnasiums, pool decks, and spas. For guest suites and luxury hotel rooms, our Premium (500-600 GSM) or Luxury (600-700 GSM) double-ply towels provide optimal loft, absorption, and a plush weight.
-              </p>
-            </details>
-
-            <details className="group border border-[#1C3F30]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(28,63,48,0.02)]">
-              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#0F1E19] cursor-pointer list-none select-none">
-                <span>Are Roserro healthcare linens safe for high-temperature commercial sanitization?</span>
-                <span className="text-[#B45A3C] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
-              </summary>
-              <p className="text-xs md:text-sm text-[#354F44] leading-relaxed mt-3 pl-1">
-                Yes. Roserro hospital and clinic linens, including our ward bedsheets, pillow covers, and honeycomb blankets, are pre-shrunk and engineered to tolerate commercial boil-washing cycles and steam autoclave sterilization without losing structural integrity.
-              </p>
-            </details>
-
-            <details className="group border border-[#1C3F30]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(28,63,48,0.02)]">
-              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#0F1E19] cursor-pointer list-none select-none">
-                <span>What is the minimum order quantity (MOQ) for custom-monogrammed hotel supplies?</span>
+                <span>What is the minimum order quantity (MOQ) for custom-monogrammed supplies?</span>
                 <span className="text-[#B45A3C] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
               </summary>
               <p className="text-xs md:text-sm text-[#354F44] leading-relaxed mt-3 pl-1">

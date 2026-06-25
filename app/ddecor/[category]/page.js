@@ -35,6 +35,17 @@ export async function generateMetadata({ params }) {
       description: data.metaDesc,
       url: `https://uniqdecorfurniture.in/ddecor/${category}`,
       type: "website",
+      images: [{
+        url: `https://uniqdecorfurniture.in${data.mainImage}`,
+        width: 1200,
+        height: 630,
+        alt: data.headline,
+      }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: data.metaTitle,
+      description: data.metaDesc,
     },
   };
 }
@@ -51,6 +62,7 @@ export default async function CategoryPage({ params }) {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "FurnitureStore",
+    "@id": "https://uniqdecorfurniture.in/#store",
     "name": "UNIQ Decor Showroom - Udaipur",
     "image": [data.mainImage],
     "url": `https://uniqdecorfurniture.in/ddecor/${category}`,
@@ -74,6 +86,19 @@ export default async function CategoryPage({ params }) {
       "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
       "opens": "10:00",
       "closes": "20:00"
+    },
+    "sameAs": [
+      "https://www.facebook.com/uniqdecor",
+      "https://www.instagram.com/uniqdecor",
+      "https://www.linkedin.com/company/uniqdecor",
+      "https://www.youtube.com/@uniqdecor"
+    ],
+    "hasMerchantReturnPolicy": {
+      "@type": "MerchantReturnPolicy",
+      "applicableCountry": "IN",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+      "merchantReturnDays": 7,
+      "returnFees": "https://schema.org/FreeReturn"
     }
   };
 
@@ -87,6 +112,7 @@ export default async function CategoryPage({ params }) {
       "@type": "Brand",
       "name": "D'Decor"
     },
+    "hasCertification": { "@type": "Certification", "name": "ISO 9001:2015 Certified", "description": "Manufactured in ISO 9001 certified facilities." },
     "offers": {
       "@type": "AggregateOffer",
       "priceCurrency": "INR",
@@ -94,14 +120,41 @@ export default async function CategoryPage({ params }) {
       "highPrice": "4999",
       "offerCount": "100",
       "priceRange": "$$-$$$",
-      "priceSpecification": {
-        "@type": "PriceSpecification",
-        "price": "299",
-        "priceCurrency": "INR",
-        "valueAddedTaxIncluded": "true"
-      }
+      "availability": "https://schema.org/InStock",
+      "seller": { "@id": "https://uniqdecorfurniture.in/#store" }
     }
   };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://uniqdecorfurniture.in/" },
+      { "@type": "ListItem", "position": 2, "name": "D'Decor", "item": "https://uniqdecorfurniture.in/ddecor" },
+      { "@type": "ListItem", "position": 3, "name": data.categoryName, "item": `https://uniqdecorfurniture.in/ddecor/${category}` }
+    ]
+  };
+
+  const itemSchemas = data.items.map((item, idx) => ({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `D'Decor ${item.title} at Uniq Decor Udaipur`,
+    "image": `https://uniqdecorfurniture.in${item.img}`,
+    "description": item.desc,
+    "sku": `DDECOR-${category}-${idx + 1}`,
+    "brand": { "@type": "Brand", "name": "D'Decor" },
+    "hasCertification": { "@type": "Certification", "name": "ISO 9001:2015 Certified", "description": "D'Decor fabrics are manufactured in ISO 9001 certified facilities with stringent quality control." },
+    "offers": {
+      "@type": "Offer",
+      "url": `https://uniqdecorfurniture.in/ddecor/${category}`,
+      "priceCurrency": "INR",
+      "price": "0",
+      "priceValidUntil": "2026-12-31",
+      "availability": "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition",
+      "seller": { "@id": "https://uniqdecorfurniture.in/#store" }
+    }
+  }));
 
   const whatsappBase = "919982219222";
   const getWhatsAppLink = (catName) => {
@@ -120,6 +173,13 @@ export default async function CategoryPage({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      {itemSchemas.map((schema, idx) => (
+        <script key={idx} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
 
       {styleTag}
 

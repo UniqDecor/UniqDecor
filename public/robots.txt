@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://uniqdecorfurniture.in/sitemap.xml
+Sitemap: https://uniqdecorfurniture.in/image-sitemap.xml

@@ -1,0 +1,75 @@
+# UNIQ Decor Udaipur
+> Multi-brand furniture & home decor showroom in Udaipur, Rajasthan
+> https://uniqdecorfurniture.in
+
+## Key facts
+- Location: 2nd Floor, Gokul Tower, F Block near CA Circle, Hiran Magri, Sector 14, Udaipur, Rajasthan 313001
+- Phone: +91 99822 19222
+- Email: info@uniqdecor.com
+- Hours: Mon-Sat 10:00 AM - 8:00 PM (Sunday closed)
+- Founded: 2015
+
+## Brands carried
+- **D'Decor** — premium curtain fabrics, upholstery, wallpapers, bedding
+- **Geeken** — ergonomic office chairs, modular workstations, steel storage, healthcare furniture
+- **Roserro** — luxury hotel bed linen, bath towels, banquet linen, healthcare linen
+- **LaxRee Amenities** — hotel guest room minibars, digital safes, hair dryers, washroom accessories
+- **LaxRee Roofing** — stone-coated steel roofing tiles, asphalt shingles, synthetic thatch
+
+## Site structure
+### Main pages
+- / — Homepage (FurnitureStore schema)
+- /about — About Us (Organization + Person schema)
+- /contact — Contact (LocalBusiness + ContactPoint schema)
+- /blog — Blog index (CollectionPage schema)
+- /sitemap — HTML sitemap
+- /privacy — Privacy policy
+- /terms — Terms of service
+- /ddecor — D'Decor brand hub
+- /geeken — Geeken brand hub
+- /roserro — Roserro brand hub
+- /laxree — LaxRee portal
+- /laxree-amenities — LaxRee Amenities hub
+- /laxree-roofing — LaxRee Roofing hub
+
+### Product pages (each with Product + Offer schema)
+- /ddecor/[category] — 13 D'Decor categories
+- /ddecor/locations/[location] — 6 locations
+- /ddecor/materials/[material] — 7 materials
+- /ddecor/hospitality/[niche] — 4 hospitality niches
+- /geeken/[category] — 4 Geeken categories
+- /roserro/[category] — 4 Roserro categories
+- /laxree-amenities/[category] — 7 LaxRee Amenities categories
+- /laxree-roofing/[category] — 3 LaxRee Roofing categories
+
+### Location pages (each with LocalBusiness schema)
+- /ddecor/locations/[location]
+- /geeken/locations
+- /roserro/locations
+- /laxree-amenities/locations
+- /laxree-roofing/locations
+
+### Blog posts (each with BlogPosting + FAQPage schema)
+- /blog/curtain-fabrics-guide-udaipur
+- /blog/best-ergonomic-office-chairs-udaipur
+- /blog/hotel-linen-thread-count-gsm-guide
+- /blog/stone-coated-roofing-vs-clay-tiles
+- /blog/hotel-room-amenities-guide-udaipur
+- /blog/ddecor-vs-other-brands-udaipur
+- /blog/choose-wallpaper-udaipur-home
+- /blog/office-furniture-setup-guide-udaipur
+- /blog/geeken-bifma-certification-standards
+- /blog/hospitality-linen-supplier-udaipur
+- /blog/roserro-vs-other-linen-brands
+- /blog/silent-minibar-vs-traditional-comparison
+- /blog/synthetic-thatch-roofing-resort-guide
+- /blog/asphalt-shingles-vs-metal-roofing
+
+## Preferred language
+English (primary), Hindi
+
+## Social
+- Facebook: https://www.facebook.com/uniqdecor
+- Instagram: https://www.instagram.com/uniqdecor
+- LinkedIn: https://www.linkedin.com/company/uniqdecor
+- YouTube: https://www.youtube.com/@uniqdecor

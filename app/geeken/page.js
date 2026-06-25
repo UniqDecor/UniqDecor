@@ -22,114 +22,7 @@ import {
   ArrowUpRight 
 } from "lucide-react";
 import ShowroomVisit from "@/components/sections/homepage/ShowroomVisit";
-
-// Product Section Data
-const PRODUCTS_DATA = {
-  chairs: {
-    id: "geeken-chairs",
-    title: "Ergonomic Chairs",
-    tag: "Category 01",
-    desc: "BIFMA-compliant mesh-back task chairs, executive high-back seating, and visitor conference chairs with advanced posture control systems.",
-    badges: ["BIFMA Certified", "Postural Mesh"],
-    items: [
-      {
-        title: "Premium Executive Task Chairs",
-        img: "/photos/geeken/executive-task-chair.png",
-        badge: "Hot Seller",
-        desc: "Adjustable lumbar support, multi-lock synchro tilt mechanism, 3D armrests, and high-density breathable mesh.",
-        spec: "Adjustable 3D"
-      },
-      {
-        title: "Visitor Lobby Sofas",
-        img: "/photos/geeken/visitor-lobby-sofa.webp",
-        badge: "Reception",
-        desc: "High-density foam cushion wrapped in premium leatherette with a strong tubular chrome steel frame structure.",
-        spec: "Chrome Base"
-      },
-      {
-        title: "Airport & Clinic Waiting Benches",
-        img: "/photos/geeken/waiting-bench.webp",
-        badge: "Heavy Duty",
-        desc: "3-seater perforated steel benches with powder-coated silver finish. Ideal for high-occupancy waiting lobbies.",
-        spec: "3-Seater Steel"
-      }
-    ]
-  },
-  workstations: {
-    id: "geeken-workstations",
-    title: "Modular Workstations",
-    tag: "Category 02",
-    desc: "Benching desk systems, acoustic privacy partitions, and premium executive conference tables designed to coordinate modern office floors.",
-    badges: ["Cable Management", "Modular"],
-    items: [
-      {
-        title: "Linear Workstation Desks",
-        img: "/photos/geeken/linear-workstation.webp",
-        badge: "Custom Layouts",
-        desc: "Integrated cable management raceways, aluminum soft-close hatches, and fabric pin-board partition panels.",
-        spec: "Modular Desk"
-      },
-      {
-        title: "Conference Boardroom Tables",
-        img: "/photos/geeken/boardroom-table.webp",
-        badge: "Boardroom",
-        desc: "Spacious executive conference tables equipped with pop-up media sockets, robust steel legs, and pre-laminated board top.",
-        spec: "Media Ready"
-      },
-      {
-        title: "Executive Boss Desks",
-        img: "/photos/geeken/boss-desk.png",
-        badge: "Managerial",
-        desc: "Premium L-shaped desks with attached side returns, lockable drawers, and matching modesty panels for corporate leaders.",
-        spec: "L-Shape Teak Finish"
-      }
-    ]
-  },
-  storage: {
-    id: "geeken-storage",
-    title: "Steel Storage & Lockers",
-    tag: "Category 03",
-    desc: "Heavy-duty filing cabinets, metal cupboards, multi-door staff lockers, and safe storage systems built with cold-rolled industrial steel sheets.",
-    badges: ["Digital Lock Option", "0.8mm CRCA Steel"],
-    items: [
-      {
-        title: "Multi-Door Staff Lockers",
-        img: "/photos/geeken/staff-lockers.webp",
-        desc: "4, 6, or 12-compartment metal lockers with individual padlocking loops, ventilation slots, and labels. Ideal for corporate changing rooms.",
-        spec: "CRCA Steel"
-      },
-      {
-        title: "4-Drawer Lateral Filing Cabinets",
-        img: "/photos/geeken/filing-cabinet.png",
-        desc: "Central locking mechanism drawer slides with anti-tilt safety system. Smooth telescopic channels accommodate foolscap folders.",
-        spec: "Telescopic Slides"
-      }
-    ]
-  },
-  healthcare: {
-    id: "geeken-healthcare",
-    title: "Healthcare Furniture",
-    tag: "Category 04",
-    desc: "Sterile hospital beds, ICU beds, medical trolley units, and patient recovery chairs designed for maximum hospital safety and durability.",
-    badges: ["ISO 13485 (Medical)", "Sterile Coated"],
-    items: [
-      {
-        title: "Modular ICU Electric Beds",
-        img: "/photos/geeken/icu-bed.png",
-        badge: "ICU Grade",
-        desc: "Features 4-section backrest adjustments, trendelenburg tilt with hand remote controls, and ABS plastic molded panels.",
-        spec: "Electric Adjust"
-      },
-      {
-        title: "Sterile Lab Workstations",
-        img: "/photos/geeken/lab-workstation.png",
-        badge: "Laboratory",
-        desc: "Medical-grade chemical-resistant board tops, stainless steel frames, and modular storage cabinets built for clinical test labs.",
-        spec: "Anti-Chemical Board"
-      }
-    ]
-  }
-};
+import { GEEKEN_CATEGORIES_DATA } from "./geekenCategoriesData";
 
 // B2B solutions carousel data
 const B2B_CAROUSEL_DATA = [
@@ -172,8 +65,6 @@ const B2B_CAROUSEL_DATA = [
 
 export default function GeekenPage() {
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
-  const [activeTab, setActiveTab] = useState("geeken-chairs");
-
 
   const containerRef = useRef(null);
   const marqueeTrackRef = useRef(null);
@@ -257,21 +148,6 @@ export default function GeekenPage() {
       });
     }
 
-    // Scroll active category tracker
-    const sections = ["geeken-chairs", "geeken-workstations", "geeken-storage", "geeken-healthcare"];
-    sections.forEach((secId) => {
-      ScrollTrigger.create({
-        trigger: `#${secId}`,
-        start: "top 180px",
-        end: "bottom 180px",
-        onToggle: (self) => {
-          if (self.isActive) {
-            setActiveTab(secId);
-          }
-        }
-      });
-    });
-
     // Consultation section reveal
     gsap.from("#geeken-consultation .max-w-4xl", {
       opacity: 0,
@@ -344,6 +220,7 @@ export default function GeekenPage() {
     "image": [
       "https://uniqdecorfurniture.in/photos/geeken/executive-task-chair.png"
     ],
+    "@id": "https://uniqdecorfurniture.in/#store",
     "url": "https://uniqdecorfurniture.in/geeken",
     "telephone": "+919982219222",
     "priceRange": "$$",
@@ -365,6 +242,19 @@ export default function GeekenPage() {
       "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
       "opens": "10:00",
       "closes": "20:00"
+    },
+    "sameAs": [
+      "https://www.facebook.com/uniqdecor",
+      "https://www.instagram.com/uniqdecor",
+      "https://www.linkedin.com/company/uniqdecor",
+      "https://www.youtube.com/@uniqdecor"
+    ],
+    "hasMerchantReturnPolicy": {
+      "@type": "MerchantReturnPolicy",
+      "applicableCountry": "IN",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+      "merchantReturnDays": 7,
+      "returnFees": "https://schema.org/FreeReturn"
     }
   };
 
@@ -374,34 +264,10 @@ export default function GeekenPage() {
     "mainEntity": [
       {
         "@type": "Question",
-        "name": "Are Geeken chairs BIFMA certified and how do they support back posture?",
+        "name": "Who is Geeken and how long have they been in the furniture industry?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes, Geeken chairs are fully BIFMA compliant. They are engineered with ergonomic postural mesh backs, adjustable lumbar support, 3D/4D armrests, and multi-lock synchro-tilt mechanisms that conform to the body's natural alignment, significantly reducing lower back fatigue."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Can Geeken modular workstations be customized to fit specific office floor plans?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Absolutely. Our modular linear and L-shaped desk layouts are fully customizable. They feature integrated aluminum soft-close wire management trays, pinnable partition panels, and noise-damping acoustic barriers that can be customized to optimize any office floor plan."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What steel gauge and materials are used in Geeken filing cabinets and cupboards?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Geeken cupboards and staff lockers are constructed using heavy-duty, cold-rolled industrial steel sheets (0.8mm CRCA steel). They are coated with anti-scratch epoxy powder finishes and feature secure telescopic drawers, anti-tilt mechanisms, and digital locker options."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Are Geeken healthcare beds and tables safe for sterile ICU environments?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes, Geeken healthcare furniture is ISO 13485 (Medical Devices Quality) certified. Our electric ICU beds, sterile tables, and patient recovery chairs are treated with medical-grade antimicrobial coatings and chemically-resistant surfaces that withstand rigorous sanitization."
+          "text": "Geeken is one of India's leading premium office and institutional furniture brands, operating for over 35 years since 1987. With five state-of-the-art factories spanning 650,000+ sq. ft., Geeken combines German CNC manufacturing technology with BIFMA-certified ergonomic standards to serve corporate, healthcare, and educational clients nationwide."
         }
       },
       {
@@ -411,8 +277,29 @@ export default function GeekenPage() {
           "@type": "Answer",
           "text": "Yes, Uniq Decor provides professional on-site floor layout audits and customized 2D/3D workspace planning. We offer wholesale commercial contract rates and structured logistics support for corporate buildings, hospitals, and academies in Udaipur and across Rajasthan."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "What warranty and after-sales support do Geeken products come with?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Geeken furniture is backed by comprehensive structural warranties against manufacturing defects. Uniq Decor provides dedicated after-sales support including on-site service calls for adjustments, repairs, and spare parts replacement. Extended warranty and AMC packages are available for bulk corporate and institutional clients."
+        }
       }
     ]
+  };
+
+  const aggregateRatingSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Geeken Office Furniture Udaipur - Uniq Decor",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "85",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
   };
 
   return (
@@ -424,6 +311,10 @@ export default function GeekenPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateRatingSchema) }}
       />
       <style dangerouslySetInnerHTML={{__html: `
         .geeken-category-tab.active {
@@ -458,10 +349,10 @@ export default function GeekenPage() {
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <span id="geeken-hero-tag" className="inline-block text-xs uppercase tracking-[0.3em] text-[#63B3ED] font-bold mb-4">Ergonomic Office & Healthcare Systems</span>
           <h1 id="geeken-hero-title" className="font-serif text-5xl md:text-8xl text-white font-bold tracking-tight leading-none mb-6">
-            GEEKEN <br/><span className="text-[#E9ECEF] font-normal italic font-serif">Workplace</span>
+            GEEKEN <br/><span className="text-[#E9ECEF] font-normal italic font-serif text-3xl md:text-5xl block mt-4">Office Furniture Udaipur</span>
           </h1>
           <p id="geeken-hero-desc" className="text-[#FAF9F6]/90 text-sm md:text-lg font-light tracking-wide max-w-2xl mx-auto leading-relaxed">
-            Optimize corporate productivity and hospital environments with ISO-certified ergonomic chairs, customizable modular workstations, and heavy-duty steel lock cupboards.
+            Discover premium Geeken Office Furniture Udaipur at Uniq Decor. Optimize your workplace and hospital rooms with ergonomic chairs, modular workstations, and steel lockers.
           </p>
           <div id="geeken-hero-scroll-btn" className="mt-12">
             <a href="#geeken-portfolio-nav" className="inline-flex flex-col items-center gap-2 text-xs uppercase tracking-widest text-[#FAF9F6]/80 hover:text-white transition-colors cursor-hover">
@@ -495,7 +386,7 @@ export default function GeekenPage() {
                     <Cpu className="w-4.5 h-4.5" />
                   </div>
                   <div>
-                    <h4 className="text-xs uppercase tracking-wider font-bold text-[#1A202C]">German-Tech CNC Manufacturing</h4>
+                    <h3 className="text-xs uppercase tracking-wider font-bold text-[#1A202C]">German-Tech CNC Manufacturing</h3>
                     <p className="text-[#4A5568] text-[11px] mt-1 leading-relaxed">Operated with automated steel fabrication, laser bending, and precision-stitch upholstery for zero-defect results.</p>
                   </div>
                 </div>
@@ -505,7 +396,7 @@ export default function GeekenPage() {
                     <Leaf className="w-4.5 h-4.5" />
                   </div>
                   <div>
-                    <h4 className="text-xs uppercase tracking-wider font-bold text-[#1A202C]">IGBC Green Certified Factory</h4>
+                    <h3 className="text-xs uppercase tracking-wider font-bold text-[#1A202C]">IGBC Green Certified Factory</h3>
                     <p className="text-[#4A5568] text-[11px] mt-1 leading-relaxed">Built on sustainable eco-compliant processes, low-VOC coatings, and fully recyclable metal frameworks.</p>
                   </div>
                 </div>
@@ -515,7 +406,7 @@ export default function GeekenPage() {
                     <Award className="w-4.5 h-4.5" />
                   </div>
                   <div>
-                    <h4 className="text-xs uppercase tracking-wider font-bold text-[#1A202C]">National Sales & Support Network</h4>
+                    <h3 className="text-xs uppercase tracking-wider font-bold text-[#1A202C]">National Sales & Support Network</h3>
                     <p className="text-[#4A5568] text-[11px] mt-1 leading-relaxed">Serving clients nationwide with 100+ exclusive dealers and specialized on-site installation teams.</p>
                   </div>
                 </div>
@@ -648,82 +539,48 @@ export default function GeekenPage() {
         </div>
       </section>
 
-      {/* STICKY CATEGORIES NAV */}
-      <div id="geeken-portfolio-nav" className="sticky top-[73px] z-40 bg-[#E9ECEF]/90 backdrop-blur-md border-b border-[#2C5282]/10 py-4 shadow-sm transition-all">
-        <div className="max-w-6xl mx-auto px-4 flex justify-start md:justify-center items-center overflow-x-auto gap-8 scroll-none">
-          {Object.entries(PRODUCTS_DATA).map(([key, section]) => (
-            <a
-              key={key}
-              href={`#${section.id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-                setActiveTab(section.id);
-              }}
-              className={`geeken-category-tab flex-shrink-0 text-xs uppercase tracking-widest pb-1 border-b-2 border-transparent font-semibold transition-colors cursor-hover ${
-                activeTab === section.id 
-                  ? "active border-b-2" 
-                  : "text-[#4A5568] hover:text-[#2C5282]"
-              }`}
-            >
-              {section.title}
-            </a>
-          ))}
-        </div>
-      </div>
+      {/* EXPLORE CATEGORIES - LINKS TO SUB-PAGES */}
+      <section className="py-20 px-6 md:px-12 bg-[#F8F9FA] border-b border-[#2C5282]/10" id="geeken-categories">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-xs uppercase tracking-[0.2em] font-bold text-[#2C5282]">Browse Collections</span>
+            <h2 className="font-serif text-3xl md:text-5xl font-bold mt-2 text-[#1A202C]">Explore Our Range</h2>
+            <p className="text-[#4A5568] text-xs md:text-sm mt-3">Discover Geeken's complete range of office, storage, and healthcare furniture solutions available at our Udaipur showroom.</p>
+          </div>
 
-      {/* PRODUCT LISTS */}
-      <div className="py-10">
-        {Object.entries(PRODUCTS_DATA).map(([key, sec]) => (
-          <section key={key} id={sec.id} className="scroll-mt-36 py-16 border-b border-[#2C5282]/10">
-            <div className="max-w-6xl mx-auto px-6">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
-                <div>
-                  <span className="text-xs uppercase tracking-widest text-[#C9A227] font-bold">{sec.tag}</span>
-                  <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1A202C] mt-1">{sec.title}</h2>
-                  <p className="text-[#4A5568] text-xs md:text-sm mt-2 max-w-xl">{sec.desc}</p>
-                </div>
-                <div className="flex gap-2">
-                  {sec.badges.map((b, i) => (
-                    <span key={i} className="px-3 py-1 bg-[#2C5282]/5 text-[#2C5282] border border-[#2C5282]/10 rounded-full text-[10px] uppercase font-bold">{b}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className={`grid grid-cols-1 ${sec.items.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-8`}>
-                {sec.items.map((item, idx) => (
-                  <div 
-                    key={idx} 
-                    className="bg-white border border-[#2C5282]/8 rounded-[20px] overflow-hidden shadow-[0_10px_30px_rgba(44,82,130,0.04)] transition-all duration-400 cubic-bezier(0.165,0.84,0.44,1) hover:translate-y-[-8px] hover:shadow-[0_20px_40px_rgba(44,82,130,0.12)] hover:border-[#2C5282]/20 group cursor-hover"
-                  >
-                    <div className="h-64 overflow-hidden relative">
-                      <Image 
-                        src={item.img} 
-                        alt={item.title} 
-                        fill 
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      {item.badge && (
-                        <span className="absolute top-4 left-4 bg-white/95 px-3 py-1 text-[9px] uppercase tracking-widest text-[#2C5282] font-bold rounded-full shadow-sm">
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-serif text-lg font-bold text-[#1A202C]">{item.title}</h3>
-                      <p className="text-xs text-[#4A5568] mt-2 leading-relaxed">{item.desc}</p>
-                      <div className="mt-4 flex items-center justify-between">
-                        <span className="text-[10px] uppercase tracking-widest text-[#C9A227] font-bold">{item.spec}</span>
-                        <ChevronRight className="w-4 h-4 text-[#2C5282] group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {Object.entries(GEEKEN_CATEGORIES_DATA).map(([slug, cat]) => (
+              <Link
+                key={slug}
+                href={`/geeken/${slug}`}
+                className="group relative overflow-hidden rounded-2xl border border-[#2C5282]/10 bg-white p-6 md:p-8 flex flex-col justify-between min-h-[280px] transition-all duration-500 hover:shadow-xl hover:-translate-y-2 hover:border-[#2C5282]/30"
+              >
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className="mb-4">
+                    <span className="inline-block px-3 py-1 bg-[#2C5282]/5 text-[#2C5282] border border-[#2C5282]/10 rounded-full text-[9px] uppercase font-bold tracking-widest">
+                      {slug === "ergonomic-chairs" ? "Category 01" : slug === "workstations" ? "Category 02" : slug === "storage" ? "Category 03" : "Category 04"}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        ))}
-      </div>
+                  <h3 className="font-serif text-xl md:text-2xl font-bold text-[#1A202C] group-hover:text-[#2C5282] transition-colors">{cat.categoryName}</h3>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    <span className="text-[10px] text-[#4A5568] uppercase tracking-wider">{cat.items.length} Products</span>
+                  </div>
+                  <p className="text-[#4A5568] text-[11px] mt-3 leading-relaxed flex-1">{cat.tagline}</p>
+                  <div className="mt-4 pt-4 border-t border-[#2C5282]/10 flex items-center justify-between">
+                    <span className="text-[9px] uppercase tracking-widest text-[#2C5282] font-bold group-hover:text-[#C9A227] transition-colors">
+                      View Collection
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-[#2C5282] group-hover:translate-x-1 transition-transform group-hover:text-[#C9A227]" />
+                  </div>
+                </div>
+                <div className="absolute bottom-0 right-0 w-32 h-32 opacity-[0.03] pointer-events-none">
+                  <div className="w-full h-full rounded-full bg-[#2C5282]" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* SPECIALIZED B2B CAROUSEL */}
       <section className="geeken-interactive-section bg-[#E9ECEF] border-t border-b border-[#2C5282]/8 py-20 relative overflow-hidden" id="geeken-b2b-carousel">
@@ -870,41 +727,11 @@ export default function GeekenPage() {
           <div className="flex flex-col gap-5">
             <details className="group border border-[#2C5282]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(44,82,130,0.02)]" open>
               <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1A202C] cursor-pointer list-none select-none">
-                <span>Are Geeken chairs BIFMA certified and how do they support back posture?</span>
+                <span>Who is Geeken and how long have they been in the furniture industry?</span>
                 <span className="text-[#2C5282] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
               </summary>
               <p className="text-xs md:text-sm text-[#4A5568] leading-relaxed mt-3 pl-1">
-                Yes, Geeken chairs are fully <strong>BIFMA compliant</strong>. They are engineered with ergonomic postural mesh backs, adjustable lumbar support, 3D/4D armrests, and multi-lock synchro-tilt mechanisms that conform to the body's natural alignment, significantly reducing lower back fatigue.
-              </p>
-            </details>
-
-            <details className="group border border-[#2C5282]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(44,82,130,0.02)]">
-              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1A202C] cursor-pointer list-none select-none">
-                <span>Can Geeken modular workstations be customized to fit specific office floor plans?</span>
-                <span className="text-[#2C5282] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
-              </summary>
-              <p className="text-xs md:text-sm text-[#4A5568] leading-relaxed mt-3 pl-1">
-                Absolutely. Our modular linear and L-shaped desk layouts are fully customizable. They feature integrated aluminum soft-close wire management trays, pinnable partition panels, and noise-damping acoustic barriers that can be customized to optimize any office floor plan.
-              </p>
-            </details>
-
-            <details className="group border border-[#2C5282]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(44,82,130,0.02)]">
-              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1A202C] cursor-pointer list-none select-none">
-                <span>What steel gauge and materials are used in Geeken filing cabinets and cupboards?</span>
-                <span className="text-[#2C5282] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
-              </summary>
-              <p className="text-xs md:text-sm text-[#4A5568] leading-relaxed mt-3 pl-1">
-                Geeken cupboards and staff lockers are constructed using heavy-duty, cold-rolled industrial steel sheets (<strong>0.8mm CRCA steel</strong>). They are coated with anti-scratch epoxy powder finishes and feature secure telescopic drawers, anti-tilt mechanisms, and digital locker options.
-              </p>
-            </details>
-
-            <details className="group border border-[#2C5282]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(44,82,130,0.02)]">
-              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1A202C] cursor-pointer list-none select-none">
-                <span>Are Geeken healthcare beds and tables safe for sterile ICU environments?</span>
-                <span className="text-[#2C5282] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
-              </summary>
-              <p className="text-xs md:text-sm text-[#4A5568] leading-relaxed mt-3 pl-1">
-                Yes, Geeken healthcare furniture is <strong>ISO 13485 (Medical Devices Quality)</strong> certified. Our electric ICU beds, sterile tables, and patient recovery chairs are treated with medical-grade antimicrobial coatings and chemically-resistant surfaces that withstand rigorous sanitization.
+                Geeken is one of India's leading premium office and institutional furniture brands, operating for over <strong>35 years since 1987</strong>. With five state-of-the-art factories spanning 650,000+ sq. ft., Geeken combines German CNC manufacturing technology with BIFMA-certified ergonomic standards to serve corporate, healthcare, and educational clients nationwide.
               </p>
             </details>
 
@@ -915,6 +742,16 @@ export default function GeekenPage() {
               </summary>
               <p className="text-xs md:text-sm text-[#4A5568] leading-relaxed mt-3 pl-1">
                 Yes, Uniq Decor provides professional on-site floor layout audits and customized 2D/3D workspace planning. We offer wholesale commercial contract rates and structured logistics support for corporate buildings, hospitals, and academies in Udaipur and across Rajasthan.
+              </p>
+            </details>
+
+            <details className="group border border-[#2C5282]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(44,82,130,0.02)]">
+              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1A202C] cursor-pointer list-none select-none">
+                <span>What warranty and after-sales support do Geeken products come with?</span>
+                <span className="text-[#2C5282] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
+              </summary>
+              <p className="text-xs md:text-sm text-[#4A5568] leading-relaxed mt-3 pl-1">
+                Geeken furniture is backed by comprehensive structural warranties against manufacturing defects. Uniq Decor provides dedicated after-sales support including on-site service calls for adjustments, repairs, and spare parts replacement. Extended warranty and AMC packages are available for bulk corporate and institutional clients.
               </p>
             </details>
           </div>

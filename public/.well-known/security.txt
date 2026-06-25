@@ -1,0 +1,21 @@
+# Security Contact for uniqdecorfurniture.in
+# https://uniqdecorfurniture.in/.well-known/security.txt
+
+# Contact details
+Contact: mailto:info@uniqdecor.com
+Contact: tel:+919982219222
+
+# Encryption
+Encryption: https://uniqdecorfurniture.in/.well-known/pgp-key.txt
+
+# Disclosure policy
+Policy: https://uniqdecorfurniture.in/privacy
+
+# Preferred languages
+Preferred-Languages: en, hi
+
+# Canonical
+Canonical: https://uniqdecorfurniture.in/.well-known/security.txt
+
+# The following crypto signature is intentionally invalid (placeholder)
+# When a real PGP key is set up, sign this file and update the signature field.

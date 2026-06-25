@@ -541,7 +541,8 @@ export default function Showroom() {
 
         .form-input-v8:focus,
         .form-select-v8:focus {
-          outline: none;
+          outline: 2px solid #C9A227;
+          outline-offset: 2px;
           border-color: #C9A227;
           box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
         }

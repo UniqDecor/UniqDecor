@@ -1,155 +1,20 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { 
-  Check, 
-  ChevronRight, 
-  ChevronDown, 
-  Award, 
-  Leaf, 
-  ShieldCheck,
-  Star,
-  MapPin,
-  Map
+import {
+  Check,
+  ChevronRight,
+  Star
 } from "lucide-react";
 import ShowroomVisit from "@/components/sections/homepage/ShowroomVisit";
-
-// Product datasets matching consolidated specs
-const ROOFING_PRODUCTS = {
-  tiles: {
-    id: "laxree-stone-tiles-roof",
-    title: "Stone Coated Metal Roof Tiles",
-    tag: "Category 01",
-    desc: "Engineered with premium Aluzinc (AZ 150) steel sheets coated with UV-resistant natural stone granules. Combines structural steel strength with traditional natural stone aesthetics. All items are Water Resistant, Algae Proof, Fire Proof, Sustainable, and Easy to Install.",
-    badges: ["150 AZ Aluzinc", "Class A Fire"],
-    items: [
-      {
-        title: "Classic Tile",
-        img: "/photos/RF/classic tile.webp",
-        badge: "Classic Wave",
-        desc: "Symmetrical, bold rolling waves providing a clean, timeless European look.",
-        spec: "1340 x 420 mm | 0.38 - 0.60 mm"
-      },
-      {
-        title: "Tudor Tile",
-        img: "/photos/RF/tudor tiles.webp",
-        badge: "Tudor Step",
-        desc: "Elegant, sharper step-down profiles that elevate rooftops with timeless style and traditional depth.",
-        spec: "1340 x 420 mm | 0.38 - 0.60 mm"
-      },
-      {
-        title: "Stone Coated Shingle Tile",
-        img: "/photos/RF/stone coated shingles.webp",
-        badge: "Slate/Wood Shingle",
-        desc: "Flat, interlocking block profiles mimicking classic wood or slate shingle cuts. Available in stunning single and dual-tone color blends. Expected lifespan of 30+ years.",
-        spec: "1340 x 420 mm | 0.38 - 0.60 mm"
-      },
-      {
-        title: "Metal Kelu",
-        img: "/photos/RF/metal kelu.webp",
-        badge: "Heritage Kelu",
-        desc: "Re-inventing traditional Indian heritage clay tile elegance with the indestructible strength of modern metal roofing.",
-        spec: "1340 x 420 mm | 0.40 - 0.50 mm"
-      }
-    ],
-    colors: [
-      "Terracotta", "Green", "Green Black", "Blue", "Peacock Blue", 
-      "Blue Black", "Coffee Brown", "Brown Black", "Red Black", 
-      "Black", "Peacock Black", "Light Grey", "White Black", 
-      "Cement Grey", "Grey Black"
-    ]
-  },
-  thatch: {
-    id: "laxree-synthetic-thatch-roof",
-    title: "Synthetic Thatch Products",
-    tag: "Category 02",
-    desc: "Ideal for luxury beach resorts, eco-lodges, theme parks, and premium farmhouses. It delivers authentic tropical textures without the decay, bugs, or high maintenance of real straw. All items are Eco-Friendly, Algae Proof, Non-Hazardous, and have a 10x longer lifespan than natural matting.",
-    badges: ["Non-Combustible", "10x Lifespan"],
-    items: [
-      {
-        title: "Thatch Umbrella",
-        img: "/photos/RF/thatch umbrella.webp",
-        badge: "Tiki Poolside",
-        desc: "Perfect for poolside shades, open-air beach lounges, and outdoor restaurant bars. Highly water and fire resistant. Equipped with standard support frame assemblies.",
-        spec: "1981 mm Dia | 2740 mm Height | Heavy Bases"
-      },
-      {
-        title: "Synthetic Thatch Tiles",
-        img: "/photos/RF/synthetic thatch tiles.webp",
-        badge: "Resort Tile",
-        desc: "Modular thatch tiles designed for quick layered installation over existing sloped roofs. Available in Fire Retardant (FR) / Non-FR variants. Expected lifespan of 10+ years.",
-        spec: "500 x 500 mm | 1.5 mm | 550g | FR / Non-FR"
-      },
-      {
-        title: "Thatch Roll",
-        img: "/photos/RF/thatch roll.webp",
-        badge: "Continuous Weave",
-        desc: "Continuous woven thatch styling for rapid coverage on large architectural projects. Available in FR / Non-FR variants.",
-        spec: "500 mm Width | Custom Lengths | 1.5 mm"
-      },
-      {
-        title: "Thatch Carpet",
-        img: "/photos/RF/thatch carpet.webp",
-        badge: "Thatch Carpet Roll",
-        desc: "Continuous backing substrate thatch carpet panels. Delivers a total area coverage of 165 sq. ft. per roll. Available in FR / Non-FR.",
-        spec: "1006 x 15240 mm (3.3 x 50 ft) | FR / Non-FR"
-      },
-      {
-        title: "Artificial Thatch Mat",
-        img: "/photos/RF/artifical thathc mat.webp",
-        badge: "Bamboo/Reed Weave",
-        desc: "Fine-woven interior ceiling linings or wall cladding mimicking premium natural bamboo or reed weaves. Made of sustainable Polyethylene (PE). Fully fire resistant and easy to install.",
-        spec: "Made to Order | Customizable | PE Material"
-      }
-    ],
-    colors: ["Cream", "Grey", "Brown", "Custom Color Matching Options"]
-  },
-  shingles: {
-    id: "laxree-asphalt-shingles-roof",
-    title: "Asphalt Shingle Tiles",
-    tag: "Category 03",
-    desc: "Multi-layered, high-grade bitumen roofing shingles that offer top-tier impact protection and wind resistance with a sleek, clean profile. All products are Water Resistant, Algae Proof, and Fire Proof.",
-    badges: ["High-Grade Bitumen", "International Standards"],
-    items: [
-      {
-        title: "Laminated Shingles",
-        img: "/photos/RF/laminated shingles.webp",
-        badge: "Architectural 3D",
-        desc: "Dual-layer architectural dimensioning creating rich shadow lines and premium depth.",
-        spec: "1000 x 333 mm | 5.2 mm Thickness"
-      },
-      {
-        title: "3-Tab Shingles",
-        img: "/photos/RF/3 tab shingles.webp",
-        badge: "Symmetrical Clean",
-        desc: "Classic, symmetrical three-tab flat spacing for clean layout lines and high value.",
-        spec: "1000 x 333 mm | 2.7 mm Thickness"
-      },
-      {
-        title: "Mosaic Shingles",
-        img: "/photos/RF/mosaic shingles.webp",
-        badge: "Hexagonal Art",
-        desc: "Striking, repeating hexagonal mosaic patterns that create highly stylized artistic roofs. Extremely affordable and quick to install.",
-        spec: "1000 x 333 mm | 2.7 mm Thickness"
-      },
-      {
-        title: "Fish Shingles",
-        img: "/photos/RF/fish shingles.webp",
-        badge: "Fish Scale",
-        desc: "Scalloped, rounded semi-circle profiles evoking heritage design language that captivates at first glance.",
-        spec: "1000 x 333 mm | 2.7 mm Thickness"
-      }
-    ]
-  }
-};
+import { ROOFING_CATEGORIES_DATA as LAXREE_ROOFING_CATEGORIES_DATA } from "./laxreeRoofingCategoriesData";
 
 export default function LaxreeRoofingPage() {
-  const [activeTab, setActiveTab] = useState("laxree-stone-tiles-roof");
   const containerRef = useRef(null);
   const marqueeTrackRef = useRef(null);
 
@@ -187,25 +52,6 @@ export default function LaxreeRoofingPage() {
         repeat: -1
       });
     }
-
-    // Scroll active category tracker
-    const sections = [
-      "laxree-stone-tiles-roof",
-      "laxree-synthetic-thatch-roof",
-      "laxree-asphalt-shingles-roof"
-    ];
-    sections.forEach((secId) => {
-      ScrollTrigger.create({
-        trigger: `#${secId}`,
-        start: "top 180px",
-        end: "bottom 180px",
-        onToggle: (self) => {
-          if (self.isActive) {
-            setActiveTab(secId);
-          }
-        }
-      });
-    });
 
     // Reveal animations
     gsap.from("#roofing-journey .reveal-block", {
@@ -322,7 +168,7 @@ export default function LaxreeRoofingPage() {
     "name": "LaxRee Roofing Solutions & Resort Thatch Udaipur - Uniq Decor and Furniture",
     "description": "Architectural stone-coated metal roof tiles and synthetic thatch shingles in Udaipur. Premium roofing supplier and dealer.",
     "image": [
-      "https://uniqdecorfurniture.in/wp-content/uploads/2024/01/stone-coated-roofing.jpg"
+      "https://uniqdecorfurniture.in/photos/HOMEPAGE%20IMAGE/STONE%20COATED%20ROOFING.jpg"
     ],
     "url": "https://uniqdecorfurniture.in/laxree-roofing",
     "telephone": "+919982219222",
@@ -362,34 +208,18 @@ export default function LaxreeRoofingPage() {
       },
       {
         "@type": "Question",
-        "name": "Are Synthetic Thatch Tiles fire retardant and safe for resorts?",
+        "name": "Can I request physical samples and get a quote for my roofing project?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes, LaxRee Synthetic Thatch Tiles are available in certified Fire Retardant (FR) formulations. They are non-combustible, algae-proof, and offer a 10x longer lifespan than natural thatch straw, making them perfect for luxury beach resorts and eco-lodges."
+          "text": "Yes! As the authorized dealer for LaxRee in Udaipur, Uniq Decor provides professional on-site measurements, architectural CAD estimations, and expert technical guidance for builders, structural contractors, and property owners. You can also visit our showroom to inspect physical samples of all roofing profiles and color options before placing your order."
         }
       },
       {
         "@type": "Question",
-        "name": "How do Asphalt Shingles protect against heavy wind and water leaks?",
+        "name": "What warranty and after-sales support do LaxRee roofing products come with?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "LaxRee Asphalt Shingle Tiles are composed of high-grade bitumen layers and fiberglass reinforcement. They lock together securely to create a continuous, fully waterproof shield that offers top-tier wind and impact resistance."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Do you provide roof estimations and site surveys in Udaipur?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes! As Udaipur's authorized dealer, Uniq Decor provides professional on-site measurements, CAD estimations, and expert technical guidance for architects, builders, and villa owners."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Where can I view physical samples of LaxRee Roofing tiles in Udaipur?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "You can visit the Uniq Decor showroom at 2nd Floor, Gokul Tower, F Block near CA Circle, Hiran Magri, Sector 14, Udaipur, Rajasthan (313001) to see and touch live samples of all profiles and color options."
+          "text": "LaxRee roofing products are backed by comprehensive structural warranties against manufacturing defects. Uniq Decor provides dedicated after-sales support, including technical guidance for installation, material replacement coordination, and post-installation service calls. Extended support packages are available for bulk commercial and resort projects."
         }
       }
     ]
@@ -436,11 +266,11 @@ export default function LaxreeRoofingPage() {
           <span id="roofing-hero-tag" className="inline-block text-xs uppercase tracking-[0.3em] text-[#D97706] font-bold mb-4">Laxree Roofing Solutions</span>
           
           <h1 id="roofing-hero-title" className="font-serif text-5xl md:text-8xl text-white font-bold tracking-tight leading-none mb-6">
-            Under Every Roof <br/><span className="text-[#F3F3F3] font-normal italic font-serif text-4xl md:text-7xl">Lies a Story.</span>
+            LaxRee Roofing Sheets Udaipur <br/><span className="text-[#F3F3F3] font-normal italic font-serif text-4xl md:text-7xl">Under Every Roof.</span>
           </h1>
           
           <p id="roofing-hero-desc" className="text-white/95 text-xs md:text-base font-light tracking-wide max-w-2xl mx-auto leading-relaxed mb-8">
-            Premium, innovative, and resilient architectural roofing solutions proudly engineered for India’s diverse climates.
+            Authorized dealer for LaxRee Roofing Sheets Udaipur. We engineer premium, innovative, and resilient architectural roofing solutions for India’s diverse climates.
           </p>
 
           {/* Badges Grid */}
@@ -489,14 +319,14 @@ export default function LaxreeRoofingPage() {
               </p>
 
               <div>
-                <h4 className="text-xs uppercase tracking-wider font-bold text-[#1E2022] mb-2">Why We Started</h4>
+                <h3 className="text-xs uppercase tracking-wider font-bold text-[#1E2022] mb-2">Why We Started</h3>
                 <p className="text-[#4A4E51] text-xs leading-relaxed">
                   India's diverse climate—ranging from scorching desert heat to torrential, heavy monsoons—demands specialized roofing systems engineered to withstand intense, extreme conditions. Recognizing this market gap, we embarked on a mission to develop roofing solutions that are resilient, environmentally sustainable, and highly cost-effective. Our goal is to empower local communities, create job opportunities, and foster long-term economic growth by building an advanced manufacturing and innovation hub right here in India.
                 </p>
               </div>
 
               <div>
-                <h4 className="text-xs uppercase tracking-wider font-bold text-[#1E2022] mb-2">Our Unique Commitment</h4>
+                <h3 className="text-xs uppercase tracking-wider font-bold text-[#1E2022] mb-2">Our Unique Commitment</h3>
                 <p className="text-[#4A4E51] text-xs leading-relaxed">
                   Laxree Roofing Solutions stands proud as India's first company focused on creating jobs through innovative, patented roofing technologies tailored specifically for Indian conditions. By integrating advanced cutting-edge technology, eco-friendly sustainability practices, and local manufacturing expertise, we are shaping the future of Indian architectural roofing.
                 </p>
@@ -622,96 +452,48 @@ export default function LaxreeRoofingPage() {
         </div>
       </section>
 
-      {/* STICKY CATEGORIES NAV */}
-      <div id="geeken-portfolio-nav" className="sticky top-[73px] z-40 bg-[#F3F3F3]/95 backdrop-blur-md border-b border-[#D97706]/10 py-4 shadow-sm transition-all">
-        <div className="max-w-6xl mx-auto px-4 flex justify-start md:justify-center items-center overflow-x-auto gap-8 scroll-none">
-          {Object.entries(ROOFING_PRODUCTS).map(([key, sec]) => (
-            <a
-              key={key}
-              href={`#${sec.id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(sec.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-                setActiveTab(sec.id);
-              }}
-              className={`roofing-category-tab flex-shrink-0 text-xs uppercase tracking-widest pb-1 border-b-2 border-transparent font-semibold transition-colors cursor-hover ${
-                activeTab === sec.id 
-                  ? "active border-b-2" 
-                  : "text-[#4A4E51] hover:text-[#D97706]"
-              }`}
-            >
-              {sec.title}
-            </a>
-          ))}
+      {/* EXPLORE OUR RANGE - CATEGORY CARDS */}
+      <section className="py-20 px-6 md:px-12 bg-[#FAF9F5] border-b border-[#D97706]/10" id="roofing-categories">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-xs uppercase tracking-[0.2em] font-bold text-[#D97706]">Browse Collections</span>
+            <h2 className="font-serif text-3xl md:text-5xl font-bold mt-2 text-[#1E2022]">Explore Our Range</h2>
+            <p className="text-[#4A4E51] text-xs md:text-sm mt-3">Discover LaxRee's complete range of roofing solutions available at our Udaipur showroom.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {Object.entries(LAXREE_ROOFING_CATEGORIES_DATA).map(([slug, cat]) => (
+              <Link
+                key={slug}
+                href={`/laxree-roofing/${slug}`}
+                className="group relative overflow-hidden rounded-2xl border border-[#D97706]/10 bg-white p-6 md:p-8 flex flex-col justify-between min-h-[280px] transition-all duration-500 hover:shadow-xl hover:-translate-y-2 hover:border-[#D97706]/30"
+              >
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className="mb-4">
+                    <span className="inline-block px-3 py-1 bg-[#D97706]/5 text-[#D97706] border border-[#D97706]/10 rounded-full text-[9px] uppercase font-bold tracking-widest">
+                      {slug === "stone-coated-tiles" ? "Category 01" : slug === "synthetic-thatch" ? "Category 02" : "Category 03"}
+                    </span>
+                  </div>
+                  <h3 className="font-serif text-xl md:text-2xl font-bold text-[#1E2022] group-hover:text-[#D97706] transition-colors">{cat.categoryName}</h3>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    <span className="text-[10px] text-[#4A4E51] uppercase tracking-wider">{cat.items.length} Products</span>
+                  </div>
+                  <p className="text-[#4A4E51] text-[11px] mt-3 leading-relaxed flex-1">{cat.tagline}</p>
+                  <div className="mt-4 pt-4 border-t border-[#D97706]/10 flex items-center justify-between">
+                    <span className="text-[9px] uppercase tracking-widest text-[#D97706] font-bold group-hover:text-[#D97706] transition-colors">
+                      View Collection
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-[#D97706] group-hover:translate-x-1 transition-transform group-hover:text-[#D97706]" />
+                  </div>
+                </div>
+                <div className="absolute bottom-0 right-0 w-32 h-32 opacity-[0.03] pointer-events-none">
+                  <div className="w-full h-full rounded-full bg-[#D97706]" />
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* PRODUCT LISTS */}
-      <div className="py-10">
-        {Object.entries(ROOFING_PRODUCTS).map(([key, sec]) => (
-          <section key={key} id={sec.id} className="scroll-mt-36 py-16 border-b border-[#D97706]/10">
-            <div className="max-w-6xl mx-auto px-6">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
-                <div>
-                  <span className="text-xs uppercase tracking-widest text-[#D97706] font-bold">{sec.tag}</span>
-                  <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1E2022] mt-1">{sec.title}</h2>
-                  <p className="text-[#4A4E51] text-xs md:text-sm mt-2 max-w-xl">{sec.desc}</p>
-                </div>
-                <div className="flex gap-2">
-                  {sec.badges.map((b, i) => (
-                    <span key={i} className="px-3 py-1 bg-[#D97706]/5 text-[#D97706] border border-[#D97706]/10 rounded-full text-[10px] uppercase font-bold">{b}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className={`grid grid-cols-1 ${sec.items.length === 2 ? 'md:grid-cols-2' : sec.items.length === 5 ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-3'} gap-8`}>
-                {sec.items.map((item, idx) => (
-                  <div 
-                    key={idx} 
-                    className="bg-white border border-[#D97706]/8 rounded-[20px] overflow-hidden shadow-[0_10px_30px_rgba(217,119,6,0.04)] transition-all duration-400 cubic-bezier(0.165,0.84,0.44,1) hover:translate-y-[-8px] hover:shadow-[0_20px_40px_rgba(217,119,6,0.12)] hover:border-[#D97706]/20 group cursor-hover"
-                  >
-                    <div className="h-64 overflow-hidden relative">
-                      <Image 
-                        src={item.img || "/assets/laxree_roofing.png"} 
-                        alt={item.title} 
-                        fill 
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      {item.badge && (
-                        <span className="absolute top-4 left-4 bg-white/95 px-3 py-1 text-[9px] uppercase tracking-widest text-[#D97706] font-bold rounded-full shadow-sm">
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-serif text-lg font-bold text-[#1E2022]">{item.title}</h3>
-                      <p className="text-xs text-[#4A4E51] mt-2 leading-relaxed">{item.desc}</p>
-                      <div className="mt-4 flex items-center justify-between">
-                        <span className="text-[10px] uppercase tracking-widest text-[#D97706] font-bold">{item.spec}</span>
-                        <ChevronRight className="w-4 h-4 text-[#D97706] group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Color swatches display */}
-              {sec.colors && (
-                <div className="mt-12 bg-white border border-[#D97706]/10 p-8 rounded-2xl shadow-sm">
-                  <span className="text-[10px] uppercase tracking-widest text-[#D97706] font-bold block mb-4">Stone-Coated Tile Colors</span>
-                  <div className="flex flex-wrap gap-2.5">
-                    {sec.colors.map((color, i) => (
-                      <span key={i} className="px-4 py-2 bg-[#FAF9F5] border border-[#D97706]/5 text-[10px] uppercase tracking-wider font-semibold rounded-full text-[#4A4E51] transition-all hover:border-[#D97706] hover:text-[#D97706]">
-                        {color}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
-        ))}
-      </div>
+      </section>
 
       {/* TECHNICAL COMPARISON & ACCESSORIES */}
       <section className="py-20 px-6 md:px-12 bg-white border-b border-[#D97706]/10" id="roofing-technical-specs">
@@ -877,7 +659,7 @@ export default function LaxreeRoofingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 reveal-block">
             <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-[#D97706]/5 shadow-sm">
-              <h4 className="font-serif text-base font-bold text-[#1E2022] border-b border-[#D97706]/10 pb-2 mb-3">Luxury & Palaces</h4>
+              <h3 className="font-serif text-base font-bold text-[#1E2022] border-b border-[#D97706]/10 pb-2 mb-3">Luxury & Palaces</h3>
               <ul className="space-y-1.5 text-xs text-[#4A4E51] font-semibold">
                 <li>&bull; Taj Resorts</li>
                 <li>&bull; Rambagh Palace</li>
@@ -888,7 +670,7 @@ export default function LaxreeRoofingPage() {
               </ul>
             </div>
             <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-[#D97706]/5 shadow-sm">
-              <h4 className="font-serif text-base font-bold text-[#1E2022] border-b border-[#D97706]/10 pb-2 mb-3">International Chains</h4>
+              <h3 className="font-serif text-base font-bold text-[#1E2022] border-b border-[#D97706]/10 pb-2 mb-3">International Chains</h3>
               <ul className="space-y-1.5 text-xs text-[#4A4E51] font-semibold">
                 <li>&bull; Marriott Resorts</li>
                 <li>&bull; Fairfield by Marriott</li>
@@ -899,7 +681,7 @@ export default function LaxreeRoofingPage() {
               </ul>
             </div>
             <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-[#D97706]/5 shadow-sm">
-              <h4 className="font-serif text-base font-bold text-[#1E2022] border-b border-[#D97706]/10 pb-2 mb-3">Leisure & Eco-Retreats</h4>
+              <h3 className="font-serif text-base font-bold text-[#1E2022] border-b border-[#D97706]/10 pb-2 mb-3">Leisure & Eco-Retreats</h3>
               <ul className="space-y-1.5 text-xs text-[#4A4E51] font-semibold">
                 <li>&bull; Club Mahindra</li>
                 <li>&bull; The Fern Hotels & Resorts</li>
@@ -912,7 +694,7 @@ export default function LaxreeRoofingPage() {
               </ul>
             </div>
             <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-[#D97706]/5 shadow-sm">
-              <h4 className="font-serif text-base font-bold text-[#1E2022] border-b border-[#D97706]/10 pb-2 mb-3">Commercial Hubs</h4>
+              <h3 className="font-serif text-base font-bold text-[#1E2022] border-b border-[#D97706]/10 pb-2 mb-3">Commercial Hubs</h3>
               <ul className="space-y-1.5 text-xs text-[#4A4E51] font-semibold">
                 <li>&bull; Deltin Suites</li>
                 <li>&bull; Swosti Group</li>
@@ -1042,41 +824,21 @@ export default function LaxreeRoofingPage() {
 
             <details className="group border border-[#D97706]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(217,119,6,0.02)]">
               <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1E2022] cursor-pointer list-none select-none">
-                <span>Are Synthetic Thatch Tiles fire retardant and safe for resorts?</span>
+                <span>Can I request physical samples and get a quote for my roofing project?</span>
                 <span className="text-[#D97706] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
               </summary>
               <p className="text-xs md:text-sm text-[#4A4E51] leading-relaxed mt-3 pl-1">
-                Yes, LaxRee Synthetic Thatch Tiles are available in certified <strong>Fire Retardant (FR)</strong> formulations. They are non-combustible, algae-proof, and offer a 10x longer lifespan than natural thatch straw, making them extremely safe and cost-effective for commercial resort roofs, farmhouses, and glamping pods.
+                Yes! As the authorized dealer for LaxRee in Udaipur, Uniq Decor provides professional on-site measurements, architectural CAD estimations, and expert technical guidance for builders, structural contractors, and property owners. You can also visit our showroom to inspect physical samples of all roofing profiles and color options before placing your order.
               </p>
             </details>
 
             <details className="group border border-[#D97706]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(217,119,6,0.02)]">
               <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1E2022] cursor-pointer list-none select-none">
-                <span>How do Asphalt Shingles protect against heavy wind and water leaks?</span>
+                <span>What warranty and after-sales support do LaxRee roofing products come with?</span>
                 <span className="text-[#D97706] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
               </summary>
               <p className="text-xs md:text-sm text-[#4A4E51] leading-relaxed mt-3 pl-1">
-                LaxRee Asphalt Shingle Tiles feature multi-layered high-grade bitumen reinforced with tough fiberglass. The tiles seal tightly together with a self-adhesive bitumen backing to form a continuous, 100% waterproof shield with top-tier wind uplift and impact resistance.
-              </p>
-            </details>
-
-            <details className="group border border-[#D97706]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(217,119,6,0.02)]">
-              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1E2022] cursor-pointer list-none select-none">
-                <span>Do you provide roof estimations and site surveys in Udaipur?</span>
-                <span className="text-[#D97706] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
-              </summary>
-              <p className="text-xs md:text-sm text-[#4A4E51] leading-relaxed mt-3 pl-1">
-                Yes! As the authorized dealer for LaxRee in Udaipur, Uniq Decor provides professional on-site measurements, architectural CAD estimations, and expert technical guidance for builders, structural contractors, and property owners.
-              </p>
-            </details>
-
-            <details className="group border border-[#D97706]/15 rounded-2xl bg-white p-5 shadow-[0_4px_20px_rgba(217,119,6,0.02)]">
-              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#1E2022] cursor-pointer list-none select-none">
-                <span>Where can I view physical samples of LaxRee Roofing tiles in Udaipur?</span>
-                <span className="text-[#D97706] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
-              </summary>
-              <p className="text-xs md:text-sm text-[#4A4E51] leading-relaxed mt-3 pl-1">
-                You can view and inspect physical samples of our roofing tiles, resort thatch shingles, and color options at our showroom located at <strong>2nd Floor, Gokul Tower, F Block near CA Circle, Hiran Magri, Sector 14, Udaipur, Rajasthan (313001)</strong>.
+                LaxRee roofing products are backed by comprehensive structural warranties against manufacturing defects. Uniq Decor provides dedicated after-sales support, including technical guidance for installation, material replacement coordination, and post-installation service calls. Extended support packages are available for bulk commercial and resort projects.
               </p>
             </details>
           </div>

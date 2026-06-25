@@ -211,8 +211,90 @@ export default function DDecorPage() {
     });
   };
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FurnitureStore",
+    "name": "UNIQ Decor",
+    "image": ["https://uniqdecorfurniture.in/assets/ddecor/hero.png"],
+    "@id": "https://uniqdecorfurniture.in/#store",
+    "url": "https://uniqdecorfurniture.in/ddecor",
+    "telephone": "+919982219222",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "2nd Floor, Gokul Tower, F Block near CA Circle, Hiran Magri, Sector 14",
+      "addressLocality": "Udaipur",
+      "addressRegion": "Rajasthan",
+      "postalCode": "313001",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 24.5420,
+      "longitude": 73.6964
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+      "opens": "10:00",
+      "closes": "20:00"
+    },
+    "sameAs": [
+      "https://www.facebook.com/uniqdecor",
+      "https://www.instagram.com/uniqdecor",
+      "https://www.linkedin.com/company/uniqdecor",
+      "https://www.youtube.com/@uniqdecor"
+    ],
+    "hasMerchantReturnPolicy": {
+      "@type": "MerchantReturnPolicy",
+      "applicableCountry": "IN",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+      "merchantReturnDays": 7,
+      "returnFees": "https://schema.org/FreeReturn"
+    }
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What types of fabrics does D'Decor offer for curtains and upholstery in Udaipur?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "D'Decor offers an extensive range including sheer linens, velvet blackout fabrics, embroidered sheers, chenille upholstery fabrics, jacquard weaves, cotton sateen bedding, and high-durability performance textiles suitable for both residential and hospitality applications in Udaipur."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I get custom-sized curtains and upholstery at Uniq Decor's D'Decor showroom?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we provide full custom measurement and tailoring services for all D'Decor fabrics. Our team takes precise laser measurements at your Udaipur home or hotel site to ensure curtains, sofa upholstery, and drapery are stitched to perfect dimensions with motorized track integration available."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I choose the right curtain fabric for Udaipur's climate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "For Udaipur's hot summers, we recommend thermal blackout curtains or linen blends that provide insulation while allowing natural light. Velvet drapes offer excellent heat retention for winter months. Our showroom experts at Hiran Magri can guide you through fabric samples and recommend the best material based on your room orientation and sun exposure."
+        }
+      }
+    ]
+  };
+
   return (
     <div ref={containerRef} className="theme-ddecor bg-[#FAF9F6] text-[#2D2A26] min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <style dangerouslySetInnerHTML={{__html: `
 
       `}} />
@@ -225,7 +307,7 @@ export default function DDecorPage() {
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <span id="hero-tag" className="inline-block text-xs uppercase tracking-[0.3em] text-[#C9A227] font-bold mb-4">Exquisite Fabric Curations</span>
           <h1 id="hero-title" className="font-serif text-5xl md:text-8xl text-white font-bold tracking-tight leading-none mb-6">
-            D'DECOR <br/><span className="text-[#F5F0E8] font-normal italic font-serif">Atelier</span>
+            D'DECOR <br/><span className="text-[#F5F0E8] font-normal italic font-serif">Showroom Udaipur</span>
           </h1>
           <p id="hero-desc" className="text-[#FAF9F6] text-sm md:text-lg font-light tracking-wide max-w-2xl mx-auto leading-relaxed">
             Immerse yourself in premium textures, custom curtain weaves, tailored sofa fabrics, and elegant residential bedding designed to make your home feel extraordinary.
@@ -474,6 +556,49 @@ export default function DDecorPage() {
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FREQUENTLY ASKED QUESTIONS */}
+      <section className="py-20 px-6 md:px-12 bg-[#FAF9F6] border-t border-[#8B4513]/10">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-xs uppercase tracking-[0.2em] font-bold text-[#8B4513]">Got Questions?</span>
+            <h2 className="font-serif text-3xl font-bold mt-2 text-[#2D2A26]">Frequently Asked Questions</h2>
+            <p className="text-[#6B6560] text-xs mt-2">Common questions about our D'Decor fabrics, custom services, and showroom experience.</p>
+          </div>
+
+          <div className="flex flex-col gap-5">
+            <details className="group border border-[#8B4513]/15 rounded-2xl bg-white p-5 shadow-sm" open>
+              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#2D2A26] cursor-pointer list-none select-none">
+                <span>What types of fabrics does D'Decor offer for curtains and upholstery in Udaipur?</span>
+                <span className="text-[#8B4513] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
+              </summary>
+              <p className="text-xs md:text-sm text-[#6B6560] leading-relaxed mt-3 pl-1">
+                D'Decor offers an extensive range including sheer linens, velvet blackout fabrics, embroidered sheers, chenille upholstery fabrics, jacquard weaves, cotton sateen bedding, and high-durability performance textiles suitable for both residential and hospitality applications in Udaipur.
+              </p>
+            </details>
+
+            <details className="group border border-[#8B4513]/15 rounded-2xl bg-white p-5 shadow-sm">
+              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#2D2A26] cursor-pointer list-none select-none">
+                <span>Can I get custom-sized curtains and upholstery at Uniq Decor's D'Decor showroom?</span>
+                <span className="text-[#8B4513] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
+              </summary>
+              <p className="text-xs md:text-sm text-[#6B6560] leading-relaxed mt-3 pl-1">
+                Yes, we provide full custom measurement and tailoring services for all D'Decor fabrics. Our team takes precise laser measurements at your Udaipur home or hotel site to ensure curtains, sofa upholstery, and drapery are stitched to perfect dimensions with motorized track integration available.
+              </p>
+            </details>
+
+            <details className="group border border-[#8B4513]/15 rounded-2xl bg-white p-5 shadow-sm">
+              <summary className="flex justify-between items-center font-serif text-base font-bold text-[#2D2A26] cursor-pointer list-none select-none">
+                <span>How do I choose the right curtain fabric for Udaipur's climate?</span>
+                <span className="text-[#8B4513] group-open:rotate-180 transition-transform duration-300 font-sans text-xs ml-3">&darr;</span>
+              </summary>
+              <p className="text-xs md:text-sm text-[#6B6560] leading-relaxed mt-3 pl-1">
+                For Udaipur's hot summers, we recommend thermal blackout curtains or linen blends that provide insulation while allowing natural light. Velvet drapes offer excellent heat retention for winter months. Our showroom experts at Hiran Magri can guide you through fabric samples and recommend the best material based on your room orientation and sun exposure.
+              </p>
+            </details>
           </div>
         </div>
       </section>
