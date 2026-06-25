@@ -43,6 +43,7 @@ export default function SeoDashboardClient() {
   const [reScraping, setReScraping] = useState({});
   const [auditProgress, setAuditProgress] = useState(0);
   const [inspections, setInspections] = useState({});
+  const [selectedFix, setSelectedFix] = useState(null);
 
   // Trigger full crawl
   const runFullAudit = async () => {
@@ -406,40 +407,67 @@ export default function SeoDashboardClient() {
                   const fixes = [];
                   const pagesWithBrokenLinks = data.pages.filter(p => p.brokenLinks?.length > 0);
                   if (pagesWithBrokenLinks.length > 0) {
-                    fixes.push({ severity: "high", text: `${pagesWithBrokenLinks.length} page(s) have broken internal links — fix to prevent rank loss` });
+                    fixes.push({ 
+                      type: "broken_links", 
+                      severity: "high", 
+                      text: `${pagesWithBrokenLinks.length} page(s) have broken internal links — fix to prevent rank loss` 
+                    });
                   }
                   const pagesWithA11yIssues = data.pages.filter(p => p.a11y?.issues?.length > 0);
                   if (pagesWithA11yIssues.length > 0) {
-                    fixes.push({ severity: "medium", text: `${pagesWithA11yIssues.length} page(s) have accessibility issues — add ARIA landmarks, form labels, lang attribute` });
+                    fixes.push({ 
+                      type: "accessibility", 
+                      severity: "medium", 
+                      text: `${pagesWithA11yIssues.length} page(s) have accessibility issues — add ARIA landmarks, form labels, lang attribute` 
+                    });
                   }
                   const missingAltPages = data.pages.filter(p => p.images?.missingAlt > 0);
                   if (missingAltPages.length > 0) {
-                    fixes.push({ severity: "medium", text: `${missingAltPages.length} page(s) have images missing alt text — ${missingAltPages.reduce((s, p) => s + p.images.missingAlt, 0)} total images affected` });
+                    fixes.push({ 
+                      type: "alt_text", 
+                      severity: "medium", 
+                      text: `${missingAltPages.length} page(s) have images missing alt text — ${missingAltPages.reduce((s, p) => s + p.images.missingAlt, 0)} total images affected` 
+                    });
                   }
                   const largeHtmlPages = data.pages.filter(p => (p.htmlSizeKB || 0) > 150);
                   if (largeHtmlPages.length > 0) {
-                    fixes.push({ severity: "low", text: `${largeHtmlPages.length} page(s) have HTML over 150KB — consider code splitting` });
+                    fixes.push({ 
+                      type: "large_html", 
+                      severity: "low", 
+                      text: `${largeHtmlPages.length} page(s) have HTML over 150KB — consider code splitting` 
+                    });
                   }
                   const sitemapIssues = data.summary?.sitemapIssues || [];
                   if (sitemapIssues.length > 0) {
-                    fixes.push({ severity: "high", text: `${sitemapIssues.length} sitemap issue(s) detected — pages missing from or extra in sitemap.xml` });
+                    fixes.push({ 
+                      type: "sitemap", 
+                      severity: "high", 
+                      text: `${sitemapIssues.length} sitemap issue(s) detected — pages missing from or extra in sitemap.xml` 
+                    });
                   }
                   if (fixes.length === 0) {
                     return <div className="flex items-center gap-2 text-emerald-700 font-semibold p-3 bg-emerald-50 rounded-lg"><CheckCircle className="w-4 h-4" /> No priority fixes needed — site is well-optimized!</div>;
                   }
                   return fixes.map((f, i) => (
-                    <div key={i} className={`flex items-start gap-2.5 p-2.5 rounded-lg border ${
-                      f.severity === "high" ? "bg-red-50 border-red-100" :
-                      f.severity === "medium" ? "bg-amber-50 border-amber-100" :
-                      "bg-stone-50 border-stone-100"
-                    }`}>
+                    <button 
+                      key={i} 
+                      onClick={() => setSelectedFix(f.type)}
+                      className={`text-left w-full flex items-start gap-2.5 p-2.5 rounded-lg border cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all group ${
+                        f.severity === "high" ? "bg-red-50 border-red-100 hover:border-red-200" :
+                        f.severity === "medium" ? "bg-amber-50 border-amber-100 hover:border-amber-200" :
+                        "bg-stone-50 border-stone-100 hover:border-stone-200"
+                      }`}
+                    >
                       <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${
                         f.severity === "high" ? "bg-red-200 text-red-800" :
                         f.severity === "medium" ? "bg-amber-200 text-amber-800" :
                         "bg-stone-200 text-stone-800"
                       }`}>{f.severity}</span>
-                      <span className="text-stone-700">{f.text}</span>
-                    </div>
+                      <div className="grow">
+                        <span className="text-stone-700 font-semibold">{f.text}</span>
+                        <span className="text-[10px] text-stone-400 block mt-0.5 group-hover:text-[#8B4513] transition-colors font-medium">Click to view affected pages & action plan →</span>
+                      </div>
+                    </button>
                   ));
                 })()}
               </div>
@@ -579,6 +607,9 @@ export default function SeoDashboardClient() {
         )}
 
       </div>
+
+      {/* Modal / Slide-out for detailed priority fixes */}
+      {selectedFix && renderFixDetailsModal()}
     </div>
   );
 
@@ -1139,6 +1170,370 @@ export default function SeoDashboardClient() {
           </div>
         )}
 
+      </div>
+    );
+  }
+
+  // Render a detailed popup modal for a selected priority fix
+  function renderFixDetailsModal() {
+    if (!selectedFix) return null;
+
+    let title = "";
+    let severity = "low";
+    let severityColor = "bg-stone-100 text-stone-700 border-stone-200";
+    let listContent = null;
+    let codeGuide = null;
+
+    if (selectedFix === "broken_links") {
+      title = "Broken Internal Links Details";
+      severity = "high";
+      severityColor = "bg-red-50 text-red-700 border-red-200";
+      
+      const affected = data.pages.filter(p => p.brokenLinks && p.brokenLinks.length > 0);
+      listContent = (
+        <div className="flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Affected Pages ({affected.length})</h4>
+          <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                  <th className="p-3">Page Path</th>
+                  <th className="p-3">Broken Reference Paths</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100 font-mono text-[11px]">
+                {affected.map(p => (
+                  <tr key={p.path} className="hover:bg-stone-50/50">
+                    <td className="p-3 font-semibold text-[#8B4513]">{p.path}</td>
+                    <td className="p-3">
+                      <div className="flex flex-wrap gap-1.5">
+                        {p.brokenLinks.map((link, idx) => (
+                          <span key={idx} className="bg-red-50 text-red-600 px-1.5 py-0.5 rounded border border-red-100">{link}</span>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+
+      codeGuide = (
+        <div className="bg-amber-50/30 border border-amber-200/50 p-5 rounded-2xl flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-amber-600" /> Action Plan & Code Guide
+          </h4>
+          <p className="leading-relaxed">
+            Broken links occur when a page links to a route that returns a <strong>404 Not Found</strong> status. 
+            This hurts user experience and leaks crawl budget.
+          </p>
+          <div className="bg-[#080D09] text-[#FAF9F6] p-4 rounded-xl font-mono text-[11px] leading-relaxed overflow-x-auto border border-stone-800">
+            <span className="text-[#C5A059] font-bold">// 1. Search files for the broken link strings</span><br />
+            grep -rn "href=\"/broken-path\"" ./app<br /><br />
+            <span className="text-[#C5A059] font-bold">// 2. Correct the paths or remove the obsolete link</span><br />
+            &lt;Link href="/correct-path-here"&gt;Page Name&lt;/Link&gt;
+          </div>
+          <ul className="list-disc pl-5 flex flex-col gap-1.5">
+            <li>Check if there is a typo in the path (e.g. <code>/laxree-amenities</code> instead of <code>/laxree-amenity</code>).</li>
+            <li>If the page is intended to exist, make sure you created the corresponding folder and <code>page.js</code> inside the Next.js <code>app/</code> directory.</li>
+          </ul>
+        </div>
+      );
+    } 
+    
+    else if (selectedFix === "accessibility") {
+      title = "Accessibility (A11y) Warnings Details";
+      severity = "medium";
+      severityColor = "bg-amber-50 text-amber-700 border-amber-200";
+
+      const affected = data.pages.filter(p => p.a11y?.issues && p.a11y.issues.length > 0);
+      listContent = (
+        <div className="flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Affected Pages ({affected.length})</h4>
+          <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                  <th className="p-3">Page Path</th>
+                  <th className="p-3">Detected Issues</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100 font-sans text-xs">
+                {affected.map(p => (
+                  <tr key={p.path} className="hover:bg-stone-50/50">
+                    <td className="p-3 font-semibold font-mono text-[#8B4513]">{p.path}</td>
+                    <td className="p-3">
+                      <ul className="list-disc pl-4 flex flex-col gap-1 text-stone-600 font-medium">
+                        {p.a11y.issues.map((issue, idx) => (
+                          <li key={idx} className="text-red-600/90">{issue}</li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+
+      codeGuide = (
+        <div className="bg-amber-50/30 border border-amber-200/50 p-5 rounded-2xl flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-amber-600" /> Action Plan & Code Guide
+          </h4>
+          <p className="leading-relaxed">
+            Search engines reward accessible websites, and screens-readers rely on proper landmark structure to navigate your pages.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <span className="font-bold text-[#8B4513]">Fix Lang & Landmarks (app/layout.js):</span>
+              <div className="bg-[#080D09] text-[#FAF9F6] p-3.5 rounded-xl font-mono text-[10px] border border-stone-800 leading-normal">
+                {`// Ensure lang attribute is present
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en"> 
+      <body>
+        {/* Skip to Main Content Link */}
+        <a href="#main-content" className="sr-only focus:not-sr-only">
+          Skip to content
+        </a>
+        
+        {/* Use <main> tag to wrap core layout */}
+        <main id="main-content">
+          {children}
+        </main>
+      </body>
+    </html>
+  );
+}`}
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <span className="font-bold text-[#8B4513]">Fix Form Label Warnings:</span>
+              <div className="bg-[#080D09] text-[#FAF9F6] p-3.5 rounded-xl font-mono text-[10px] border border-stone-800 leading-normal">
+                {`// WRONG: input without connection
+<input type="text" id="name" />
+
+// CORRECT: wrap in label, or use htmlFor
+<label htmlFor="name" className="text-xs">Your Name</label>
+<input id="name" type="text" />
+
+// OR: use aria-label
+<input aria-label="Search items" type="text" />`}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    } 
+    
+    else if (selectedFix === "alt_text") {
+      title = "Missing Image Alt Text Details";
+      severity = "medium";
+      severityColor = "bg-amber-50 text-amber-700 border-amber-200";
+
+      const affected = data.pages.filter(p => p.images && p.images.missingAlt > 0);
+      listContent = (
+        <div className="flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Affected Pages ({affected.length})</h4>
+          <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                  <th className="p-3">Page Path</th>
+                  <th className="p-3">Images Scanned</th>
+                  <th className="p-3">Images Missing Alt Text</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100 font-sans text-xs">
+                {affected.map(p => (
+                  <tr key={p.path} className="hover:bg-stone-50/50">
+                    <td className="p-3 font-semibold font-mono text-[#8B4513]">{p.path}</td>
+                    <td className="p-3 text-stone-500 font-semibold">{p.images?.total || 0}</td>
+                    <td className="p-3 text-red-600 font-bold">{p.images?.missingAlt || 0}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+
+      codeGuide = (
+        <div className="bg-amber-50/30 border border-amber-200/50 p-5 rounded-2xl flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-amber-600" /> Action Plan & Code Guide
+          </h4>
+          <p className="leading-relaxed">
+            Alternative descriptions (alt text) allow Google Image Search to index your products, while providing fallbacks for screen readers.
+          </p>
+          <div className="bg-[#080D09] text-[#FAF9F6] p-4 rounded-xl font-mono text-[11px] leading-relaxed overflow-x-auto border border-stone-800">
+            <span className="text-[#C5A059] font-bold">// Locate images in the component and add descriptive alt tags:</span><br />
+            {`<Image 
+  src="/images/luxury-velvet-curtains.jpg" 
+  alt="Luxurious velvet blackout curtains in Udaipur showroom" 
+  width={600} 
+  height={400} 
+/>
+
+// For purely decorative divider elements, use empty string alt:
+<img src="/line-separator.svg" alt="" />`}
+          </div>
+        </div>
+      );
+    } 
+    
+    else if (selectedFix === "large_html") {
+      title = "Large HTML Size Warnings Details";
+      severity = "low";
+      severityColor = "bg-stone-50 text-stone-700 border-stone-200";
+
+      const affected = data.pages.filter(p => (p.htmlSizeKB || 0) > 150);
+      listContent = (
+        <div className="flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Affected Pages ({affected.length})</h4>
+          <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                  <th className="p-3">Page Path</th>
+                  <th className="p-3">Scraped HTML Size</th>
+                  <th className="p-3">Auditor Advice</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100 font-sans text-xs">
+                {affected.map(p => (
+                  <tr key={p.path} className="hover:bg-stone-50/50">
+                    <td className="p-3 font-semibold font-mono text-[#8B4513]">{p.path}</td>
+                    <td className="p-3 text-amber-700 font-bold font-mono">{p.htmlSizeKB} KB</td>
+                    <td className="p-3 text-stone-500 font-medium">Exceeds recommended 150KB size by {p.htmlSizeKB - 150}KB. Check for heavy embedded SVG assets or large JSON data structures.</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+
+      codeGuide = (
+        <div className="bg-amber-50/30 border border-amber-200/50 p-5 rounded-2xl flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-amber-600" /> Action Plan & Code Guide
+          </h4>
+          <p className="leading-relaxed">
+            Large HTML payloads delay browser rendering and increase TTFB. Let's keep layouts fast and light.
+          </p>
+          <ul className="list-disc pl-5 flex flex-col gap-1.5 leading-relaxed">
+            <li><strong>Inline SVGs</strong>: Move large inline SVGs to external files in the <code>/public</code> directory and load them via optimized <code>Image</code> or <code>img</code> tags.</li>
+            <li><strong>Dynamic components</strong>: Lazy-load heavy components that aren't visible on immediate page load using Next.js <code>next/dynamic</code>.</li>
+            <li><strong>Reduce static data</strong>: Separate heavy JSON datasets from component renders. Load them asynchronously or fetch them in client-side hooks.</li>
+          </ul>
+        </div>
+      );
+    } 
+    
+    else if (selectedFix === "sitemap") {
+      title = "Sitemap Issues Details";
+      severity = "high";
+      severityColor = "bg-red-50 text-red-700 border-red-200";
+
+      const issues = data.summary?.sitemapIssues || [];
+      listContent = (
+        <div className="flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Detected Sitemap Warnings ({issues.length})</h4>
+          <div className="border border-stone-200 rounded-xl bg-white max-h-[250px] overflow-y-auto">
+            <ul className="divide-y divide-stone-100 font-mono text-[11px] leading-relaxed bg-white">
+              {issues.map((issue, idx) => (
+                <li key={idx} className="p-3 text-red-700/90 font-medium hover:bg-stone-50 flex items-start gap-2">
+                  <span className="text-red-500 font-bold shrink-0 mt-0.5">⚠️</span>
+                  <span>{issue}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      );
+
+      codeGuide = (
+        <div className="bg-amber-50/30 border border-amber-200/50 p-5 rounded-2xl flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-amber-600" /> Action Plan & Code Guide
+          </h4>
+          <p className="leading-relaxed">
+            The sitemap file is located at <code>public/sitemap.xml</code>. Make sure all entries align perfectly with your routing map to prevent crawl issues.
+          </p>
+          <div className="bg-[#080D09] text-[#FAF9F6] p-4 rounded-xl font-mono text-[11px] leading-relaxed overflow-x-auto border border-stone-800">
+            <span className="text-[#C5A059] font-bold">&lt;!-- public/sitemap.xml structure --&gt;</span><br />
+            &lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;<br />
+            &nbsp;&nbsp;&lt;url&gt;<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;loc&gt;https://uniqdecorfurniture.in/path-here&lt;/loc&gt;<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;lastmod&gt;2026-06-25&lt;/lastmod&gt;<br />
+            &nbsp;&nbsp;&lt;/url&gt;<br />
+            &lt;/urlset&gt;
+          </div>
+          <ul className="list-disc pl-5 flex flex-col gap-1.5">
+            <li>For <strong>"Page missing from sitemap"</strong>: Add corresponding <code>&lt;url&gt;</code> entry to <code>public/sitemap.xml</code>.</li>
+            <li>For <strong>"Sitemap URL not audited"</strong>: Remove the obsolete route from <code>public/sitemap.xml</code> if the path does not exist.</li>
+          </ul>
+        </div>
+      );
+    }
+
+    return (
+      <div 
+        className="fixed inset-0 bg-[#080D09]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-300 animate-in fade-in"
+        onClick={() => setSelectedFix(null)}
+      >
+        <div 
+          className="bg-[#FAF9F6] border border-[#8B4513]/20 w-full max-w-3xl max-h-[85vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Modal Header */}
+          <div className="p-6 border-b border-[#8B4513]/10 bg-white flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded border ${severityColor}`}>
+                {severity} Severity
+              </span>
+              <h3 className="font-serif text-lg font-black text-[#2D2A26]">{title}</h3>
+            </div>
+            <button 
+              onClick={() => setSelectedFix(null)}
+              className="text-stone-400 hover:text-black p-1 hover:bg-stone-100 rounded-full transition-colors cursor-pointer"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Modal Body */}
+          <div className="p-6 overflow-y-auto flex flex-col gap-6 text-xs text-[#6B6560]">
+            {listContent}
+            {codeGuide}
+          </div>
+
+          {/* Modal Footer */}
+          <div className="p-4 border-t border-[#8B4513]/10 bg-white flex justify-end gap-3 shrink-0">
+            <button 
+              onClick={() => setSelectedFix(null)}
+              className="px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold uppercase rounded-lg transition-colors cursor-pointer text-[10px] tracking-wider"
+            >
+              Close Details
+            </button>
+            <button 
+              onClick={() => {
+                setSelectedFix(null);
+                runFullAudit();
+              }}
+              className="px-5 py-2.5 bg-[#8B4513] hover:bg-[#C5A059] text-white font-bold uppercase rounded-lg transition-colors cursor-pointer text-[10px] tracking-wider flex items-center gap-1.5"
+            >
+              <RefreshCw className="w-3.5 h-3.5" /> Re-Run Full Audit
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
