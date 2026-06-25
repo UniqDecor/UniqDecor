@@ -114,7 +114,11 @@ const PAGES_LIST = [
   "/blog/roserro-vs-other-linen-brands",
   "/blog/silent-minibar-vs-traditional-comparison",
   "/blog/synthetic-thatch-roofing-resort-guide",
-  "/blog/asphalt-shingles-vs-metal-roofing"
+  "/blog/asphalt-shingles-vs-metal-roofing",
+  "/sitemap",
+  "/llms",
+  "/authors",
+  "/authors/uniq-decor-team"
 ];
 
 const KEYWORDS_MAP = {
@@ -195,7 +199,11 @@ const KEYWORDS_MAP = {
   "/blog/roserro-vs-other-linen-brands": "Roserro vs Other Linen Brands",
   "/blog/silent-minibar-vs-traditional-comparison": "Silent Minibar vs Traditional Minibar",
   "/blog/synthetic-thatch-roofing-resort-guide": "Synthetic Thatch Roofing Resort",
-  "/blog/asphalt-shingles-vs-metal-roofing": "Asphalt Shingles vs Metal Roofing"
+  "/blog/asphalt-shingles-vs-metal-roofing": "Asphalt Shingles vs Metal Roofing",
+  "/sitemap": "HTML Sitemap Uniq Decor",
+  "/llms": "LLMs.txt Uniq Decor AI Readiness",
+  "/authors": "Uniq Decor Team Authors",
+  "/authors/uniq-decor-team": "Uniq Decor Team Author Bio"
 };
 
 // HTML Entities Decoder Helper
@@ -238,6 +246,10 @@ function getLastUpdatedForRoute(routePath) {
   else if (routePath.startsWith("/laxree-amenities/")) fileToStat = "app/laxree-amenities/laxreeAmenitiesCategoriesData.js";
   else if (routePath.startsWith("/laxree-roofing/")) fileToStat = "app/laxree-roofing/laxreeRoofingCategoriesData.js";
   else if (routePath.startsWith("/blog/")) fileToStat = "app/blog/blogData.js";
+  else if (routePath.startsWith("/authors/")) fileToStat = "app/authors/uniq-decor-team/page.js";
+  else if (routePath === "/authors") fileToStat = "app/authors/page.js";
+  else if (routePath === "/sitemap") fileToStat = "app/sitemap/page.js";
+  else if (routePath === "/llms") fileToStat = "public/llms.txt";
   
   try {
     const stats = fs.statSync(pathLib.join(process.cwd(), fileToStat));
@@ -1260,19 +1272,27 @@ export async function GET(request) {
     const sitemapPath = pathLib.join(process.cwd(), "public", "sitemap.xml");
     if (fs.existsSync(sitemapPath)) {
       const sitemapContent = fs.readFileSync(sitemapPath, "utf8");
-      const sitemapUrls = (sitemapContent.match(/<loc>([^<]+)<\/loc>/gi) || []).map(loc => {
-        return loc.replace(/<\/?loc>/gi, "");
+      // Extract just the path from sitemap URLs
+      const sitemapPaths = (sitemapContent.match(/<loc>([^<]+)<\/loc>/gi) || []).map(loc => {
+        const url = loc.replace(/<\/?loc>/gi, "");
+        try { return new URL(url).pathname.replace(/\/$/, "") || "/"; } catch { return url; }
       });
-      const pageUrls = new Set(reports.map(r => r.url));
-      sitemapUrls.forEach(url => {
-        if (!pageUrls.has(url)) {
-          sitemapIssues.push(`Sitemap URL not audited: ${url}`);
+      // Get paths from report URLs (normalize away domain differences)
+      const reportPaths = reports.map(r => {
+        try { return new URL(r.url).pathname.replace(/\/$/, "") || "/"; } catch { return r.path; }
+      });
+      const reportPathSet = new Set(reportPaths);
+
+      // Check sitemap URLs that weren't audited
+      sitemapPaths.forEach(sPath => {
+        if (!reportPathSet.has(sPath)) {
+          sitemapIssues.push(`Sitemap URL not audited: ${sPath}`);
         }
       });
-      const pageUrlList = reports.map(r => r.url);
-      pageUrlList.forEach(url => {
-        if (!sitemapUrls.includes(url)) {
-          sitemapIssues.push(`Page missing from sitemap: ${url}`);
+      // Check audited pages missing from sitemap
+      reportPaths.forEach(rPath => {
+        if (!sitemapPaths.includes(rPath)) {
+          sitemapIssues.push(`Page missing from sitemap: ${rPath}`);
         }
       });
     }

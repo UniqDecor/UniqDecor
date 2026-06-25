@@ -152,6 +152,8 @@ export default function SeoDashboardClient() {
     if (path.startsWith("/laxree-amenities/")) return "LaxRee Hospitality Amenities Pages";
     if (path.startsWith("/laxree-roofing/")) return "LaxRee Premium Roofing Pages";
     if (path.startsWith("/blog/")) return "Company Blog Posts";
+    if (path.startsWith("/authors")) return "Author Pages";
+    if (path === "/sitemap" || path === "/llms") return "Utility Pages";
     return "Main Brand & Layout Pages";
   };
 
@@ -165,7 +167,9 @@ export default function SeoDashboardClient() {
     "Neighborhood Local SEO Pages",
     "Niche Tech Materials Pages",
     "B2B Hospitality Niches",
-    "Company Blog Posts"
+    "Company Blog Posts",
+    "Author Pages",
+    "Utility Pages"
   ];
   if (error) {
     return (
