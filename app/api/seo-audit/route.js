@@ -1285,12 +1285,14 @@ export async function GET(request) {
 
       // Check sitemap URLs that weren't audited
       sitemapPaths.forEach(sPath => {
+        if (sPath === "/analytics-dashboard" || sPath === "/seo-dashboard") return;
         if (!reportPathSet.has(sPath)) {
           sitemapIssues.push(`Sitemap URL not audited: ${sPath}`);
         }
       });
       // Check audited pages missing from sitemap
       reportPaths.forEach(rPath => {
+        if (rPath === "/analytics-dashboard" || rPath === "/seo-dashboard") return;
         if (!sitemapPaths.includes(rPath)) {
           sitemapIssues.push(`Page missing from sitemap: ${rPath}`);
         }
