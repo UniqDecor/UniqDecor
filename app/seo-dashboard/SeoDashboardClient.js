@@ -30,7 +30,8 @@ import {
   Clock,
   ArrowRightLeft,
   ChevronsRight,
-  Copy
+  Copy,
+  Zap
 } from "lucide-react";
 
 export default function SeoDashboardClient() {
@@ -52,6 +53,8 @@ export default function SeoDashboardClient() {
   const [bulkProgress, setBulkProgress] = useState(0);
   const [showIndexRegistry, setShowIndexRegistry] = useState(false);
   const [modalSearch, setModalSearch] = useState("");
+  const [registryFilter, setRegistryFilter] = useState("all"); // 'all' | 'indexed' | 'not_indexed' | 'unverified'
+  const [submittingIndex, setSubmittingIndex] = useState({});
   // Trigger full crawl
   const runFullAudit = async () => {
     setLoading(true);
@@ -250,31 +253,150 @@ export default function SeoDashboardClient() {
     setBulkInspecting(true);
     setBulkProgress(0);
     
-    let count = 0;
-    for (const page of data.pages) {
-      setInspections(prev => ({
-        ...prev,
-        [page.path]: { ...prev[page.path], loading: true, error: null }
+    const pages = data.pages;
+    const batchSize = 10;
+    
+    for (let i = 0; i < pages.length; i += batchSize) {
+      const batch = pages.slice(i, i + batchSize);
+      
+      // Mark all in the batch as loading
+      setInspections(prev => {
+        const next = { ...prev };
+        batch.forEach(page => {
+          next[page.path] = { ...next[page.path], loading: true, error: null };
+        });
+        return next;
+      });
+      
+      await Promise.all(batch.map(async (page) => {
+        try {
+          const res = await fetch(`/api/inspect-url?path=${encodeURIComponent(page.path)}&gscOnly=true`, { cache: "no-store" });
+          if (!res.ok) throw new Error("GSC API query failed.");
+          const result = await res.json();
+          saveSingleInspection(page.path, result);
+        } catch (err) {
+          setInspections(prev => ({
+            ...prev,
+            [page.path]: { loading: false, data: null, error: err.message }
+          }));
+        }
       }));
       
-      try {
-        const res = await fetch(`/api/inspect-url?path=${encodeURIComponent(page.path)}&gscOnly=true`, { cache: "no-store" });
-        if (!res.ok) throw new Error("GSC API query failed.");
-        const result = await res.json();
-        saveSingleInspection(page.path, result);
-      } catch (err) {
-        setInspections(prev => ({
-          ...prev,
-          [page.path]: { loading: false, data: null, error: err.message }
-        }));
-      }
+      setBulkProgress(prev => Math.min(prev + batch.length, pages.length));
       
-      count++;
-      setBulkProgress(count);
-      await new Promise(r => setTimeout(r, 150)); // small delay of 150ms to prevent request flooding
+      if (i + batchSize < pages.length) {
+        await new Promise(r => setTimeout(r, 200));
+      }
     }
     
     setBulkInspecting(false);
+  };
+
+  const verifyNonIndexedPages = async () => {
+    if (!data?.pages || bulkInspecting) return;
+    
+    // Find all pages that are either unverified or verified as not indexed
+    const targetPages = data.pages.filter(p => {
+      const gsc = inspections[p.path]?.data?.inspection;
+      return !gsc || !gsc.isIndexed;
+    });
+
+    if (targetPages.length === 0) {
+      alert("All pages are already verified as indexed!");
+      return;
+    }
+
+    setBulkInspecting(true);
+    setBulkProgress(0);
+    
+    const batchSize = 10;
+    for (let i = 0; i < targetPages.length; i += batchSize) {
+      const batch = targetPages.slice(i, i + batchSize);
+      
+      // Mark all in the batch as loading
+      setInspections(prev => {
+        const next = { ...prev };
+        batch.forEach(page => {
+          next[page.path] = { ...next[page.path], loading: true, error: null };
+        });
+        return next;
+      });
+      
+      await Promise.all(batch.map(async (page) => {
+        try {
+          const res = await fetch(`/api/inspect-url?path=${encodeURIComponent(page.path)}&gscOnly=true`, { cache: "no-store" });
+          if (!res.ok) throw new Error("GSC API query failed.");
+          const result = await res.json();
+          saveSingleInspection(page.path, result);
+        } catch (err) {
+          setInspections(prev => ({
+            ...prev,
+            [page.path]: { loading: false, data: null, error: err.message }
+          }));
+        }
+      }));
+      
+      setBulkProgress(prev => Math.min(prev + batch.length, targetPages.length));
+      
+      if (i + batchSize < targetPages.length) {
+        await new Promise(r => setTimeout(r, 200));
+      }
+    }
+    
+    setBulkInspecting(false);
+  };
+
+  const submitNonIndexedPages = async () => {
+    if (!data?.pages) return;
+    const targetPaths = data.pages
+      .filter(p => {
+        const gsc = inspections[p.path]?.data?.inspection;
+        return !gsc || !gsc.isIndexed;
+      })
+      .map(p => p.path);
+
+    if (targetPaths.length === 0) {
+      alert("All pages are already verified as indexed!");
+      return;
+    }
+
+    if (confirm(`Are you sure you want to submit ${targetPaths.length} non-indexed/unverified page(s) to the Google Indexing API?`)) {
+      await submitIndexRequest(targetPaths);
+    }
+  };
+
+  const handleExportNonIndexedCsv = () => {
+    if (!data?.pages) return;
+    
+    const targetPages = data.pages.filter(p => {
+      const gsc = inspections[p.path]?.data?.inspection;
+      return !gsc || !gsc.isIndexed;
+    });
+
+    if (targetPages.length === 0) {
+      alert("No non-indexed or unverified pages found to export.");
+      return;
+    }
+
+    const headers = ["Route Path", "Google Verified Status", "Coverage Details", "Last Crawl Time", "Last Checked Time"];
+    const rows = targetPages.map(page => {
+      const gsc = inspections[page.path]?.data?.inspection;
+      const status = gsc ? (gsc.isIndexed ? "Indexed" : "Not Indexed") : "Unverified";
+      const coverage = gsc ? gsc.coverage : "N/A";
+      const lastCrawl = gsc ? (gsc.lastCrawl || "N/A") : "N/A";
+      const lastChecked = gsc ? (gsc.lastChecked || "N/A") : "N/A";
+      return `"${page.path}","${status}","${coverage.replace(/"/g, '""')}","${lastCrawl}","${lastChecked}"`;
+    });
+    
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `non-indexed-pages-${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const togglePageExpand = (path) => {
@@ -309,6 +431,113 @@ export default function SeoDashboardClient() {
     "Author Pages",
     "Utility Pages"
   ];
+
+  const submitIndexRequest = async (paths) => {
+    const pathsArray = Array.isArray(paths) ? paths : [paths];
+    
+    setSubmittingIndex(prev => {
+      const next = { ...prev };
+      pathsArray.forEach(p => { next[p] = true; });
+      return next;
+    });
+
+    try {
+      const res = await fetch("/api/submit-index", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paths: pathsArray })
+      });
+      
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Failed to submit pages for indexing.");
+
+      let successCount = 0;
+      let activationRequired = null;
+
+      const newInspectionsState = { ...inspections };
+
+      result.results.forEach(r => {
+        if (r.success) {
+          successCount++;
+          const updatedInspection = {
+            verdict: "CRAWL_REQUESTED",
+            coverage: "Crawl Requested (Indexing API)",
+            lastCrawl: null,
+            canonical: null,
+            mobileUsability: "PASS",
+            isIndexed: false,
+            lastChecked: new Date().toISOString()
+          };
+
+          newInspectionsState[r.path] = {
+            loading: false,
+            data: {
+              inspection: updatedInspection,
+              pageSpeed: inspections[r.path]?.data?.pageSpeed || { score: 95, simulated: true }
+            },
+            error: null
+          };
+        } else {
+          if (r.needsActivation) {
+            activationRequired = r.activationUrl;
+          } else {
+            console.error(`Index submit failed for ${r.path}:`, r.error);
+          }
+        }
+      });
+
+      setInspections(newInspectionsState);
+
+      // Save to localStorage
+      try {
+        const stored = localStorage.getItem("uniq_gsc_inspections");
+        const localCache = stored ? JSON.parse(stored) : {};
+        result.results.forEach(r => {
+          if (r.success) {
+            localCache[r.path] = newInspectionsState[r.path].data.inspection;
+          }
+        });
+        localStorage.setItem("uniq_gsc_inspections", JSON.stringify(localCache));
+      } catch (e) {
+        console.error("Failed to save GSC indexing to localStorage:", e);
+      }
+
+      // Sync with server cache
+      try {
+        const syncPayload = {};
+        result.results.forEach(r => {
+          if (r.success) {
+            syncPayload[r.path] = newInspectionsState[r.path].data.inspection;
+          }
+        });
+        await fetch("/api/inspect-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(syncPayload)
+        });
+      } catch (e) {
+        console.error("Failed to sync GSC indexing status to server:", e);
+      }
+
+      if (activationRequired) {
+        alert(
+          `GSC Index Submission failed because the Google Indexing API is disabled on your Google Cloud project.\n\nPlease click OK to open the Google Cloud Console and enable the Indexing API for your project. After enabling it, you can submit again!`
+        );
+        window.open(activationRequired, "_blank");
+      } else if (successCount > 0) {
+        alert(`Successfully submitted ${successCount} page(s) to Google for Instant Indexing! Googlebot will crawl them shortly.`);
+      }
+
+    } catch (err) {
+      alert(`Instant Indexing request failed: ${err.message}`);
+    } finally {
+      setSubmittingIndex(prev => {
+        const next = { ...prev };
+        pathsArray.forEach(p => { next[p] = false; });
+        return next;
+      });
+    }
+  };
 
   const handleExportGscCsv = () => {
     if (!data?.pages) return;
@@ -912,12 +1141,12 @@ export default function SeoDashboardClient() {
                 {copiedAllKeywords ? (
                   <>
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="text-emerald-700">Keywords Copied!</span>
+                    <span className="text-emerald-700">Copied!</span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-3.5 h-3.5 text-[#C5A059]" />
-                    <span>Copy All Keywords</span>
+                    <span>Copy Keywords</span>
                   </>
                 )}
               </button>
@@ -931,8 +1160,8 @@ export default function SeoDashboardClient() {
                 <Globe className={`w-3.5 h-3.5 ${bulkInspecting ? 'animate-spin' : 'text-[#C5A059]'}`} />
                 <span>
                   {bulkInspecting 
-                    ? `Verifying index (${bulkProgress}/${data.pages.length})...` 
-                    : "Verify All Google Indexes"
+                    ? `Verifying (${bulkProgress}/${data.pages.length})...` 
+                    : "Verify Indexes"
                   }
                 </span>
               </button>
@@ -943,7 +1172,7 @@ export default function SeoDashboardClient() {
                 title="View the tabular Google Index verification registry and import/export CSV reports"
               >
                 <Database className="w-3.5 h-3.5 text-[#C5A059]" />
-                <span>Google Index Registry</span>
+                <span>Index Registry</span>
               </button>
 
               <div className="relative w-full lg:w-[350px]">
@@ -1061,31 +1290,54 @@ export default function SeoDashboardClient() {
                       Google Verified Index: {inspections[page.path].data.inspection.isIndexed ? "Indexed ✅" : "Not Indexed ⚠️"}
                     </span>
                     {!inspections[page.path].data.inspection.isIndexed && (
-                      <a
-                        href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent("sc-domain:uniqdecorfurniture.in")}&url=${encodeURIComponent("https://www.uniqdecorfurniture.in" + page.path)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 transition-all flex items-center gap-1 cursor-pointer"
-                        title="Open this URL directly in Google Search Console to request manual indexing"
-                      >
-                        <ExternalLink className="w-2.5 h-2.5 text-amber-600" />
-                        <span>Request Indexing</span>
-                      </a>
+                      <div className="flex items-center gap-1.5">
+                        <a
+                          href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent("sc-domain:uniqdecorfurniture.in")}&url=${encodeURIComponent("https://www.uniqdecorfurniture.in" + page.path)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 transition-all flex items-center gap-1 cursor-pointer"
+                          title="Open this URL directly in Google Search Console to request manual indexing"
+                        >
+                          <ExternalLink className="w-2.5 h-2.5 text-amber-600" />
+                          <span>Request Indexing</span>
+                        </a>
+
+                        {inspections[page.path].data.inspection.verdict === "CRAWL_REQUESTED" ? (
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border border-purple-300 bg-purple-50 text-purple-800 flex items-center gap-1" title="Crawl request successfully sent via Google Indexing API">
+                            <span>Crawl Requested</span>
+                          </span>
+                        ) : (
+                          <button
+                            disabled={submittingIndex[page.path]}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              submitIndexRequest(page.path);
+                            }}
+                            className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border border-purple-400 bg-purple-50 hover:bg-purple-100 disabled:opacity-50 text-purple-700 transition-all flex items-center gap-1 cursor-pointer"
+                            title="Submit this URL to the Google Indexing API for instant crawling and indexing"
+                          >
+                            <Zap className="w-2.5 h-2.5 text-purple-600" />
+                            <span>{submittingIndex[page.path] ? "Submitting..." : "Submit Crawl"}</span>
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 ) : (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      runLiveInspection(page.path);
-                    }}
-                    disabled={inspections[page.path]?.loading}
-                    className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border border-[#C5A059]/40 hover:border-[#C5A059] bg-[#FAF9F6] text-[#8B4513] hover:bg-[#C5A059]/10 transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    <RefreshCw className={`w-2.5 h-2.5 ${inspections[page.path]?.loading ? 'animate-spin' : ''}`} />
-                    {inspections[page.path]?.loading ? "Verifying..." : "Verify Google Index"}
-                  </button>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        runLiveInspection(page.path);
+                      }}
+                      disabled={inspections[page.path]?.loading}
+                      className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border border-[#C5A059]/40 hover:border-[#C5A059] bg-[#FAF9F6] text-[#8B4513] hover:bg-[#C5A059]/10 transition-all flex items-center gap-1 cursor-pointer"
+                    >
+                      <RefreshCw className={`w-2.5 h-2.5 ${inspections[page.path]?.loading ? 'animate-spin' : ''}`} />
+                      {inspections[page.path]?.loading ? "Verifying..." : "Verify Google Index"}
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -1855,10 +2107,26 @@ export default function SeoDashboardClient() {
 
 
   function renderIndexRegistryModal() {
-    const sortedRegistry = data?.pages.filter(p => {
-      return p.path.toLowerCase().includes(modalSearch.toLowerCase()) ||
-             (inspections[p.path]?.data?.inspection?.coverage || "").toLowerCase().includes(modalSearch.toLowerCase());
-    }) || [];
+    const sortedRegistry = (data?.pages || []).filter(p => {
+      const gsc = inspections[p.path]?.data?.inspection;
+      
+      // Search filter
+      const matchesSearch = p.path.toLowerCase().includes(modalSearch.toLowerCase()) ||
+                            (gsc?.coverage || "").toLowerCase().includes(modalSearch.toLowerCase());
+      if (!matchesSearch) return false;
+      
+      // Registry Status filter
+      if (registryFilter === "indexed") {
+        return gsc && gsc.isIndexed;
+      }
+      if (registryFilter === "not_indexed") {
+        return gsc && !gsc.isIndexed;
+      }
+      if (registryFilter === "unverified") {
+        return !gsc;
+      }
+      return true;
+    });
 
     return (
       <div 
@@ -1889,41 +2157,122 @@ export default function SeoDashboardClient() {
           </div>
 
           {/* Action Ribbon & Upload/Export Bar */}
-          <div className="p-4 bg-stone-50 border-b border-stone-200 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-              <button
-                onClick={handleExportGscCsv}
-                className="flex items-center gap-1.5 px-4 py-2 bg-white border border-[#8B4513]/15 hover:border-[#C5A059]/40 rounded-xl text-[10px] uppercase font-black tracking-wider text-[#8B4513] transition-all cursor-pointer shadow-sm active:scale-95 shrink-0"
-                title="Download current Google index status report as a CSV sheet"
-              >
-                <FileText className="w-3.5 h-3.5 text-[#C5A059]" />
-                <span>Export CSV Sheet</span>
-              </button>
+          <div className="p-4 bg-stone-50 border-b border-stone-200 flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <button
+                  onClick={handleExportGscCsv}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-white border border-[#8B4513]/15 hover:border-[#C5A059]/40 rounded-xl text-[10px] uppercase font-black tracking-wider text-[#8B4513] transition-all cursor-pointer shadow-sm active:scale-95 shrink-0"
+                  title="Download current Google index status report as a CSV sheet"
+                >
+                  <FileText className="w-3.5 h-3.5 text-[#C5A059]" />
+                  <span>Export CSV Sheet</span>
+                </button>
 
-              <label 
-                className="flex items-center gap-1.5 px-4 py-2 bg-white border border-[#8B4513]/15 hover:border-[#C5A059]/40 rounded-xl text-[10px] uppercase font-black tracking-wider text-[#8B4513] transition-all cursor-pointer shadow-sm active:scale-95 shrink-0"
-                title="Upload previously exported GSC CSV report to restore verification logs"
-              >
-                <Database className="w-3.5 h-3.5 text-purple-600" />
-                <span>Import GSC CSV</span>
+                <label 
+                  className="flex items-center gap-1.5 px-4 py-2 bg-white border border-[#8B4513]/15 hover:border-[#C5A059]/40 rounded-xl text-[10px] uppercase font-black tracking-wider text-[#8B4513] transition-all cursor-pointer shadow-sm active:scale-95 shrink-0"
+                  title="Upload previously exported GSC CSV report to restore verification logs"
+                >
+                  <Database className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Import GSC CSV</span>
+                  <input 
+                    type="file" 
+                    accept=".csv" 
+                    onChange={handleImportGscCsv} 
+                    className="hidden" 
+                  />
+                </label>
+              </div>
+
+              <div className="relative w-full md:w-[280px]">
                 <input 
-                  type="file" 
-                  accept=".csv" 
-                  onChange={handleImportGscCsv} 
-                  className="hidden" 
+                  type="text" 
+                  placeholder="Search registry path or status..." 
+                  value={modalSearch}
+                  onChange={(e) => setModalSearch(e.target.value)}
+                  className="w-full bg-white border border-[#8B4513]/15 rounded-lg pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-[#C5A059] transition-all font-medium"
                 />
-              </label>
+                <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-stone-400" />
+              </div>
             </div>
 
-            <div className="relative w-full md:w-[280px]">
-              <input 
-                type="text" 
-                placeholder="Search registry path or status..." 
-                value={modalSearch}
-                onChange={(e) => setModalSearch(e.target.value)}
-                className="w-full bg-white border border-[#8B4513]/15 rounded-lg pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-[#C5A059] transition-all font-medium"
-              />
-              <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-stone-400" />
+            {/* Second Ribbon Row: Segment tabs and bulk actions */}
+            <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 border-t border-stone-200/60 pt-3">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="text-[10px] uppercase font-bold text-stone-500 tracking-wider">Filter Registry:</span>
+                <div className="flex flex-wrap gap-1 bg-stone-200/50 p-1 rounded-xl">
+                  <button
+                    onClick={() => setRegistryFilter("all")}
+                    className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all ${
+                      registryFilter === "all" ? 'bg-[#080D09] text-white shadow-sm' : 'hover:bg-stone-100 text-[#6B6560]'
+                    }`}
+                  >
+                    All ({data?.pages?.length || 0})
+                  </button>
+                  <button
+                    onClick={() => setRegistryFilter("indexed")}
+                    className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all ${
+                      registryFilter === "indexed" ? 'bg-emerald-800 text-white shadow-sm' : 'hover:bg-stone-100 text-[#6B6560]'
+                    }`}
+                  >
+                    Indexed ({data?.pages?.filter(p => inspections[p.path]?.data?.inspection?.isIndexed).length || 0})
+                  </button>
+                  <button
+                    onClick={() => setRegistryFilter("not_indexed")}
+                    className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all ${
+                      registryFilter === "not_indexed" ? 'bg-amber-700 text-white shadow-sm' : 'hover:bg-stone-100 text-[#6B6560]'
+                    }`}
+                  >
+                    Not Indexed ({data?.pages?.filter(p => {
+                      const gsc = inspections[p.path]?.data?.inspection;
+                      return gsc && !gsc.isIndexed;
+                    }).length || 0})
+                  </button>
+                  <button
+                    onClick={() => setRegistryFilter("unverified")}
+                    className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-all ${
+                      registryFilter === "unverified" ? 'bg-purple-700 text-white shadow-sm' : 'hover:bg-stone-100 text-[#6B6560]'
+                    }`}
+                  >
+                    Unverified ({data?.pages?.filter(p => !inspections[p.path]?.data?.inspection).length || 0})
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={submitNonIndexedPages}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 hover:bg-purple-100 text-purple-700 rounded-xl text-[9px] uppercase font-black tracking-wider transition-all cursor-pointer shadow-sm active:scale-95"
+                  title="Submit all non-indexed and unverified pages in bulk to the Google Indexing API"
+                >
+                  <Zap className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Submit Non-Indexed</span>
+                </button>
+
+                <button
+                  disabled={bulkInspecting}
+                  onClick={verifyNonIndexedPages}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 rounded-xl text-[9px] uppercase font-black tracking-wider transition-all cursor-pointer shadow-sm active:scale-95"
+                  title="Perform live Google inspection on all non-indexed and unverified pages in batches of 10"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${bulkInspecting ? 'animate-spin' : 'text-[#C5A059]'}`} />
+                  <span>
+                    {bulkInspecting 
+                      ? `Verifying (${bulkProgress})...` 
+                      : "Verify Non-Indexed"
+                    }
+                  </span>
+                </button>
+
+                <button
+                  onClick={handleExportNonIndexedCsv}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 hover:bg-amber-100 text-amber-700 rounded-xl text-[9px] uppercase font-black tracking-wider transition-all cursor-pointer shadow-sm active:scale-95"
+                  title="Export only non-indexed and unverified pages as CSV"
+                >
+                  <FileText className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Export Non-Indexed</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1995,6 +2344,24 @@ export default function SeoDashboardClient() {
                             >
                               <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
                             </button>
+
+                            {(!gsc || !gsc.isIndexed) && (
+                              gsc?.verdict === "CRAWL_REQUESTED" ? (
+                                <span className="p-1 text-purple-700 bg-purple-50 border border-purple-200 rounded text-[9px] font-bold" title="Crawl request successfully sent via Google Indexing API">
+                                  Sent
+                                </span>
+                              ) : (
+                                <button
+                                  disabled={submittingIndex[p.path]}
+                                  onClick={() => submitIndexRequest(p.path)}
+                                  className="p-1 hover:bg-purple-100 text-purple-700 rounded transition-colors cursor-pointer border border-purple-200 bg-purple-50/50"
+                                  title="Submit to Google Indexing API for instant crawl"
+                                >
+                                  <Zap className={`w-3 h-3 ${submittingIndex[p.path] ? 'animate-spin' : ''}`} />
+                                </button>
+                              )
+                            )}
+
                             {gsc && !gsc.isIndexed && (
                               <a
                                 href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent("sc-domain:uniqdecorfurniture.in")}&url=${encodeURIComponent("https://www.uniqdecorfurniture.in" + p.path)}`}
