@@ -702,7 +702,7 @@ export default function SeoDashboardClient() {
                 {page.bailoutDetected && (
                   <span className="text-[9px] bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-widest">CSR Hydration Bail</span>
                 )}
-                <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                 <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
                   page.indexability.status === "Indexable" 
                     ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
                     : "bg-red-50 text-red-700 border-red-100"
@@ -712,6 +712,29 @@ export default function SeoDashboardClient() {
                 <span className="text-[9px] font-bold text-stone-500 bg-stone-100 px-2 py-0.5 rounded font-mono">
                   {page.indexability.liveStatus}
                 </span>
+
+                {/* Real GSC index inspection status */}
+                {inspections[page.path]?.data ? (
+                  <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border ${
+                    inspections[page.path].data.inspection.isIndexed
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                      : "bg-amber-50 text-amber-700 border-amber-100"
+                  }`} title={inspections[page.path].data.inspection.coverage}>
+                    Google Verified Index: {inspections[page.path].data.inspection.isIndexed ? "Indexed ✅" : "Not Indexed ⚠️"}
+                  </span>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      runLiveInspection(page.path);
+                    }}
+                    disabled={inspections[page.path]?.loading}
+                    className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border border-[#C5A059]/40 hover:border-[#C5A059] bg-[#FAF9F6] text-[#8B4513] hover:bg-[#C5A059]/10 transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <RefreshCw className={`w-2.5 h-2.5 ${inspections[page.path]?.loading ? 'animate-spin' : ''}`} />
+                    {inspections[page.path]?.loading ? "Verifying..." : "Verify Google Index"}
+                  </button>
+                )}
               </div>
 
               {/* Primary Target Keyword (Large size display requested) */}
