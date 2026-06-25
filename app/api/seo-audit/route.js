@@ -384,42 +384,15 @@ function getNormalizedPath(pagePath) {
 
 // Simulated traffic metrics generator fallback
 function getSimulatedTraffic(path) {
-  let rank = 1;
-  let volume = 140;
-  if (path === "/") { rank = 1; volume = 720; }
-  else if (path === "/ddecor") { rank = 1; volume = 480; }
-  else if (path === "/geeken") { rank = 2; volume = 390; }
-  else if (path === "/roserro") { rank = 2; volume = 320; }
-  else if (path === "/laxree") { rank = 1; volume = 260; }
-  else if (path.includes("location")) {
-    const hash = path.charCodeAt(path.length - 1) % 3;
-    rank = hash + 2; 
-    volume = 150;
-  }
-  else if (path.includes("materials")) {
-    const hash = path.charCodeAt(path.length - 1) % 2;
-    rank = hash + 1; 
-    volume = 120;
-  }
-  else {
-    const hash = path.charCodeAt(path.length - 1) % 3;
-    rank = hash + 1; 
-    volume = 110;
-  }
-
-  const impressions = Math.floor(volume * (10 - rank + (path.charCodeAt(0) % 2)) * 1.5);
-  const ctr = parseFloat((Math.max(2.5, 12.5 - rank * 2.2 + (path.charCodeAt(1) % 2))).toFixed(1));
-  const clicks = Math.floor(impressions * (ctr / 100));
-
   return {
-    clicks,
-    impressions,
-    ctr,
-    position: rank,
-    volume,
-    pageviews: Math.floor(clicks * 2.4) + 12,
-    activeUsers: Math.floor(clicks * 1.1) + 4,
-    source: "simulation"
+    clicks: 0,
+    impressions: 0,
+    ctr: 0,
+    position: 0,
+    volume: 0,
+    pageviews: 0,
+    activeUsers: 0,
+    source: "none"
   };
 }
 
