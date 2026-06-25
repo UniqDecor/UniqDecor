@@ -29,7 +29,8 @@ import {
   Database,
   Clock,
   ArrowRightLeft,
-  ChevronsRight
+  ChevronsRight,
+  Copy
 } from "lucide-react";
 
 export default function SeoDashboardClient() {
@@ -44,6 +45,7 @@ export default function SeoDashboardClient() {
   const [auditProgress, setAuditProgress] = useState(0);
   const [inspections, setInspections] = useState({});
   const [selectedFix, setSelectedFix] = useState(null);
+  const [copiedFix, setCopiedFix] = useState(false);
 
   // Trigger full crawl
   const runFullAudit = async () => {
@@ -1174,6 +1176,92 @@ export default function SeoDashboardClient() {
     );
   }
 
+  const handleCopyFixErrors = () => {
+    if (!selectedFix || !data) return;
+
+    let reportStr = "";
+    const dateStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    const getLiveUrl = (path) => path.startsWith("http") ? path : `https://uniqdecorfurniture.in${path}`;
+
+    if (selectedFix === "broken_links") {
+      const affected = data.pages.filter(p => p.brokenLinks && p.brokenLinks.length > 0);
+      reportStr = `UNIQ DECOR SEO AUDIT - DETECTED BROKEN INTERNAL LINKS REPORT\nGenerated: ${dateStr}\n\nAffected Pages (${affected.length}):\n`;
+      reportStr += `========================================\n\n`;
+      affected.forEach(p => {
+        reportStr += `Page Path: ${p.path}\n`;
+        reportStr += `Live URL: ${getLiveUrl(p.path)}\n`;
+        reportStr += `Broken Links Found:\n`;
+        p.brokenLinks.forEach(link => {
+          reportStr += `  - ${getLiveUrl(link)}\n`;
+        });
+        reportStr += `----------------------------------------\n\n`;
+      });
+    } 
+    
+    else if (selectedFix === "accessibility") {
+      const affected = data.pages.filter(p => p.a11y?.issues && p.a11y.issues.length > 0);
+      reportStr = `UNIQ DECOR SEO AUDIT - ACCESSIBILITY (A11Y) ISSUES REPORT\nGenerated: ${dateStr}\n\nAffected Pages (${affected.length}):\n`;
+      reportStr += `========================================\n\n`;
+      affected.forEach(p => {
+        reportStr += `Page Path: ${p.path}\n`;
+        reportStr += `Live URL: ${getLiveUrl(p.path)}\n`;
+        reportStr += `Accessibility Issues:\n`;
+        p.a11y.issues.forEach(issue => {
+          reportStr += `  - ${issue}\n`;
+        });
+        reportStr += `----------------------------------------\n\n`;
+      });
+    } 
+    
+    else if (selectedFix === "alt_text") {
+      const affected = data.pages.filter(p => p.images && p.images.missingAlt > 0);
+      reportStr = `UNIQ DECOR SEO AUDIT - MISSING IMAGE ALT TEXT REPORT\nGenerated: ${dateStr}\n\nAffected Pages (${affected.length}):\n`;
+      reportStr += `========================================\n\n`;
+      affected.forEach(p => {
+        reportStr += `Page Path: ${p.path}\n`;
+        reportStr += `Live URL: ${getLiveUrl(p.path)}\n`;
+        reportStr += `Images Scanned: ${p.images?.total || 0}\n`;
+        reportStr += `Images Missing Alt: ${p.images?.missingAlt || 0}\n`;
+        reportStr += `----------------------------------------\n\n`;
+      });
+    } 
+    
+    else if (selectedFix === "large_html") {
+      const affected = data.pages.filter(p => (p.htmlSizeKB || 0) > 150);
+      reportStr = `UNIQ DECOR SEO AUDIT - LARGE HTML SIZE REPORT (>150KB)\nGenerated: ${dateStr}\n\nAffected Pages (${affected.length}):\n`;
+      reportStr += `========================================\n\n`;
+      affected.forEach(p => {
+        reportStr += `Page Path: ${p.path}\n`;
+        reportStr += `Live URL: ${getLiveUrl(p.path)}\n`;
+        reportStr += `HTML Size: ${p.htmlSizeKB} KB\n`;
+        reportStr += `Recommended Max: 150 KB\n`;
+        reportStr += `Exceeds by: ${p.htmlSizeKB - 150} KB\n`;
+        reportStr += `Advice: Check for heavy embedded SVG assets or large JSON data structures.\n`;
+        reportStr += `----------------------------------------\n\n`;
+      });
+    } 
+    
+    else if (selectedFix === "sitemap") {
+      const issues = data.summary?.sitemapIssues || [];
+      reportStr = `UNIQ DECOR SEO AUDIT - SITEMAP ISSUES REPORT\nGenerated: ${dateStr}\n\n`;
+      reportStr += `Detected Sitemap Warnings (${issues.length}):\n`;
+      reportStr += `========================================\n\n`;
+      issues.forEach(issue => {
+        reportStr += `- ${issue}\n`;
+      });
+      reportStr += `\n========================================\n`;
+    }
+
+    navigator.clipboard.writeText(reportStr)
+      .then(() => {
+        setCopiedFix(true);
+        setTimeout(() => setCopiedFix(false), 2000);
+      })
+      .catch(err => {
+        console.error("Failed to copy report:", err);
+      });
+  };
+
   // Render a detailed popup modal for a selected priority fix
   function renderFixDetailsModal() {
     if (!selectedFix) return null;
@@ -1184,6 +1272,26 @@ export default function SeoDashboardClient() {
     let listContent = null;
     let codeGuide = null;
 
+    const copyButton = (
+      <button 
+        onClick={handleCopyFixErrors}
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#8B4513]/15 hover:border-[#C5A059]/40 hover:bg-[#FAF9F6] rounded-xl text-[10px] uppercase font-black tracking-wider text-[#8B4513] transition-all cursor-pointer shadow-sm active:scale-95 shrink-0"
+        title="Copy detailed report with URLs to clipboard"
+      >
+        {copiedFix ? (
+          <>
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-600 animate-in zoom-in-75" />
+            <span className="text-emerald-700">Copied Report!</span>
+          </>
+        ) : (
+          <>
+            <Copy className="w-3.5 h-3.5 text-[#C5A059]" />
+            <span>Copy All Errors</span>
+          </>
+        )}
+      </button>
+    );
+
     if (selectedFix === "broken_links") {
       title = "Broken Internal Links Details";
       severity = "high";
@@ -1192,7 +1300,10 @@ export default function SeoDashboardClient() {
       const affected = data.pages.filter(p => p.brokenLinks && p.brokenLinks.length > 0);
       listContent = (
         <div className="flex flex-col gap-3">
-          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Affected Pages ({affected.length})</h4>
+          <div className="flex items-center justify-between">
+            <h4 className="font-serif text-[#8B4513] font-bold text-sm">Affected Pages ({affected.length})</h4>
+            {copyButton}
+          </div>
           <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -1251,7 +1362,10 @@ export default function SeoDashboardClient() {
       const affected = data.pages.filter(p => p.a11y?.issues && p.a11y.issues.length > 0);
       listContent = (
         <div className="flex flex-col gap-3">
-          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Affected Pages ({affected.length})</h4>
+          <div className="flex items-center justify-between">
+            <h4 className="font-serif text-[#8B4513] font-bold text-sm">Affected Pages ({affected.length})</h4>
+            {copyButton}
+          </div>
           <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -1338,7 +1452,10 @@ export default function RootLayout({ children }) {
       const affected = data.pages.filter(p => p.images && p.images.missingAlt > 0);
       listContent = (
         <div className="flex flex-col gap-3">
-          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Affected Pages ({affected.length})</h4>
+          <div className="flex items-center justify-between">
+            <h4 className="font-serif text-[#8B4513] font-bold text-sm">Affected Pages ({affected.length})</h4>
+            {copyButton}
+          </div>
           <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -1394,7 +1511,10 @@ export default function RootLayout({ children }) {
       const affected = data.pages.filter(p => (p.htmlSizeKB || 0) > 150);
       listContent = (
         <div className="flex flex-col gap-3">
-          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Affected Pages ({affected.length})</h4>
+          <div className="flex items-center justify-between">
+            <h4 className="font-serif text-[#8B4513] font-bold text-sm">Affected Pages ({affected.length})</h4>
+            {copyButton}
+          </div>
           <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -1443,7 +1563,10 @@ export default function RootLayout({ children }) {
       const issues = data.summary?.sitemapIssues || [];
       listContent = (
         <div className="flex flex-col gap-3">
-          <h4 className="font-serif text-[#8B4513] font-bold text-sm mb-1">Detected Sitemap Warnings ({issues.length})</h4>
+          <div className="flex items-center justify-between">
+            <h4 className="font-serif text-[#8B4513] font-bold text-sm">Detected Sitemap Warnings ({issues.length})</h4>
+            {copyButton}
+          </div>
           <div className="border border-stone-200 rounded-xl bg-white max-h-[250px] overflow-y-auto">
             <ul className="divide-y divide-stone-100 font-mono text-[11px] leading-relaxed bg-white">
               {issues.map((issue, idx) => (
