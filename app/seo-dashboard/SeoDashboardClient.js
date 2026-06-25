@@ -348,53 +348,71 @@ export default function SeoDashboardClient() {
         {/* Stats Summary Panel */}
         {data && !loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white border border-[#8B4513]/10 p-6 rounded-2xl shadow-sm flex items-center gap-5">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center font-serif text-xl font-bold ${
-                data.summary.averageScore >= 90 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
-              }`}>
+            {/* Card 1: Average SEO Score */}
+            <div 
+              onClick={() => setSelectedFix("average_score")}
+              className="bg-white border border-[#8B4513]/10 p-6 rounded-2xl shadow-sm flex items-center gap-5 cursor-pointer hover:shadow-md hover:border-[#C5A059]/40 transition-all select-none group"
+            >
+              <div className="w-14 h-14 bg-amber-50 border border-amber-200 rounded-full flex items-center justify-center font-serif text-xl font-bold text-amber-700 group-hover:scale-105 transition-transform shrink-0">
                 {data.summary.averageScore}%
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-[#6B6560] tracking-wider block">Average SEO Score</span>
-                <span className="text-sm font-serif font-bold mt-1 block">
+                <span className="text-sm font-serif font-bold mt-1 block group-hover:text-[#8B4513] transition-colors">
                   {data.summary.averageScore >= 95 ? "🚀 Highly Optimized" : "⚠️ Needs Improvement"}
                 </span>
+                <span className="text-[9px] text-stone-400 block mt-0.5 font-medium">Click to view breakdown →</span>
               </div>
             </div>
 
-            <div className="bg-white border border-[#8B4513]/10 p-6 rounded-2xl shadow-sm flex items-center gap-5">
-              <div className="w-14 h-14 bg-stone-50 border border-stone-200 rounded-full flex items-center justify-center font-serif text-xl font-bold text-stone-700">
+            {/* Card 2: Total Scanned Pages */}
+            <div 
+              onClick={() => setSelectedFix("scanned_pages")}
+              className="bg-white border border-[#8B4513]/10 p-6 rounded-2xl shadow-sm flex items-center gap-5 cursor-pointer hover:shadow-md hover:border-[#C5A059]/40 transition-all select-none group"
+            >
+              <div className="w-14 h-14 bg-stone-50 border border-stone-200 rounded-full flex items-center justify-center font-serif text-xl font-bold text-stone-700 group-hover:scale-105 transition-transform shrink-0">
                 {data.summary.totalPages}
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-[#6B6560] tracking-wider block">Total Scanned Pages</span>
-                <span className="text-sm font-bold text-[#2D2A26] mt-1 block font-serif">Full Sitemap Audited</span>
+                <span className="text-sm font-bold text-[#2D2A26] mt-1 block font-serif group-hover:text-[#8B4513] transition-colors">Full Sitemap Audited</span>
+                <span className="text-[9px] text-stone-400 block mt-0.5 font-medium">Click to view categories →</span>
               </div>
             </div>
 
-            <div className="bg-white border border-[#8B4513]/10 p-6 rounded-2xl shadow-sm flex items-center gap-5">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center font-serif text-xl font-bold ${
-                data.summary.failedPages === 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'
+            {/* Card 3: Low-Score Warnings */}
+            <div 
+              onClick={() => setSelectedFix("low_scores")}
+              className="bg-white border border-[#8B4513]/10 p-6 rounded-2xl shadow-sm flex items-center gap-5 cursor-pointer hover:shadow-md hover:border-[#C5A059]/40 transition-all select-none group"
+            >
+              <div className={`w-14 h-14 rounded-full flex items-center justify-center font-serif text-xl font-bold group-hover:scale-105 transition-transform shrink-0 ${
+                data.summary.failedPages === 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'
               }`}>
                 {data.summary.failedPages}
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-[#6B6560] tracking-wider block">Low-Score Warnings</span>
-                <span className="text-sm font-bold text-[#2D2A26] mt-1 block font-serif">Pages Score &lt; 90%</span>
+                <span className="text-sm font-bold text-[#2D2A26] mt-1 block font-serif group-hover:text-[#8B4513] transition-colors">Pages Score &lt; 90%</span>
+                <span className="text-[9px] text-stone-400 block mt-0.5 font-medium">Click to view page list →</span>
               </div>
             </div>
 
-            <div className="bg-white border border-[#8B4513]/10 p-6 rounded-2xl shadow-sm flex items-center gap-5">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center font-serif text-xl font-bold ${
-                data.summary.clientBailouts === 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'
+            {/* Card 4: CSR Bails */}
+            <div 
+              onClick={() => setSelectedFix("csr_bails")}
+              className="bg-white border border-[#8B4513]/10 p-6 rounded-2xl shadow-sm flex items-center gap-5 cursor-pointer hover:shadow-md hover:border-[#C5A059]/40 transition-all select-none group"
+            >
+              <div className={`w-14 h-14 rounded-full flex items-center justify-center font-serif text-xl font-bold group-hover:scale-105 transition-transform shrink-0 ${
+                data.summary.clientBailouts === 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'
               }`}>
                 {data.summary.clientBailouts}
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-[#6B6560] tracking-wider block">CSR Bails (Next.js)</span>
-                <span className="text-sm font-bold text-[#2D2A26] mt-1 block font-serif">
+                <span className="text-sm font-bold text-[#2D2A26] mt-1 block font-serif group-hover:text-[#8B4513] transition-colors">
                   {data.summary.clientBailouts === 0 ? "🔥 Clean static HTML" : "❌ Loading Spinners Only"}
                 </span>
+                <span className="text-[9px] text-stone-400 block mt-0.5 font-medium">Click to view details →</span>
               </div>
             </div>
           </div>
@@ -1255,6 +1273,136 @@ export default function SeoDashboardClient() {
       });
       reportStr += `\n========================================\n`;
     }
+    
+    else if (selectedFix === "average_score") {
+      const excellentCount = data.pages.filter(p => p.score === 100).length;
+      const goodCount = data.pages.filter(p => p.score >= 90 && p.score < 100).length;
+      const needsImpCount = data.pages.filter(p => p.score < 90).length;
+      const sortedPages = [...data.pages].sort((a, b) => a.score - b.score);
+
+      reportStr = `UNIQ DECOR SEO AUDIT - AVERAGE SEO SCORE BREAKDOWN\nGenerated: ${dateStr}\n\n`;
+      reportStr += `Overall Average SEO Score: ${data.summary.averageScore}%\n`;
+      reportStr += `Score Distribution:\n`;
+      reportStr += `- Excellent (100%): ${excellentCount} page(s)\n`;
+      reportStr += `- Good (90-99%): ${goodCount} page(s)\n`;
+      reportStr += `- Needs Improvement (< 90%): ${needsImpCount} page(s)\n\n`;
+      reportStr += `Page Score Registry (Worst First):\n`;
+      reportStr += `========================================\n\n`;
+      
+      sortedPages.forEach((p, idx) => {
+        reportStr += `${idx + 1}. Path: ${p.path} (SEO Score: ${p.score}%)\n`;
+        reportStr += `   Live URL: ${getLiveUrl(p.path)}\n`;
+        reportStr += `   Target Focus Keyword: "${p.keyword || "None"}"\n`;
+        
+        const issues = [];
+        if (p.score === 100) {
+          issues.push("None (100% Perfect SEO Score)");
+        } else {
+          if (p.title?.status !== "Pass") issues.push(`Title issue: ${p.title?.detail || "Invalid character length"}`);
+          if (p.description?.status !== "Pass") issues.push(`Description issue: ${p.description?.detail || "Invalid character length"}`);
+          if (p.images?.missingAlt > 0) issues.push(`${p.images.missingAlt} image(s) missing alt text`);
+          if (p.brokenLinks?.length > 0) issues.push(`${p.brokenLinks.length} broken internal link(s)`);
+          if (p.a11y?.issues?.length > 0) issues.push(`${p.a11y.issues.length} accessibility warning(s)`);
+          if (p.bailoutDetected) issues.push("Next.js CSR hydration bailout warning");
+          if (p.checklist) {
+            p.checklist.forEach(c => {
+              if (!c.pass) issues.push(`Failed Checklist: ${c.name}`);
+            });
+          }
+        }
+        reportStr += `   Issues:\n`;
+        issues.forEach(issue => {
+          reportStr += `     - ${issue}\n`;
+        });
+        reportStr += `----------------------------------------\n\n`;
+      });
+    }
+
+    else if (selectedFix === "scanned_pages") {
+      const groups = {};
+      data.pages.forEach(p => {
+        const grp = getPageGroup(p.path);
+        groups[grp] = (groups[grp] || 0) + 1;
+      });
+
+      reportStr = `UNIQ DECOR SEO AUDIT - AUDITED PAGES REGISTRY\nGenerated: ${dateStr}\n\n`;
+      reportStr += `Total Scanned Pages: ${data.pages.length}\n\n`;
+      reportStr += `Category Breakdown:\n`;
+      Object.entries(groups).forEach(([name, count]) => {
+        reportStr += `- ${name}: ${count} page(s)\n`;
+      });
+      reportStr += `\nDetailed Scanned Pages List:\n`;
+      reportStr += `========================================\n\n`;
+      
+      data.pages.forEach((p, idx) => {
+        reportStr += `${idx + 1}. Path: ${p.path}\n`;
+        reportStr += `   Live URL: ${getLiveUrl(p.path)}\n`;
+        reportStr += `   Category: ${getPageGroup(p.path)}\n`;
+        reportStr += `   Focus Keyword: "${p.keyword || "None"}" (${p.keywordType || "N/A"})\n`;
+        reportStr += `   Indexability: ${p.indexability?.status || "Unknown"} (Live GSC Status: ${p.indexability?.liveStatus || "Unknown"})\n`;
+        reportStr += `   Traffic: ${p.traffic?.clicks || 0} clicks, ${p.traffic?.impressions || 0} impressions, position #${p.ranking?.position || 0}\n`;
+        reportStr += `----------------------------------------\n\n`;
+      });
+    }
+
+    else if (selectedFix === "low_scores") {
+      const affected = data.pages.filter(p => p.score < 90);
+      
+      reportStr = `UNIQ DECOR SEO AUDIT - LOW SEO SCORE PAGES REPORT (< 90%)\nGenerated: ${dateStr}\n\n`;
+      reportStr += `Total Pages Scoring < 90%: ${affected.length}\n`;
+      reportStr += `========================================\n\n`;
+      
+      affected.forEach((p, idx) => {
+        reportStr += `${idx + 1}. Path: ${p.path} (SEO Score: ${p.score}%)\n`;
+        reportStr += `   Live URL: ${getLiveUrl(p.path)}\n`;
+        reportStr += `   Target Focus Keyword: "${p.keyword || "None"}"\n`;
+        
+        const failedChecklist = p.checklist ? p.checklist.filter(c => !c.pass).map(c => c.name) : [];
+        if (failedChecklist.length > 0) {
+          reportStr += `   Failed Checklist Items:\n`;
+          failedChecklist.forEach(c => {
+            reportStr += `     - ${c}\n`;
+          });
+        }
+        
+        const techErrors = [];
+        if (p.title?.status !== "Pass") techErrors.push(`Meta Title: ${p.title?.detail || "Invalid length"}`);
+        if (p.description?.status !== "Pass") techErrors.push(`Meta Description: ${p.description?.detail || "Invalid length"}`);
+        if (p.images?.missingAlt > 0) techErrors.push(`${p.images.missingAlt} image(s) missing alt text attribute`);
+        if (p.brokenLinks?.length > 0) techErrors.push(`${p.brokenLinks.length} broken internal link(s)`);
+        if (p.a11y?.issues?.length > 0) techErrors.push(`${p.a11y.issues.length} accessibility issue(s)`);
+        if (p.bailoutDetected) techErrors.push("Next.js CSR hydration bailout warning detected (missing server-rendered HTML)");
+        
+        if (techErrors.length > 0) {
+          reportStr += `   Technical Errors / Audit Failures:\n`;
+          techErrors.forEach(err => {
+            reportStr += `     - ${err}\n`;
+          });
+        }
+        reportStr += `----------------------------------------\n\n`;
+      });
+    }
+
+    else if (selectedFix === "csr_bails") {
+      const affected = data.pages.filter(p => p.bailoutDetected);
+      
+      reportStr = `UNIQ DECOR SEO AUDIT - NEXT.JS CSR HYDRATION BAILOUT REPORT\nGenerated: ${dateStr}\n\n`;
+      reportStr += `Total Pages with CSR Hydration Bailouts: ${affected.length}\n`;
+      reportStr += `========================================\n\n`;
+      
+      if (affected.length === 0) {
+        reportStr += `No pages with CSR hydration bails detected! All pages render clean static HTML for maximum crawlability.\n`;
+      } else {
+        affected.forEach((p, idx) => {
+          reportStr += `${idx + 1}. Path: ${p.path}\n`;
+          reportStr += `   Live URL: ${getLiveUrl(p.path)}\n`;
+          reportStr += `   Scraped HTML Size: ${p.htmlSizeKB || 0} KB\n`;
+          reportStr += `   Render-blocking Assets: ${p.renderBlocking?.cssLinks || 0} CSS link(s), ${p.renderBlocking?.jsScripts || 0} JS script(s)\n`;
+          reportStr += `   Explanation: This route does not serve static pre-rendered content. It contains React hydration bails (e.g. useSearchParams or browser APIs called top-level without Suspense wrapper), which triggers Next.js client-side rendering. Googlebot might only crawl a blank screen or a loading spinner.\n`;
+          reportStr += `----------------------------------------\n\n`;
+        });
+      }
+    }
 
     navigator.clipboard.writeText(reportStr)
       .then(() => {
@@ -1605,6 +1753,325 @@ export default function RootLayout({ children }) {
             <li>For <strong>"Page missing from sitemap"</strong>: Add corresponding <code>&lt;url&gt;</code> entry to <code>public/sitemap.xml</code>.</li>
             <li>For <strong>"Sitemap URL not audited"</strong>: Remove the obsolete route from <code>public/sitemap.xml</code> if the path does not exist.</li>
           </ul>
+        </div>
+      );
+    }
+
+    else if (selectedFix === "average_score") {
+      title = "Average SEO Score Breakdown";
+      severity = "medium";
+      severityColor = "bg-amber-50 text-amber-700 border-amber-200";
+
+      const total = data.pages.length;
+      const excellent = data.pages.filter(p => p.score === 100);
+      const good = data.pages.filter(p => p.score >= 90 && p.score < 100);
+      const needsImp = data.pages.filter(p => p.score < 90);
+      const sortedPages = [...data.pages].sort((a, b) => a.score - b.score);
+
+      listContent = (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h4 className="font-serif text-[#8B4513] font-bold text-sm">Site-wide Score Distribution</h4>
+            {copyButton}
+          </div>
+          
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="bg-emerald-50 border border-emerald-150 p-3 rounded-xl">
+              <span className="text-[10px] uppercase font-bold text-emerald-800 block">Excellent (100%)</span>
+              <p className="text-lg font-black text-emerald-950 mt-1">{excellent.length} / {total} pages</p>
+              <span className="text-[9px] text-emerald-600 block mt-0.5">{total ? Math.round((excellent.length/total)*100) : 0}% of site</span>
+            </div>
+            <div className="bg-blue-50 border border-blue-150 p-3 rounded-xl">
+              <span className="text-[10px] uppercase font-bold text-blue-800 block">Good (90-99%)</span>
+              <p className="text-lg font-black text-blue-950 mt-1">{good.length} / {total} pages</p>
+              <span className="text-[9px] text-blue-600 block mt-0.5">{total ? Math.round((good.length/total)*100) : 0}% of site</span>
+            </div>
+            <div className="bg-red-50 border border-red-150 p-3 rounded-xl">
+              <span className="text-[10px] uppercase font-bold text-red-800 block">Needs Improvement (&lt;90%)</span>
+              <p className="text-lg font-black text-red-950 mt-1">{needsImp.length} / {total} pages</p>
+              <span className="text-[9px] text-red-600 block mt-0.5">{total ? Math.round((needsImp.length/total)*100) : 0}% of site</span>
+            </div>
+          </div>
+
+          <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[300px] overflow-y-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                  <th className="p-3">Page Route</th>
+                  <th className="p-3 text-center">Score</th>
+                  <th className="p-3">Primary Target Keyword</th>
+                  <th className="p-3">Issues / Warnings</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100 font-sans text-xs">
+                {sortedPages.map(p => {
+                  const issuesSummary = [];
+                  if (p.score === 100) {
+                    issuesSummary.push("Clean ✨");
+                  } else {
+                    if (p.title?.status !== "Pass") issuesSummary.push("Meta Title");
+                    if (p.description?.status !== "Pass") issuesSummary.push("Meta Description");
+                    if (p.images?.missingAlt > 0) issuesSummary.push(`${p.images.missingAlt} Alt tag(s)`);
+                    if (p.brokenLinks?.length > 0) issuesSummary.push(`${p.brokenLinks.length} Broken Link(s)`);
+                    if (p.a11y?.issues?.length > 0) issuesSummary.push(`${p.a11y.issues.length} A11y`);
+                    if (p.bailoutDetected) issuesSummary.push("Hydration Bail");
+                  }
+                  
+                  return (
+                    <tr key={p.path} className="hover:bg-stone-50/50">
+                      <td className="p-3 font-semibold font-mono text-[#8B4513] truncate max-w-[200px]" title={p.path}>{p.path}</td>
+                      <td className="p-3 text-center font-mono">
+                        <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${
+                          p.score === 100 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
+                          p.score >= 90 ? 'bg-amber-50 text-amber-700 border-amber-100' :
+                          'bg-red-50 text-red-700 border-red-100'
+                        }`}>{p.score}%</span>
+                      </td>
+                      <td className="p-3 font-serif italic text-stone-700">"{p.keyword || "None"}"</td>
+                      <td className="p-3 text-stone-500 font-semibold font-mono text-[10px]">
+                        {issuesSummary.join(", ")}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+
+      codeGuide = (
+        <div className="bg-amber-50/30 border border-amber-200/50 p-5 rounded-2xl flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-amber-600" /> Action Plan & Optimization Guide
+          </h4>
+          <p className="leading-relaxed">
+            The overall score is a simple average across all pages. Prioritize fixing the pages under <strong>"Needs Improvement" (&lt;90%)</strong> first to lift the global average score.
+          </p>
+          <ul className="list-disc pl-5 flex flex-col gap-1.5">
+            <li>Ensure all pages have a focus keyword that appears in their meta title, meta description, and page heading structures.</li>
+            <li>Run live inspections on non-indexed pages via GSC to verify they have successfully rendered server-side.</li>
+          </ul>
+        </div>
+      );
+    }
+
+    else if (selectedFix === "scanned_pages") {
+      title = "Audited Pages Registry";
+      severity = "low";
+      severityColor = "bg-stone-50 text-stone-700 border-stone-200";
+
+      const groups = {};
+      data.pages.forEach(p => {
+        const grp = getPageGroup(p.path);
+        groups[grp] = (groups[grp] || 0) + 1;
+      });
+
+      listContent = (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h4 className="font-serif text-[#8B4513] font-bold text-sm">Routes Catalog by Category</h4>
+            {copyButton}
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            {Object.entries(groups).map(([name, count], idx) => (
+              <div key={idx} className="bg-stone-50 border border-stone-200 p-2.5 rounded-xl text-center">
+                <span className="text-[9px] uppercase font-bold text-stone-500 block truncate" title={name}>{name}</span>
+                <p className="text-base font-black text-black mt-0.5">{count} pages</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                  <th className="p-3">Route Path</th>
+                  <th className="p-3">Focus Keyword</th>
+                  <th className="p-3">Page Group Category</th>
+                  <th className="p-3">Indexability</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100 font-sans text-xs">
+                {data.pages.map(p => (
+                  <tr key={p.path} className="hover:bg-stone-50/50">
+                    <td className="p-3 font-semibold font-mono text-[#8B4513] truncate max-w-[200px]" title={p.path}>{p.path}</td>
+                    <td className="p-3 font-serif text-stone-700 italic truncate max-w-[120px]" title={p.keyword}>"{p.keyword || "None"}"</td>
+                    <td className="p-3 text-stone-500 font-medium truncate max-w-[150px]" title={getPageGroup(p.path)}>{getPageGroup(p.path)}</td>
+                    <td className="p-3 font-mono">
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                        p.indexability.status === "Indexable" 
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-100" 
+                          : "bg-red-50 text-red-700 border-red-100"
+                      }`}>{p.indexability.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+
+      codeGuide = (
+        <div className="bg-amber-50/30 border border-amber-200/50 p-5 rounded-2xl flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-amber-600" /> Action Plan & Code Guide
+          </h4>
+          <p className="leading-relaxed">
+            All routes are discovered from the application map. Ensure new niche layout page groups (like hospitality dynamic pages or locations data) are accurately described under <code>getPageGroup()</code> inside [SeoDashboardClient.js](file:///f:/UNIQ/app/seo-dashboard/SeoDashboardClient.js) to organize reporting filters.
+          </p>
+        </div>
+      );
+    }
+
+    else if (selectedFix === "low_scores") {
+      title = "Low SEO Score Pages (< 90%)";
+      severity = "high";
+      severityColor = "bg-red-50 text-red-700 border-red-200";
+
+      const affected = data.pages.filter(p => p.score < 90);
+      
+      listContent = (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-serif text-[#8B4513] font-bold text-sm">Pages Requiring Attention ({affected.length})</h4>
+            {copyButton}
+          </div>
+          <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[300px] overflow-y-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                  <th className="p-3">Route Path</th>
+                  <th className="p-3 text-center">Score</th>
+                  <th className="p-3">Primary Deficiencies</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100 font-sans text-xs">
+                {affected.map(p => {
+                  const errors = [];
+                  if (p.title?.status !== "Pass") errors.push("Title length");
+                  if (p.description?.status !== "Pass") errors.push("Description length");
+                  if (p.images?.missingAlt > 0) errors.push(`${p.images.missingAlt} Alt tag(s)`);
+                  if (p.brokenLinks?.length > 0) errors.push(`${p.brokenLinks.length} Broken link(s)`);
+                  if (p.a11y?.issues?.length > 0) errors.push(`${p.a11y.issues.length} A11y issue(s)`);
+                  if (p.bailoutDetected) errors.push("CSR Hydration");
+                  if (p.checklist) {
+                    p.checklist.forEach(c => {
+                      if (!c.pass) errors.push(c.name);
+                    });
+                  }
+
+                  return (
+                    <tr key={p.path} className="hover:bg-stone-50/50">
+                      <td className="p-3 font-semibold font-mono text-[#8B4513] truncate max-w-[200px]" title={p.path}>{p.path}</td>
+                      <td className="p-3 text-center font-mono">
+                        <span className="bg-red-50 text-red-700 border border-red-200 px-2.5 py-0.5 rounded font-black text-[10px]">
+                          {p.score}%
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex flex-wrap gap-1">
+                          {errors.map((err, idx) => (
+                            <span key={idx} className="bg-red-50 text-red-600 border border-red-100 text-[9px] font-mono px-1.5 py-0.5 rounded">
+                              {err}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+
+      codeGuide = (
+        <div className="bg-amber-50/30 border border-amber-200/50 p-5 rounded-2xl flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-amber-600" /> Action Plan & Code Guide
+          </h4>
+          <p className="leading-relaxed">
+            Pages scoring below 90% need direct metadata or markup adjustments.
+          </p>
+          <ul className="list-disc pl-5 flex flex-col gap-1.5">
+            <li><strong>Titles & Descriptions</strong>: Adjust layout parameters inside page metadata configuration. Recommendation: 50-60 characters for Titles, 120-160 for Meta Descriptions.</li>
+            <li><strong>Focus Keyword Density</strong>: Ensure your focus keyword is matching exactly in the layout and text of the component file. Aim for at least 0.5% keyword density.</li>
+            <li><strong>Missing Alt Tags</strong>: Open the respective component and locate any static <code>&lt;img&gt;</code> or Next.js <code>&lt;Image&gt;</code> tags without alt content, and provide descriptive alternative tags.</li>
+          </ul>
+        </div>
+      );
+    }
+
+    else if (selectedFix === "csr_bails") {
+      title = "React Hydration & CSR Bailouts";
+      severity = "high";
+      severityColor = "bg-red-50 text-red-700 border-red-200";
+
+      const affected = data.pages.filter(p => p.bailoutDetected);
+      
+      listContent = (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-serif text-[#8B4513] font-bold text-sm">Affected Routes ({affected.length})</h4>
+            {copyButton}
+          </div>
+          {affected.length === 0 ? (
+            <div className="flex items-center gap-2 text-xs text-emerald-700 font-semibold p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
+              <CheckCircle className="w-4 h-4" /> All pages pre-render clean static HTML! No hydration bails found.
+            </div>
+          ) : (
+            <div className="border border-stone-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                    <th className="p-3">Route Path</th>
+                    <th className="p-3 text-center">HTML Size</th>
+                    <th className="p-3 text-center">CSS Assets</th>
+                    <th className="p-3 text-center">JS Scripts</th>
+                    <th className="p-3">Diagnostics</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100 font-sans text-xs">
+                  {affected.map(p => (
+                    <tr key={p.path} className="hover:bg-stone-50/50">
+                      <td className="p-3 font-semibold font-mono text-[#8B4513]">{p.path}</td>
+                      <td className="p-3 text-center font-mono">{p.htmlSizeKB || 0} KB</td>
+                      <td className="p-3 text-center font-mono">{p.renderBlocking?.cssLinks || 0}</td>
+                      <td className="p-3 text-center font-mono">{p.renderBlocking?.jsScripts || 0}</td>
+                      <td className="p-3 text-red-600 font-bold font-mono text-[10px]">CSR Hydration Warning</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      );
+
+      codeGuide = (
+        <div className="bg-amber-50/30 border border-amber-200/50 p-5 rounded-2xl flex flex-col gap-3">
+          <h4 className="font-serif text-[#8B4513] font-bold text-sm flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-amber-600" /> React Hydration Bailout Guide
+          </h4>
+          <p className="leading-relaxed">
+            In Next.js App Router, using dynamic elements (like reading <code>useSearchParams</code> or client-only hooks outside layout boundaries) can break server-side pre-rendering. This triggers a client-side rendering bailout, returning a blank HTML document to crawlers.
+          </p>
+          <div className="bg-[#080D09] text-[#FAF9F6] p-4 rounded-xl font-mono text-[11px] leading-relaxed overflow-x-auto border border-stone-800">
+            <span className="text-[#C5A059] font-bold">// FIX: Wrap components using useSearchParams in a Suspense boundary:</span><br />
+            import &#123; Suspense &#125; from "react";<br />
+            import MySearchComponent from "./MySearchComponent";<br /><br />
+            export default function Page() &amp;#123;<br />
+            &nbsp;&nbsp;return (<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;Suspense fallback=&lt;div&gt;Loading...&lt;/div&gt;&gt;<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;MySearchComponent /&gt;<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;/Suspense&gt;<br />
+            &nbsp;&nbsp;);<br />
+            &#125;
+          </div>
         </div>
       );
     }
