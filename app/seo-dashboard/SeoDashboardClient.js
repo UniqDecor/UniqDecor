@@ -777,7 +777,7 @@ export default function SeoDashboardClient() {
                     </span>
                     {!inspections[page.path].data.inspection.isIndexed && (
                       <a
-                        href={`https://search.google.com/search-console/inspect?resource_id=sc-domain:uniqdecorfurniture.in&id=https://uniqdecorfurniture.in${page.path}`}
+                        href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent("sc-domain:uniqdecorfurniture.in")}&url=${encodeURIComponent("https://uniqdecorfurniture.in" + page.path)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
