@@ -286,14 +286,38 @@ export default function SeoDashboardClient() {
             </div>
           </div>
 
-          <button 
-            disabled={loading}
-            onClick={runFullAudit}
-            className="inline-flex items-center gap-3 px-6 py-3 bg-[#C5A059] hover:bg-[#B38D46] disabled:opacity-50 text-[#080D09] font-bold text-xs uppercase tracking-widest rounded-lg shadow-lg active:scale-[0.97] transition-all cursor-pointer"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            Run Full Audit Scan
-          </button>
+          <div className="flex items-center gap-3">
+            {data && !loading && (
+              <button
+                onClick={() => {
+                  const headers = ["Path,Keyword,Score,Title Chars,Desc Chars,Word Count,Keyword Density%,KW Matches,Schemas,Internal Links,External Links,Incoming Links,Clicks,Impressions,CTR%,Position,Volume,Pageviews,ActiveUsers,Status,HTML Size KB,Broken Links,A11y Issues"];
+                  const rows = data.pages.map(p => {
+                    return `"${p.path}","${p.keyword}",${p.score},${p.title?.value?.length||0},${p.description?.value?.length||0},${p.wordCount},${p.keywordDensity},${p.keywordCount},${p.schemas?.count||0},${p.links.internal},${p.links.external},${p.links.incoming},${p.traffic.clicks},${p.traffic.impressions},${p.traffic.ctr},${p.ranking.position},${p.ranking.volume},${p.pageviews||0},${p.activeUsers||0},"${p.indexability.status}",${p.htmlSizeKB||0},${p.brokenLinks?.length||0},${p.a11y?.issues?.length||0}`;
+                  });
+                  const csv = [headers, ...rows].join("\n");
+                  const blob = new Blob([csv], { type: "text/csv" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `seo-audit-${new Date().toISOString().split("T")[0]}.csv`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-3 border border-[#C5A059]/40 hover:border-[#C5A059] text-[#C5A059] hover:text-[#080D09] hover:bg-[#C5A059] font-bold text-xs uppercase tracking-widest rounded-lg transition-all cursor-pointer"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                Export CSV
+              </button>
+            )}
+            <button 
+              disabled={loading}
+              onClick={runFullAudit}
+              className="inline-flex items-center gap-3 px-6 py-3 bg-[#C5A059] hover:bg-[#B38D46] disabled:opacity-50 text-[#080D09] font-bold text-xs uppercase tracking-widest rounded-lg shadow-lg active:scale-[0.97] transition-all cursor-pointer"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              Run Full Audit Scan
+            </button>
+          </div>
         </div>
       </div>
 
@@ -365,6 +389,94 @@ export default function SeoDashboardClient() {
                   {data.summary.clientBailouts === 0 ? "🔥 Clean static HTML" : "❌ Loading Spinners Only"}
                 </span>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Priority Actions & Score History Row */}
+        {data && !loading && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            {/* Priority Fixes */}
+            <div className="bg-white border border-[#8B4513]/10 p-5 rounded-2xl shadow-sm lg:col-span-2">
+              <span className="text-xs uppercase font-extrabold tracking-wider text-[#8B4513] border-b border-[#8B4513]/10 pb-2 block mb-4 flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 text-amber-600" /> Priority Fix Recommendations
+              </span>
+              <div className="flex flex-col gap-2 text-xs">
+                {(() => {
+                  const fixes = [];
+                  const pagesWithBrokenLinks = data.pages.filter(p => p.brokenLinks?.length > 0);
+                  if (pagesWithBrokenLinks.length > 0) {
+                    fixes.push({ severity: "high", text: `${pagesWithBrokenLinks.length} page(s) have broken internal links — fix to prevent rank loss` });
+                  }
+                  const pagesWithA11yIssues = data.pages.filter(p => p.a11y?.issues?.length > 0);
+                  if (pagesWithA11yIssues.length > 0) {
+                    fixes.push({ severity: "medium", text: `${pagesWithA11yIssues.length} page(s) have accessibility issues — add ARIA landmarks, form labels, lang attribute` });
+                  }
+                  const missingAltPages = data.pages.filter(p => p.images?.missingAlt > 0);
+                  if (missingAltPages.length > 0) {
+                    fixes.push({ severity: "medium", text: `${missingAltPages.length} page(s) have images missing alt text — ${missingAltPages.reduce((s, p) => s + p.images.missingAlt, 0)} total images affected` });
+                  }
+                  const largeHtmlPages = data.pages.filter(p => (p.htmlSizeKB || 0) > 150);
+                  if (largeHtmlPages.length > 0) {
+                    fixes.push({ severity: "low", text: `${largeHtmlPages.length} page(s) have HTML over 150KB — consider code splitting` });
+                  }
+                  const sitemapIssues = data.summary?.sitemapIssues || [];
+                  if (sitemapIssues.length > 0) {
+                    fixes.push({ severity: "high", text: `${sitemapIssues.length} sitemap issue(s) detected — pages missing from or extra in sitemap.xml` });
+                  }
+                  if (fixes.length === 0) {
+                    return <div className="flex items-center gap-2 text-emerald-700 font-semibold p-3 bg-emerald-50 rounded-lg"><CheckCircle className="w-4 h-4" /> No priority fixes needed — site is well-optimized!</div>;
+                  }
+                  return fixes.map((f, i) => (
+                    <div key={i} className={`flex items-start gap-2.5 p-2.5 rounded-lg border ${
+                      f.severity === "high" ? "bg-red-50 border-red-100" :
+                      f.severity === "medium" ? "bg-amber-50 border-amber-100" :
+                      "bg-stone-50 border-stone-100"
+                    }`}>
+                      <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${
+                        f.severity === "high" ? "bg-red-200 text-red-800" :
+                        f.severity === "medium" ? "bg-amber-200 text-amber-800" :
+                        "bg-stone-200 text-stone-800"
+                      }`}>{f.severity}</span>
+                      <span className="text-stone-700">{f.text}</span>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+
+            {/* Score History Mini Chart */}
+            <div className="bg-white border border-[#8B4513]/10 p-5 rounded-2xl shadow-sm">
+              <span className="text-xs uppercase font-extrabold tracking-wider text-[#8B4513] border-b border-[#8B4513]/10 pb-2 block mb-4 flex items-center gap-1.5">
+                <TrendingUp className="w-4 h-4 text-indigo-600" /> Score History Trend
+              </span>
+              {data.summary?.scoreHistory && data.summary.scoreHistory.length > 1 ? (
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-end gap-[2px] h-24">
+                    {data.summary.scoreHistory.map((rec, i) => {
+                      const barH = Math.max(8, Math.round(rec.averageScore * 0.8));
+                      const isLatest = i === data.summary.scoreHistory.length - 1;
+                      return (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-0.5 group relative">
+                          <div 
+                            className={`w-full rounded-t ${isLatest ? 'bg-[#C5A059]' : 'bg-stone-300'} hover:bg-amber-400 transition-colors cursor-help min-h-[4px]`}
+                            style={{ height: `${barH}px` }}
+                            title={`${new Date(rec.timestamp).toLocaleDateString()}: ${rec.averageScore}%`}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex justify-between text-[8px] text-stone-400 uppercase tracking-wider">
+                    <span>Earlier</span>
+                    <span>Latest: {data.summary.scoreHistory[data.summary.scoreHistory.length - 1]?.averageScore}%</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-xs text-stone-400 italic">
+                  Run audits regularly to build score history
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -951,6 +1063,59 @@ export default function SeoDashboardClient() {
                     ))}
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Broken Links & Accessibility */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Broken Links */}
+              <div className="bg-white border border-[#8B4513]/8 p-5 rounded-xl shadow-sm">
+                <span className="text-xs uppercase font-extrabold tracking-wider text-[#8B4513] border-b border-[#8B4513]/10 pb-2 block mb-4 flex items-center gap-1.5">
+                  <LinkIcon className="w-4 h-4 text-red-600" /> Broken Internal Links
+                </span>
+                {!page.brokenLinks || page.brokenLinks.length === 0 ? (
+                  <div className="flex items-center gap-2 text-xs text-emerald-700 font-semibold p-4 bg-emerald-50/50 rounded-lg">
+                    <CheckCircle className="w-4 h-4" /> No broken internal links detected.
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {page.brokenLinks.map((link, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs bg-red-50 border border-red-100 p-2 rounded-lg">
+                        <ShieldAlert className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                        <span className="font-mono text-red-700">{link}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Accessibility Issues */}
+              <div className="bg-white border border-[#8B4513]/8 p-5 rounded-xl shadow-sm">
+                <span className="text-xs uppercase font-extrabold tracking-wider text-[#8B4513] border-b border-[#8B4513]/10 pb-2 block mb-4 flex items-center gap-1.5">
+                  <ShieldAlert className="w-4 h-4 text-amber-600" /> Accessibility (a11y) Issues
+                </span>
+                {!page.a11y || page.a11y.issues.length === 0 ? (
+                  <div className="flex items-center gap-2 text-xs text-emerald-700 font-semibold p-4 bg-emerald-50/50 rounded-lg">
+                    <CheckCircle className="w-4 h-4" /> No accessibility issues found.
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {page.a11y.issues.map((issue, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs bg-amber-50 border border-amber-100 p-2 rounded-lg">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span className="text-amber-800">{issue}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-3 flex items-center gap-3 text-[10px]">
+                  <span className="text-stone-500">HTML Size:</span>
+                  <span className="font-bold font-mono text-stone-700">{page.htmlSizeKB || 0} KB</span>
+                  <span className="text-stone-500">CSS:</span>
+                  <span className="font-bold font-mono text-stone-700">{page.renderBlocking?.cssLinks || 0}</span>
+                  <span className="text-stone-500">JS:</span>
+                  <span className="font-bold font-mono text-stone-700">{page.renderBlocking?.jsScripts || 0}</span>
+                </div>
               </div>
             </div>
 

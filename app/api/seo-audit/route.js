@@ -6,6 +6,36 @@ import { BetaAnalyticsDataClient } from "@google-analytics/data";
 
 export const dynamic = "force-dynamic";
 
+// Historical score tracking file
+const SCORE_HISTORY_FILE = pathLib.join(process.cwd(), "data", "score-history.json");
+
+function ensureScoreHistoryFile() {
+  const dir = pathLib.join(process.cwd(), "data");
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(SCORE_HISTORY_FILE)) {
+    fs.writeFileSync(SCORE_HISTORY_FILE, JSON.stringify([]), "utf8");
+  }
+}
+
+function loadScoreHistory() {
+  try {
+    return JSON.parse(fs.readFileSync(SCORE_HISTORY_FILE, "utf8"));
+  } catch { return []; }
+}
+
+function saveScoreRecord(record) {
+  try {
+    ensureScoreHistoryFile();
+    const history = loadScoreHistory();
+    history.push(record);
+    // Keep last 100 entries
+    if (history.length > 100) history.splice(0, history.length - 100);
+    fs.writeFileSync(SCORE_HISTORY_FILE, JSON.stringify(history, null, 2), "utf8");
+  } catch (err) {
+    console.error("Failed to save score history:", err.message);
+  }
+}
+
 const PAGES_LIST = [
   "/",
   "/about",
@@ -426,6 +456,10 @@ async function auditPage(baseUrl, path) {
     publishedDate: "2026-06-01",
     lastUpdated: "2026-06-23",
     bailoutDetected: false,
+    brokenLinks: [],
+    a11y: { issues: [], score: 100 },
+    htmlSizeKB: 0,
+    renderBlocking: { cssLinks: 0, jsScripts: 0 },
     checklist: []
   };
 
@@ -800,6 +834,68 @@ async function auditPage(baseUrl, path) {
       }
     }
 
+    // 16. Check for broken links (internal links returning 404)
+    let brokenLinks = [];
+    const uniqueInternal = [...new Set(internalLinksList)];
+    for (const linkPath of uniqueInternal.slice(0, 10)) { // Check first 10 unique internal links
+      try {
+        const linkUrl = `${baseUrl}${linkPath}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1500);
+        const linkRes = await fetch(linkUrl, { method: "HEAD", signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (linkRes.status === 404) {
+          brokenLinks.push(linkPath);
+        }
+      } catch (e) {
+        // Timeout or network error - skip
+      }
+    }
+    report.brokenLinks = brokenLinks;
+    if (brokenLinks.length > 0) {
+      report.score -= Math.min(brokenLinks.length * 5, 15);
+    }
+
+    // 17. Accessibility basic checks
+    let a11yIssues = [];
+    // Check for skip-to-content link
+    if (!html.includes("skip-to-content") && !html.includes("skip-to-main") && !html.includes("#main-content")) {
+      a11yIssues.push("Missing skip-to-content link");
+      report.score -= 3;
+    }
+    // Check for ARIA landmarks
+    if (!html.includes('role="main"') && !html.includes('<main')) {
+      a11yIssues.push("Missing <main> landmark or role='main'");
+      report.score -= 2;
+    }
+    // Check form labels
+    if (html.includes("<form") && !html.includes("htmlFor=") && !html.includes("for=") && !html.includes("aria-label")) {
+      a11yIssues.push("Forms may be missing label associations");
+      report.score -= 2;
+    }
+    // Check lang attribute
+    if (!html.includes('lang="') && !html.includes("lang='")) {
+      a11yIssues.push("Missing lang attribute on <html>");
+      report.score -= 2;
+    }
+    report.a11y = {
+      issues: a11yIssues,
+      score: Math.max(0, 100 - a11yIssues.length * 10)
+    };
+
+    // 18. Check HTML size
+    report.htmlSizeKB = Math.round(html.length / 1024);
+    if (report.htmlSizeKB > 150) {
+      report.score -= 5;
+    }
+
+    // 19. Check for render-blocking resources
+    const cssLinks = (html.match(/<link[^>]*rel=["']stylesheet["'][^>]*>/gi) || []).length;
+    const jsScripts = (html.match(/<script[^>]*src=["'][^"']+["'][^>]*>/gi) || []).length;
+    report.renderBlocking = { cssLinks, jsScripts };
+    if (cssLinks > 3) report.score -= 2;
+    if (jsScripts > 10) report.score -= 2;
+
     // Floor score at 0
     report.score = Math.max(0, report.score);
 
@@ -1168,6 +1264,32 @@ export async function GET(request) {
     reports.push(report);
   }
 
+  // Sitemap validation - check all sitemap URLs resolve
+  let sitemapIssues = [];
+  try {
+    const sitemapPath = pathLib.join(process.cwd(), "public", "sitemap.xml");
+    if (fs.existsSync(sitemapPath)) {
+      const sitemapContent = fs.readFileSync(sitemapPath, "utf8");
+      const sitemapUrls = (sitemapContent.match(/<loc>([^<]+)<\/loc>/gi) || []).map(loc => {
+        return loc.replace(/<\/?loc>/gi, "");
+      });
+      const pageUrls = new Set(reports.map(r => r.url));
+      sitemapUrls.forEach(url => {
+        if (!pageUrls.has(url)) {
+          sitemapIssues.push(`Sitemap URL not audited: ${url}`);
+        }
+      });
+      const pageUrlList = reports.map(r => r.url);
+      pageUrlList.forEach(url => {
+        if (!sitemapUrls.includes(url)) {
+          sitemapIssues.push(`Page missing from sitemap: ${url}`);
+        }
+      });
+    }
+  } catch (err) {
+    sitemapIssues.push(`Sitemap read error: ${err.message}`);
+  }
+
   // Compute incoming links count dynamically
   reports.forEach((r) => {
     r.links.incoming = reports.filter((other) => other.path !== r.path && other.links.list.includes(r.path)).length;
@@ -1178,6 +1300,20 @@ export async function GET(request) {
   const averageScore = parseFloat((totalScore / reports.length).toFixed(1));
   const failedPagesCount = reports.filter(r => r.score < 90).length;
   const clientBailoutsCount = reports.filter(r => r.bailoutDetected).length;
+
+  // Save score history record
+  const scoreRecord = {
+    timestamp: new Date().toISOString(),
+    averageScore,
+    totalPages: reports.length,
+    failedPages: failedPagesCount,
+    clientBailouts: clientBailoutsCount,
+    usingRealData
+  };
+  saveScoreRecord(scoreRecord);
+
+  // Load score history for trend chart
+  const scoreHistory = loadScoreHistory().slice(-30);
 
   return NextResponse.json({
     summary: {
@@ -1191,7 +1327,11 @@ export async function GET(request) {
       adsSuccess,
       liveActiveUsers,
       recentEvents,
-      apiError: [apiError, adsError].filter(Boolean).join(" | ")
+      apiError: [apiError, adsError].filter(Boolean).join(" | "),
+      scoreHistory,
+      sitemapIssues,
+      siteWideA11yIssues: reports.filter(r => r.a11y?.issues?.length > 0).length,
+      siteWideBrokenLinks: reports.reduce((s, r) => s + (r.brokenLinks?.length || 0), 0)
     },
     pages: reports
   });
