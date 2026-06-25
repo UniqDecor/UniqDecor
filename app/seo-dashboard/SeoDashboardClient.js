@@ -309,6 +309,181 @@ export default function SeoDashboardClient() {
     "Author Pages",
     "Utility Pages"
   ];
+
+  const handleExportGscCsv = () => {
+    if (!data?.pages) return;
+    
+    const headers = ["Route Path", "Google Verified Status", "Coverage Details", "Last Crawl Time", "Last Checked Time"];
+    const rows = data.pages.map(page => {
+      const gsc = inspections[page.path]?.data?.inspection;
+      const status = gsc ? (gsc.isIndexed ? "Indexed" : "Not Indexed") : "Not Checked";
+      const coverage = gsc ? gsc.coverage : "N/A";
+      const lastCrawl = gsc ? (gsc.lastCrawl || "N/A") : "N/A";
+      const lastChecked = gsc ? (gsc.lastChecked || "N/A") : "N/A";
+      return `"${page.path}","${status}","${coverage.replace(/"/g, '""')}","${lastCrawl}","${lastChecked}"`;
+    });
+    
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `google-index-registry-${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleImportGscCsv = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const text = event.target.result;
+      
+      // Robust character-by-character CSV Parser
+      const parseCsvText = (csvString) => {
+        const rows = [];
+        let currentRow = [];
+        let currentCell = "";
+        let inQuotes = false;
+        
+        // Find delimiter: check the first line to auto-detect
+        const firstLineEnd = csvString.indexOf("\n");
+        const firstLine = firstLineEnd !== -1 ? csvString.substring(0, firstLineEnd) : csvString;
+        let delimiter = ",";
+        if (!firstLine.includes(",") && firstLine.includes(";")) delimiter = ";";
+        if (!firstLine.includes(",") && firstLine.includes("\t")) delimiter = "\t";
+
+        for (let i = 0; i < csvString.length; i++) {
+          const char = csvString[i];
+          const nextChar = csvString[i + 1];
+
+          if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+              // Escaped quotes inside quotes (e.g. "")
+              currentCell += '"';
+              i++; // Skip next quote
+            } else {
+              // Toggle quote mode
+              inQuotes = !inQuotes;
+            }
+          } else if (char === delimiter && !inQuotes) {
+            currentRow.push(currentCell.trim());
+            currentCell = "";
+          } else if ((char === "\r" || char === "\n") && !inQuotes) {
+            if (char === "\r" && nextChar === "\n") {
+              i++; // Skip \n in \r\n
+            }
+            currentRow.push(currentCell.trim());
+            if (currentRow.some(cell => cell.length > 0)) {
+              rows.push(currentRow);
+            }
+            currentRow = [];
+            currentCell = "";
+          } else {
+            currentCell += char;
+          }
+        }
+        
+        // Push residual cell and row
+        if (currentCell || currentRow.length > 0) {
+          currentRow.push(currentCell.trim());
+          if (currentRow.some(cell => cell.length > 0)) {
+            rows.push(currentRow);
+          }
+        }
+        
+        return rows;
+      };
+
+      const rows = parseCsvText(text);
+      if (rows.length <= 1) {
+        alert("Empty or invalid CSV file.");
+        return;
+      }
+      
+      const headers = rows[0].map(h => h.toLowerCase());
+      const pathIdx = headers.indexOf("route path") !== -1 ? headers.indexOf("route path") : headers.indexOf("path");
+      const statusIdx = headers.indexOf("google verified status") !== -1 ? headers.indexOf("google verified status") : headers.indexOf("status");
+      const coverageIdx = headers.indexOf("coverage details") !== -1 ? headers.indexOf("coverage details") : headers.indexOf("coverage");
+      const crawlIdx = headers.indexOf("last crawl time") !== -1 ? headers.indexOf("last crawl time") : headers.indexOf("last crawl");
+      const checkedIdx = headers.indexOf("last checked time") !== -1 ? headers.indexOf("last checked time") : headers.indexOf("last checked");
+
+      if (pathIdx === -1) {
+        alert("Invalid CSV format. Header must contain 'Route Path' or 'Path' column.");
+        return;
+      }
+      
+      const importedInspections = {};
+      const newInspectionsState = { ...inspections };
+      
+      for (let i = 1; i < rows.length; i++) {
+        const cells = rows[i];
+        if (cells.length === 0 || !cells[pathIdx]) continue;
+        
+        const path = cells[pathIdx];
+        const status = statusIdx !== -1 ? cells[statusIdx] : "";
+        const coverage = coverageIdx !== -1 ? cells[coverageIdx] : "Imported from CSV";
+        const lastCrawl = crawlIdx !== -1 && cells[crawlIdx] !== "N/A" ? cells[crawlIdx] : null;
+        const lastChecked = checkedIdx !== -1 && cells[checkedIdx] !== "N/A" ? cells[checkedIdx] : new Date().toISOString();
+        const isIndexed = status.toLowerCase().includes("indexed") && !status.toLowerCase().includes("not");
+        
+        importedInspections[path] = {
+          verdict: isIndexed ? "PASS" : "FAIL",
+          coverage,
+          lastCrawl,
+          canonical: null,
+          mobileUsability: "PASS",
+          isIndexed,
+          lastChecked
+        };
+        
+        newInspectionsState[path] = {
+          loading: false,
+          data: {
+            inspection: importedInspections[path],
+            pageSpeed: { score: 95, simulated: true }
+          },
+          error: null
+        };
+      }
+      
+      // Update React state
+      setInspections(newInspectionsState);
+
+      // Save to localStorage
+      try {
+        const stored = localStorage.getItem("uniq_gsc_inspections");
+        const localCache = stored ? JSON.parse(stored) : {};
+        Object.entries(importedInspections).forEach(([path, data]) => {
+          localCache[path] = data;
+        });
+        localStorage.setItem("uniq_gsc_inspections", JSON.stringify(localCache));
+      } catch (e) {
+        console.error("Failed to save GSC CSV import to localStorage:", e);
+      }
+      
+      // Save to server
+      try {
+        const res = await fetch("/api/inspect-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(importedInspections)
+        });
+        if (res.ok) {
+          alert("GSC Index Registry imported and synced successfully!");
+        } else {
+          throw new Error("Failed to save to server filesystem cache.");
+        }
+      } catch (err) {
+        alert(`GSC imported locally but server sync failed: ${err.message}`);
+      }
+    };
+    reader.readAsText(file);
+  };
+
   if (error) {
     return (
       <div className="min-h-screen bg-[#080D09] text-white flex flex-col items-center justify-center p-6 font-sans">
@@ -1678,179 +1853,6 @@ export default function SeoDashboardClient() {
       });
   };
 
-  const handleExportGscCsv = () => {
-    if (!data?.pages) return;
-    
-    const headers = ["Route Path", "Google Verified Status", "Coverage Details", "Last Crawl Time", "Last Checked Time"];
-    const rows = data.pages.map(page => {
-      const gsc = inspections[page.path]?.data?.inspection;
-      const status = gsc ? (gsc.isIndexed ? "Indexed" : "Not Indexed") : "Not Checked";
-      const coverage = gsc ? gsc.coverage : "N/A";
-      const lastCrawl = gsc ? (gsc.lastCrawl || "N/A") : "N/A";
-      const lastChecked = gsc ? (gsc.lastChecked || "N/A") : "N/A";
-      return `"${page.path}","${status}","${coverage.replace(/"/g, '""')}","${lastCrawl}","${lastChecked}"`;
-    });
-    
-    const csvContent = [headers.join(","), ...rows].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `google-index-registry-${new Date().toISOString().split("T")[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const handleImportGscCsv = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const text = event.target.result;
-      
-      // Robust character-by-character CSV Parser
-      const parseCsvText = (csvString) => {
-        const rows = [];
-        let currentRow = [];
-        let currentCell = "";
-        let inQuotes = false;
-        
-        // Find delimiter: check the first line to auto-detect
-        const firstLineEnd = csvString.indexOf("\n");
-        const firstLine = firstLineEnd !== -1 ? csvString.substring(0, firstLineEnd) : csvString;
-        let delimiter = ",";
-        if (!firstLine.includes(",") && firstLine.includes(";")) delimiter = ";";
-        if (!firstLine.includes(",") && firstLine.includes("\t")) delimiter = "\t";
-
-        for (let i = 0; i < csvString.length; i++) {
-          const char = csvString[i];
-          const nextChar = csvString[i + 1];
-
-          if (char === '"') {
-            if (inQuotes && nextChar === '"') {
-              // Escaped quotes inside quotes (e.g. "")
-              currentCell += '"';
-              i++; // Skip next quote
-            } else {
-              // Toggle quote mode
-              inQuotes = !inQuotes;
-            }
-          } else if (char === delimiter && !inQuotes) {
-            currentRow.push(currentCell.trim());
-            currentCell = "";
-          } else if ((char === "\r" || char === "\n") && !inQuotes) {
-            if (char === "\r" && nextChar === "\n") {
-              i++; // Skip \n in \r\n
-            }
-            currentRow.push(currentCell.trim());
-            if (currentRow.some(cell => cell.length > 0)) {
-              rows.push(currentRow);
-            }
-            currentRow = [];
-            currentCell = "";
-          } else {
-            currentCell += char;
-          }
-        }
-        
-        // Push residual cell and row
-        if (currentCell || currentRow.length > 0) {
-          currentRow.push(currentCell.trim());
-          if (currentRow.some(cell => cell.length > 0)) {
-            rows.push(currentRow);
-          }
-        }
-        
-        return rows;
-      };
-
-      const rows = parseCsvText(text);
-      if (rows.length <= 1) {
-        alert("Empty or invalid CSV file.");
-        return;
-      }
-      
-      const headers = rows[0].map(h => h.toLowerCase());
-      const pathIdx = headers.indexOf("route path") !== -1 ? headers.indexOf("route path") : headers.indexOf("path");
-      const statusIdx = headers.indexOf("google verified status") !== -1 ? headers.indexOf("google verified status") : headers.indexOf("status");
-      const coverageIdx = headers.indexOf("coverage details") !== -1 ? headers.indexOf("coverage details") : headers.indexOf("coverage");
-      const crawlIdx = headers.indexOf("last crawl time") !== -1 ? headers.indexOf("last crawl time") : headers.indexOf("last crawl");
-      const checkedIdx = headers.indexOf("last checked time") !== -1 ? headers.indexOf("last checked time") : headers.indexOf("last checked");
-
-      if (pathIdx === -1) {
-        alert("Invalid CSV format. Header must contain 'Route Path' or 'Path' column.");
-        return;
-      }
-      
-      const importedInspections = {};
-      const newInspectionsState = { ...inspections };
-      
-      for (let i = 1; i < rows.length; i++) {
-        const cells = rows[i];
-        if (cells.length === 0 || !cells[pathIdx]) continue;
-        
-        const path = cells[pathIdx];
-        const status = statusIdx !== -1 ? cells[statusIdx] : "";
-        const coverage = coverageIdx !== -1 ? cells[coverageIdx] : "Imported from CSV";
-        const lastCrawl = crawlIdx !== -1 && cells[crawlIdx] !== "N/A" ? cells[crawlIdx] : null;
-        const lastChecked = checkedIdx !== -1 && cells[checkedIdx] !== "N/A" ? cells[checkedIdx] : new Date().toISOString();
-        const isIndexed = status.toLowerCase().includes("indexed") && !status.toLowerCase().includes("not");
-        
-        importedInspections[path] = {
-          verdict: isIndexed ? "PASS" : "FAIL",
-          coverage,
-          lastCrawl,
-          canonical: null,
-          mobileUsability: "PASS",
-          isIndexed,
-          lastChecked
-        };
-        
-        newInspectionsState[path] = {
-          loading: false,
-          data: {
-            inspection: importedInspections[path],
-            pageSpeed: { score: 95, simulated: true }
-          },
-          error: null
-        };
-      }
-      
-      // Update React state
-      setInspections(newInspectionsState);
-
-      // Save to localStorage
-      try {
-        const stored = localStorage.getItem("uniq_gsc_inspections");
-        const localCache = stored ? JSON.parse(stored) : {};
-        Object.entries(importedInspections).forEach(([path, data]) => {
-          localCache[path] = data;
-        });
-        localStorage.setItem("uniq_gsc_inspections", JSON.stringify(localCache));
-      } catch (e) {
-        console.error("Failed to save GSC CSV import to localStorage:", e);
-      }
-      
-      // Save to server
-      try {
-        const res = await fetch("/api/inspect-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(importedInspections)
-        });
-        if (res.ok) {
-          alert("GSC Index Registry imported and synced successfully!");
-        } else {
-          throw new Error("Failed to save to server filesystem cache.");
-        }
-      } catch (err) {
-        alert(`GSC imported locally but server sync failed: ${err.message}`);
-      }
-    };
-    reader.readAsText(file);
-  };
 
   function renderIndexRegistryModal() {
     const sortedRegistry = data?.pages.filter(p => {
