@@ -979,9 +979,26 @@ export async function GET(request) {
   }
 
   // 1. Query GSC & GA4 if credentials are set
-  if (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_PRIVATE_KEY) {
-    const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-    const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n");
+  // Support GOOGLE_SERVICE_ACCOUNT_JSON (full JSON string) for Vercel compatibility
+  let _email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  let _privateKey = process.env.GOOGLE_PRIVATE_KEY;
+  
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+    try {
+      const saJson = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+      _email = saJson.client_email;
+      _privateKey = saJson.private_key; // Already has real newlines from JSON
+    } catch(e) {
+      console.error("Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON:", e.message);
+    }
+  }
+  
+  if (_email && _privateKey) {
+    const email = _email;
+    // Handle both \\n (escaped) and actual newlines
+    const privateKey = _privateKey.includes("\\n") 
+      ? _privateKey.replace(/\\n/g, "\n")
+      : _privateKey;
     let errors = [];
 
     // Google Search Console metrics

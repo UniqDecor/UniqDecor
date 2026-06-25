@@ -8,10 +8,21 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const pathParam = searchParams.get("path") || "/";
 
-    const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-    const privateKey = process.env.GOOGLE_PRIVATE_KEY
-      ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
+    // Support GOOGLE_SERVICE_ACCOUNT_JSON for Vercel compatibility
+    let email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    let privateKey = process.env.GOOGLE_PRIVATE_KEY
+      ? (process.env.GOOGLE_PRIVATE_KEY.includes("\\n")
+          ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n")
+          : process.env.GOOGLE_PRIVATE_KEY)
       : null;
+
+    if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+      try {
+        const saJson = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+        email = saJson.client_email;
+        privateKey = saJson.private_key;
+      } catch(e) { /* fall through to individual vars */ }
+    }
 
     let indexVerdict = "Unknown";
     let indexCoverage = "Inspection Credentials Not Configured";
