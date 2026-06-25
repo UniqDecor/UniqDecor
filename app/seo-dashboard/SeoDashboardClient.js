@@ -1607,7 +1607,7 @@ export default function RootLayout({ children }) {
 
     return (
       <div 
-        className="fixed inset-0 bg-[#080D09]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-300 animate-in fade-in"
+        className="fixed inset-0 bg-[#080D09]/80 backdrop-blur-md z-[9999] flex items-center justify-center p-4 transition-all duration-300 animate-in fade-in"
         onClick={() => setSelectedFix(null)}
       >
         <div 
