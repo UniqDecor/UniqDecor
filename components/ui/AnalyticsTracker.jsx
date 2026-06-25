@@ -93,8 +93,24 @@ export default function AnalyticsTracker() {
   // Track pageview + page_time on path change
   useEffect(() => {
     const prevPageTime = Math.floor((Date.now() - pageStartRef.current) / 1000);
-    if (prevPageTime > 2) {
-      sendEvent("page_time", { seconds: prevPageTime, previousPath: window.__previousPath || "" });
+    const prevPath = window.__previousPath || "";
+    if (prevPageTime > 2 && prevPath) {
+      // Send page_time with the PREVIOUS page's path (not current pathname)
+      const payload = JSON.stringify({
+        sessionId: sessionIdRef.current,
+        event: "page_time",
+        path: prevPath,
+        seconds: prevPageTime,
+        previousPath: prevPath,
+        timestamp: new Date().toISOString()
+      });
+      try {
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon("/api/events", payload);
+        } else {
+          fetch("/api/events", { method: "POST", headers: { "Content-Type": "application/json" }, body: payload, keepalive: true }).catch(() => {});
+        }
+      } catch (e) {}
     }
     window.__previousPath = pathname;
     pageStartRef.current = Date.now();

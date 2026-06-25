@@ -485,7 +485,7 @@ async function auditPage(baseUrl, path) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1000);
-      const liveUrl = `https://uniqdecorfurniture.in${path}`;
+      const liveUrl = `https://www.uniqdecorfurniture.in${path}`;
       const liveRes = await fetch(liveUrl, { 
         method: "HEAD", 
         headers: { "User-Agent": "UNIQ-SEO-Index-Checker/1.0" },
@@ -517,7 +517,7 @@ async function auditPage(baseUrl, path) {
       const href = hrefMatch[1].trim();
       if (href.startsWith("/") || href.includes("uniqdecorfurniture.in")) {
         internalCount++;
-        let cleanPath = href.replace(/https?:\/\/uniqdecorfurniture\.in/g, "");
+        let cleanPath = href.replace(/https?:\/\/(www\.)?uniqdecorfurniture\.in/g, "");
         if (cleanPath.startsWith("/")) {
           internalLinksList.push(cleanPath);
         }
@@ -748,7 +748,7 @@ async function auditPage(baseUrl, path) {
       if (jsonText.includes("sameAs")) {
         hasSameAs = true;
       }
-      if (jsonText.includes("#store") || jsonText.includes("uniqdecorfurniture.in/#store")) {
+      if (jsonText.includes("#store") || jsonText.includes("uniqdecorfurniture.in/#store") || jsonText.includes("www.uniqdecorfurniture.in/#store")) {
         hasStoreId = true;
       }
       
@@ -1161,6 +1161,17 @@ export async function GET(request) {
     const report = await auditPage(baseUrl, pathParam);
     report.links.incoming = calculateStaticIncomingLinks(pathParam);
 
+    // Merge GSC inspections cache fallback
+    try {
+      const cacheFile = pathLib.join(process.cwd(), "data", "gsc-inspections.json");
+      if (fs.existsSync(cacheFile)) {
+        const cache = JSON.parse(fs.readFileSync(cacheFile, "utf8"));
+        if (cache[pathParam]) {
+          report.gscInspection = cache[pathParam];
+        }
+      }
+    } catch (e) {}
+
     // Map GSC Performance
     if (gscSuccess) {
       const pGsc = gscData[pathParam];
@@ -1212,6 +1223,14 @@ export async function GET(request) {
   }
 
   // AUDIT ALL PAGES SEQUENTIALLY
+  let inspectionsCache = {};
+  try {
+    const cacheFile = pathLib.join(process.cwd(), "data", "gsc-inspections.json");
+    if (fs.existsSync(cacheFile)) {
+      inspectionsCache = JSON.parse(fs.readFileSync(cacheFile, "utf8"));
+    }
+  } catch (e) {}
+
   const reports = [];
   for (const path of PAGES_LIST) {
     const report = await auditPage(baseUrl, path);
@@ -1262,6 +1281,12 @@ export async function GET(request) {
     // Map Behavioral Metrics
     const normPath = getNormalizedPath(path);
     report.userActivity = pageEventsMap[normPath] || { whatsapp: 0, phone: 0, showroom: 0, maxScroll: 0 };
+
+    // Merge GSC inspections cache
+    const cached = inspectionsCache[path];
+    if (cached) {
+      report.gscInspection = cached;
+    }
 
     reports.push(report);
   }

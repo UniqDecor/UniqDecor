@@ -44,12 +44,23 @@ export default function AnalyticsDashboardClient() {
         setAuditProgress(prev => (prev >= 90 ? 90 : prev + 15));
       }, 300);
 
-      // Run both fetches but don't let events failure block the whole dashboard
-      const [seoRes, eventsRes] = await Promise.all([
-        fetch("/api/seo-audit", { cache: "no-store" }),
-        fetch("/api/events", { cache: "no-store" }).catch(() => null)
-      ]);
+      // 1. Fetch events data first (fast - reads local files)
+      setAuditProgress(20);
+      let eventsResult = null;
+      try {
+        const eventsRes = await fetch("/api/events", { cache: "no-store" });
+        if (eventsRes.ok) {
+          eventsResult = await eventsRes.json();
+          setEventsData(eventsResult);
+        }
+      } catch (e) {
+        setEventsData(null);
+      }
 
+      setAuditProgress(60);
+
+      // 2. Fetch SEO audit for scores only (slower - crawls pages)
+      const seoRes = await fetch("/api/seo-audit", { cache: "no-store" });
       clearInterval(interval);
       setAuditProgress(100);
 
@@ -58,17 +69,6 @@ export default function AnalyticsDashboardClient() {
       const seoResult = await seoRes.json();
       setSeoData(seoResult);
 
-      // Events data is optional - use empty defaults if unavailable
-      if (eventsRes && eventsRes.ok) {
-        try {
-          const eventsResult = await eventsRes.json();
-          setEventsData(eventsResult);
-        } catch (e) {
-          setEventsData(null); // graceful fallback
-        }
-      } else {
-        setEventsData(null); // no events tracking yet (Vercel filesystem limitation)
-      }
     } catch (err) {
       setError(err.message);
     } finally {

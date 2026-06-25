@@ -1,5 +1,38 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
+import fs from "fs";
+import pathLib from "path";
+
+const INSPECTIONS_FILE = pathLib.join(process.cwd(), "data", "gsc-inspections.json");
+
+function ensureInspectionsFile() {
+  const dir = pathLib.join(process.cwd(), "data");
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(INSPECTIONS_FILE)) {
+    fs.writeFileSync(INSPECTIONS_FILE, JSON.stringify({}), "utf8");
+  }
+}
+
+function loadInspections() {
+  try {
+    ensureInspectionsFile();
+    return JSON.parse(fs.readFileSync(INSPECTIONS_FILE, "utf8"));
+  } catch { return {}; }
+}
+
+function saveInspection(path, data) {
+  try {
+    ensureInspectionsFile();
+    const inspections = loadInspections();
+    inspections[path] = {
+      ...data,
+      lastChecked: data.lastChecked || new Date().toISOString()
+    };
+    fs.writeFileSync(INSPECTIONS_FILE, JSON.stringify(inspections, null, 2), "utf8");
+  } catch (err) {
+    console.error("Failed to save GSC inspection cache:", err.message);
+  }
+}
 
 export const dynamic = "force-dynamic";
 
@@ -24,12 +57,15 @@ export async function GET(request) {
       } catch(e) { /* fall through to individual vars */ }
     }
 
-    let indexVerdict = "Unknown";
-    let indexCoverage = "Inspection Credentials Not Configured";
-    let indexLastCrawl = null;
-    let indexGoogleCanonical = null;
-    let indexMobileUsability = "Unknown";
-    let isIndexed = false;
+    const cachedInspections = loadInspections();
+    const cached = cachedInspections[pathParam];
+
+    let indexVerdict = cached?.verdict || "Unknown";
+    let indexCoverage = cached?.coverage || "Inspection Credentials Not Configured";
+    let indexLastCrawl = cached?.lastCrawl || null;
+    let indexGoogleCanonical = cached?.canonical || null;
+    let indexMobileUsability = cached?.mobileUsability || "Unknown";
+    let isIndexed = cached?.isIndexed !== undefined ? cached.isIndexed : false;
 
     // 1. Query Google URL Inspection API if credentials are set
     if (email && privateKey) {
@@ -41,7 +77,7 @@ export async function GET(request) {
         });
         const searchconsole = google.searchconsole({ version: "v1", auth });
         const gscSiteUrl = process.env.GSC_SITE_URL || "sc-domain:uniqdecorfurniture.in";
-        const targetUrl = `https://uniqdecorfurniture.in${pathParam}`;
+        const targetUrl = `https://www.uniqdecorfurniture.in${pathParam}`;
 
         const inspectRes = await searchconsole.urlInspection.index.inspect({
           requestBody: {
@@ -81,7 +117,7 @@ export async function GET(request) {
 
     if (!gscOnly) {
       try {
-        const targetUrl = `https://uniqdecorfurniture.in${pathParam}`;
+        const targetUrl = `https://www.uniqdecorfurniture.in${pathParam}`;
         const psiUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(targetUrl)}&strategy=mobile`;
         
         const controller = new AbortController();
@@ -107,6 +143,18 @@ export async function GET(request) {
       }
     }
 
+    if (indexVerdict !== "Unknown" && indexCoverage !== "Inspection Credentials Not Configured") {
+      saveInspection(pathParam, {
+        verdict: indexVerdict,
+        coverage: indexCoverage,
+        lastCrawl: indexLastCrawl,
+        canonical: indexGoogleCanonical,
+        mobileUsability: indexMobileUsability,
+        isIndexed,
+        pageSpeedScore: speedScore
+      });
+    }
+
     return NextResponse.json({
       path: pathParam,
       inspection: {
@@ -115,7 +163,8 @@ export async function GET(request) {
         lastCrawl: indexLastCrawl,
         canonical: indexGoogleCanonical,
         mobileUsability: indexMobileUsability,
-        isIndexed
+        isIndexed,
+        lastChecked: cached?.lastChecked || new Date().toISOString()
       },
       pageSpeed: {
         score: speedScore,
@@ -126,6 +175,31 @@ export async function GET(request) {
         simulated: isSpeedSimulated
       }
     });
+  } catch (err) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
+export async function POST(request) {
+  try {
+    const body = await request.json(); // Map of { [path]: { verdict, coverage, lastCrawl, canonical, mobileUsability, isIndexed, lastChecked } }
+    ensureInspectionsFile();
+    const inspections = loadInspections();
+    
+    Object.entries(body).forEach(([path, data]) => {
+      inspections[path] = {
+        verdict: data.verdict || "Unknown",
+        coverage: data.coverage || "Unknown",
+        lastCrawl: data.lastCrawl || null,
+        canonical: data.canonical || null,
+        mobileUsability: data.mobileUsability || "Unknown",
+        isIndexed: data.isIndexed !== undefined ? data.isIndexed : false,
+        lastChecked: data.lastChecked || new Date().toISOString()
+      };
+    });
+    
+    fs.writeFileSync(INSPECTIONS_FILE, JSON.stringify(inspections, null, 2), "utf8");
+    return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

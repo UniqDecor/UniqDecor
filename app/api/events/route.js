@@ -143,8 +143,9 @@ export async function POST(request) {
         aggData.daily[today].pageviews++;
       }
 
-      if (newEvent.event === "heartbeat" && newEvent.sessionDuration) {
-        aggData.totalDuration += newEvent.sessionDuration;
+      // Use session_end duration for accurate total (heartbeats send absolute time, not delta)
+      if (newEvent.event === "session_end" && newEvent.duration) {
+        aggData.totalDuration += newEvent.duration;
       }
 
       if (newEvent.event === "click") {
@@ -231,10 +232,10 @@ export async function GET(request) {
       } catch {}
     });
 
-    // Compute average session duration
-    const sessionsWithDuration = events.filter(e => e.event === "heartbeat" && e.sessionDuration);
-    const avgSessionDuration = sessionsWithDuration.length > 0
-      ? Math.round(sessionsWithDuration.reduce((s, e) => s + (e.sessionDuration || 0), 0) / sessionsWithDuration.length)
+    // Compute average session duration from session_end events (accurate total per session)
+    const sessionEndEvents = events.filter(e => e.event === "session_end" && e.duration);
+    const avgSessionDuration = sessionEndEvents.length > 0
+      ? Math.round(sessionEndEvents.reduce((s, e) => s + (e.duration || 0), 0) / sessionEndEvents.length)
       : 0;
 
     // Compute average time-on-page from page_time events

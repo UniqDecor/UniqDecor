@@ -50,6 +50,8 @@ export default function SeoDashboardClient() {
   const [auditProgress, setAuditProgress] = useState(0);
   const [bulkInspecting, setBulkInspecting] = useState(false);
   const [bulkProgress, setBulkProgress] = useState(0);
+  const [showIndexRegistry, setShowIndexRegistry] = useState(false);
+  const [modalSearch, setModalSearch] = useState("");
   // Trigger full crawl
   const runFullAudit = async () => {
     setLoading(true);
@@ -81,6 +83,110 @@ export default function SeoDashboardClient() {
   useEffect(() => {
     runFullAudit();
   }, []);
+
+  const saveSingleInspection = (path, result) => {
+    // 1. Update React state
+    setInspections(prev => ({
+      ...prev,
+      [path]: { loading: false, data: result, error: null }
+    }));
+
+    // 2. Persist to browser localStorage
+    try {
+      const stored = localStorage.getItem("uniq_gsc_inspections");
+      const localCache = stored ? JSON.parse(stored) : {};
+      localCache[path] = {
+        ...result.inspection,
+        pageSpeedScore: result.pageSpeed?.score
+      };
+      localStorage.setItem("uniq_gsc_inspections", JSON.stringify(localCache));
+    } catch (e) {
+      console.error("Failed to save GSC inspection cache to localStorage:", e);
+    }
+  };
+
+  // Pre-populate GSC inspections state from server cache and localStorage
+  useEffect(() => {
+    if (data?.pages) {
+      // 1. Retrieve from localStorage
+      let localCache = {};
+      try {
+        const stored = localStorage.getItem("uniq_gsc_inspections");
+        if (stored) {
+          localCache = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.error("Failed to parse inspections from localStorage:", e);
+      }
+
+      // 2. Retrieve from data.pages (server-side cache)
+      const serverMap = {};
+      data.pages.forEach(p => {
+        if (p.gscInspection) {
+          serverMap[p.path] = p.gscInspection;
+        }
+      });
+
+      // 3. Merge based on newest timestamp
+      const mergedMap = {};
+      const allPaths = new Set([...Object.keys(localCache), ...Object.keys(serverMap)]);
+
+      allPaths.forEach(path => {
+        const localVal = localCache[path];
+        const serverVal = serverMap[path];
+
+        let chosenVal = null;
+        if (localVal && serverVal) {
+          const localTime = new Date(localVal.lastChecked || 0).getTime();
+          const serverTime = new Date(serverVal.lastChecked || 0).getTime();
+          chosenVal = localTime >= serverTime ? localVal : serverVal;
+        } else {
+          chosenVal = localVal || serverVal;
+        }
+
+        if (chosenVal) {
+          mergedMap[path] = {
+            loading: false,
+            data: {
+              inspection: chosenVal,
+              pageSpeed: { score: chosenVal.pageSpeedScore || 95, simulated: true }
+            },
+            error: null
+          };
+        }
+      });
+
+      // 4. Update React state
+      setInspections(prev => {
+        const next = { ...prev };
+        Object.entries(mergedMap).forEach(([path, val]) => {
+          if (!next[path] || !next[path].data) {
+            next[path] = val;
+          } else {
+            const currentLastChecked = next[path].data?.inspection?.lastChecked;
+            const incomingLastChecked = val.data?.inspection?.lastChecked;
+            if (new Date(incomingLastChecked || 0).getTime() > new Date(currentLastChecked || 0).getTime()) {
+              next[path] = val;
+            }
+          }
+        });
+        return next;
+      });
+
+      // Sync merged result back to localStorage
+      try {
+        const inspectionsToStore = {};
+        Object.entries(mergedMap).forEach(([path, val]) => {
+          if (val.data?.inspection) {
+            inspectionsToStore[path] = val.data.inspection;
+          }
+        });
+        localStorage.setItem("uniq_gsc_inspections", JSON.stringify(inspectionsToStore));
+      } catch (e) {
+        console.error("Failed to save inspections map to localStorage:", e);
+      }
+    }
+  }, [data]);
 
   // Re-scrape a single page
   const reScrapePage = async (path) => {
@@ -130,10 +236,7 @@ export default function SeoDashboardClient() {
       const res = await fetch(`/api/inspect-url?path=${encodeURIComponent(path)}`, { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to query live Google inspection API.");
       const result = await res.json();
-      setInspections(prev => ({
-        ...prev,
-        [path]: { loading: false, data: result, error: null }
-      }));
+      saveSingleInspection(path, result);
     } catch (err) {
       setInspections(prev => ({
         ...prev,
@@ -158,10 +261,7 @@ export default function SeoDashboardClient() {
         const res = await fetch(`/api/inspect-url?path=${encodeURIComponent(page.path)}&gscOnly=true`, { cache: "no-store" });
         if (!res.ok) throw new Error("GSC API query failed.");
         const result = await res.json();
-        setInspections(prev => ({
-          ...prev,
-          [page.path]: { loading: false, data: result, error: null }
-        }));
+        saveSingleInspection(page.path, result);
       } catch (err) {
         setInspections(prev => ({
           ...prev,
@@ -662,6 +762,15 @@ export default function SeoDashboardClient() {
                 </span>
               </button>
 
+              <button
+                onClick={() => setShowIndexRegistry(true)}
+                className="inline-flex items-center gap-2 px-3.5 py-2.5 border border-purple-200 hover:border-purple-400 bg-purple-50/50 hover:bg-purple-50 text-purple-700 font-bold text-xs uppercase tracking-wider rounded-lg transition-all cursor-pointer shadow-sm active:scale-95 shrink-0 bg-white"
+                title="View the tabular Google Index verification registry and import/export CSV reports"
+              >
+                <Database className="w-3.5 h-3.5 text-[#C5A059]" />
+                <span>Google Index Registry</span>
+              </button>
+
               <div className="relative w-full lg:w-[350px]">
                 <input 
                   type="text" 
@@ -718,6 +827,7 @@ export default function SeoDashboardClient() {
 
       {/* Modal / Slide-out for detailed priority fixes */}
       {selectedFix && renderFixDetailsModal()}
+      {showIndexRegistry && renderIndexRegistryModal()}
     </div>
   );
 
@@ -777,7 +887,7 @@ export default function SeoDashboardClient() {
                     </span>
                     {!inspections[page.path].data.inspection.isIndexed && (
                       <a
-                        href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent("sc-domain:uniqdecorfurniture.in")}&url=${encodeURIComponent("https://uniqdecorfurniture.in" + page.path)}`}
+                        href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent("sc-domain:uniqdecorfurniture.in")}&url=${encodeURIComponent("https://www.uniqdecorfurniture.in" + page.path)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
@@ -1357,7 +1467,7 @@ export default function SeoDashboardClient() {
 
     let reportStr = "";
     const dateStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-    const getLiveUrl = (path) => path.startsWith("http") ? path : `https://uniqdecorfurniture.in${path}`;
+    const getLiveUrl = (path) => path.startsWith("http") ? path : `https://www.uniqdecorfurniture.in${path}`;
 
     if (selectedFix === "broken_links") {
       const affected = data.pages.filter(p => p.brokenLinks && p.brokenLinks.length > 0);
@@ -1567,6 +1677,356 @@ export default function SeoDashboardClient() {
         console.error("Failed to copy report:", err);
       });
   };
+
+  const handleExportGscCsv = () => {
+    if (!data?.pages) return;
+    
+    const headers = ["Route Path", "Google Verified Status", "Coverage Details", "Last Crawl Time", "Last Checked Time"];
+    const rows = data.pages.map(page => {
+      const gsc = inspections[page.path]?.data?.inspection;
+      const status = gsc ? (gsc.isIndexed ? "Indexed" : "Not Indexed") : "Not Checked";
+      const coverage = gsc ? gsc.coverage : "N/A";
+      const lastCrawl = gsc ? (gsc.lastCrawl || "N/A") : "N/A";
+      const lastChecked = gsc ? (gsc.lastChecked || "N/A") : "N/A";
+      return `"${page.path}","${status}","${coverage.replace(/"/g, '""')}","${lastCrawl}","${lastChecked}"`;
+    });
+    
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `google-index-registry-${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleImportGscCsv = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const text = event.target.result;
+      
+      // Robust character-by-character CSV Parser
+      const parseCsvText = (csvString) => {
+        const rows = [];
+        let currentRow = [];
+        let currentCell = "";
+        let inQuotes = false;
+        
+        // Find delimiter: check the first line to auto-detect
+        const firstLineEnd = csvString.indexOf("\n");
+        const firstLine = firstLineEnd !== -1 ? csvString.substring(0, firstLineEnd) : csvString;
+        let delimiter = ",";
+        if (!firstLine.includes(",") && firstLine.includes(";")) delimiter = ";";
+        if (!firstLine.includes(",") && firstLine.includes("\t")) delimiter = "\t";
+
+        for (let i = 0; i < csvString.length; i++) {
+          const char = csvString[i];
+          const nextChar = csvString[i + 1];
+
+          if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+              // Escaped quotes inside quotes (e.g. "")
+              currentCell += '"';
+              i++; // Skip next quote
+            } else {
+              // Toggle quote mode
+              inQuotes = !inQuotes;
+            }
+          } else if (char === delimiter && !inQuotes) {
+            currentRow.push(currentCell.trim());
+            currentCell = "";
+          } else if ((char === "\r" || char === "\n") && !inQuotes) {
+            if (char === "\r" && nextChar === "\n") {
+              i++; // Skip \n in \r\n
+            }
+            currentRow.push(currentCell.trim());
+            if (currentRow.some(cell => cell.length > 0)) {
+              rows.push(currentRow);
+            }
+            currentRow = [];
+            currentCell = "";
+          } else {
+            currentCell += char;
+          }
+        }
+        
+        // Push residual cell and row
+        if (currentCell || currentRow.length > 0) {
+          currentRow.push(currentCell.trim());
+          if (currentRow.some(cell => cell.length > 0)) {
+            rows.push(currentRow);
+          }
+        }
+        
+        return rows;
+      };
+
+      const rows = parseCsvText(text);
+      if (rows.length <= 1) {
+        alert("Empty or invalid CSV file.");
+        return;
+      }
+      
+      const headers = rows[0].map(h => h.toLowerCase());
+      const pathIdx = headers.indexOf("route path") !== -1 ? headers.indexOf("route path") : headers.indexOf("path");
+      const statusIdx = headers.indexOf("google verified status") !== -1 ? headers.indexOf("google verified status") : headers.indexOf("status");
+      const coverageIdx = headers.indexOf("coverage details") !== -1 ? headers.indexOf("coverage details") : headers.indexOf("coverage");
+      const crawlIdx = headers.indexOf("last crawl time") !== -1 ? headers.indexOf("last crawl time") : headers.indexOf("last crawl");
+      const checkedIdx = headers.indexOf("last checked time") !== -1 ? headers.indexOf("last checked time") : headers.indexOf("last checked");
+
+      if (pathIdx === -1) {
+        alert("Invalid CSV format. Header must contain 'Route Path' or 'Path' column.");
+        return;
+      }
+      
+      const importedInspections = {};
+      const newInspectionsState = { ...inspections };
+      
+      for (let i = 1; i < rows.length; i++) {
+        const cells = rows[i];
+        if (cells.length === 0 || !cells[pathIdx]) continue;
+        
+        const path = cells[pathIdx];
+        const status = statusIdx !== -1 ? cells[statusIdx] : "";
+        const coverage = coverageIdx !== -1 ? cells[coverageIdx] : "Imported from CSV";
+        const lastCrawl = crawlIdx !== -1 && cells[crawlIdx] !== "N/A" ? cells[crawlIdx] : null;
+        const lastChecked = checkedIdx !== -1 && cells[checkedIdx] !== "N/A" ? cells[checkedIdx] : new Date().toISOString();
+        const isIndexed = status.toLowerCase().includes("indexed") && !status.toLowerCase().includes("not");
+        
+        importedInspections[path] = {
+          verdict: isIndexed ? "PASS" : "FAIL",
+          coverage,
+          lastCrawl,
+          canonical: null,
+          mobileUsability: "PASS",
+          isIndexed,
+          lastChecked
+        };
+        
+        newInspectionsState[path] = {
+          loading: false,
+          data: {
+            inspection: importedInspections[path],
+            pageSpeed: { score: 95, simulated: true }
+          },
+          error: null
+        };
+      }
+      
+      // Update React state
+      setInspections(newInspectionsState);
+
+      // Save to localStorage
+      try {
+        const stored = localStorage.getItem("uniq_gsc_inspections");
+        const localCache = stored ? JSON.parse(stored) : {};
+        Object.entries(importedInspections).forEach(([path, data]) => {
+          localCache[path] = data;
+        });
+        localStorage.setItem("uniq_gsc_inspections", JSON.stringify(localCache));
+      } catch (e) {
+        console.error("Failed to save GSC CSV import to localStorage:", e);
+      }
+      
+      // Save to server
+      try {
+        const res = await fetch("/api/inspect-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(importedInspections)
+        });
+        if (res.ok) {
+          alert("GSC Index Registry imported and synced successfully!");
+        } else {
+          throw new Error("Failed to save to server filesystem cache.");
+        }
+      } catch (err) {
+        alert(`GSC imported locally but server sync failed: ${err.message}`);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  function renderIndexRegistryModal() {
+    const sortedRegistry = data?.pages.filter(p => {
+      return p.path.toLowerCase().includes(modalSearch.toLowerCase()) ||
+             (inspections[p.path]?.data?.inspection?.coverage || "").toLowerCase().includes(modalSearch.toLowerCase());
+    }) || [];
+
+    return (
+      <div 
+        className="fixed inset-0 bg-[#080D09]/80 backdrop-blur-md z-[200000] flex items-center justify-center p-4 transition-all duration-300 animate-in fade-in"
+        onClick={() => setShowIndexRegistry(false)}
+      >
+        <div 
+          className="bg-[#FAF9F6] border border-[#8B4513]/20 w-full max-w-5xl max-h-[85vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Modal Header */}
+          <div className="p-6 border-b border-[#8B4513]/10 bg-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="font-serif text-lg font-black text-[#2D2A26] flex items-center gap-2">
+                <Globe className="w-5 h-5 text-[#C5A059]" />
+                <span>Google Search Console Index Registry</span>
+              </h3>
+              <p className="text-[11px] text-stone-500 mt-1">Verify live indexing states, check crawls, or sync data logs locally without database requirements.</p>
+            </div>
+            <button 
+              onClick={() => setShowIndexRegistry(false)}
+              className="text-stone-400 hover:text-black p-1 hover:bg-stone-100 rounded-full transition-colors cursor-pointer self-start sm:self-auto"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Action Ribbon & Upload/Export Bar */}
+          <div className="p-4 bg-stone-50 border-b border-stone-200 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+              <button
+                onClick={handleExportGscCsv}
+                className="flex items-center gap-1.5 px-4 py-2 bg-white border border-[#8B4513]/15 hover:border-[#C5A059]/40 rounded-xl text-[10px] uppercase font-black tracking-wider text-[#8B4513] transition-all cursor-pointer shadow-sm active:scale-95 shrink-0"
+                title="Download current Google index status report as a CSV sheet"
+              >
+                <FileText className="w-3.5 h-3.5 text-[#C5A059]" />
+                <span>Export CSV Sheet</span>
+              </button>
+
+              <label 
+                className="flex items-center gap-1.5 px-4 py-2 bg-white border border-[#8B4513]/15 hover:border-[#C5A059]/40 rounded-xl text-[10px] uppercase font-black tracking-wider text-[#8B4513] transition-all cursor-pointer shadow-sm active:scale-95 shrink-0"
+                title="Upload previously exported GSC CSV report to restore verification logs"
+              >
+                <Database className="w-3.5 h-3.5 text-purple-600" />
+                <span>Import GSC CSV</span>
+                <input 
+                  type="file" 
+                  accept=".csv" 
+                  onChange={handleImportGscCsv} 
+                  className="hidden" 
+                />
+              </label>
+            </div>
+
+            <div className="relative w-full md:w-[280px]">
+              <input 
+                type="text" 
+                placeholder="Search registry path or status..." 
+                value={modalSearch}
+                onChange={(e) => setModalSearch(e.target.value)}
+                className="w-full bg-white border border-[#8B4513]/15 rounded-lg pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-[#C5A059] transition-all font-medium"
+              />
+              <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-stone-400" />
+            </div>
+          </div>
+
+          {/* Modal Body Table */}
+          <div className="p-6 overflow-y-auto grow bg-white">
+            <div className="border border-stone-200 rounded-xl overflow-hidden bg-white">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-[#6B6560]">
+                    <th className="p-3">Route Path</th>
+                    <th className="p-3 text-center">Live Status</th>
+                    <th className="p-3 text-center">GSC Index status</th>
+                    <th className="p-3">GSC Coverage State</th>
+                    <th className="p-3 text-center">Last Google Crawled</th>
+                    <th className="p-3 text-center">Verified checked</th>
+                    <th className="p-3 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100 font-sans">
+                  {sortedRegistry.map(p => {
+                    const gsc = inspections[p.path]?.data?.inspection;
+                    const isLoading = !!inspections[p.path]?.loading;
+                    
+                    return (
+                      <tr key={p.path} className="hover:bg-stone-50/50">
+                        <td className="p-3 font-semibold font-mono text-[#8B4513] truncate max-w-[200px]" title={p.path}>
+                          {p.path}
+                        </td>
+                        <td className="p-3 text-center">
+                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                            p.indexability.status === "Indexable"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                              : "bg-red-50 text-red-700 border-red-100"
+                          }`}>
+                            {p.indexability.status}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          {gsc ? (
+                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                              gsc.isIndexed 
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                                : "bg-amber-50 text-amber-700 border-amber-100"
+                            }`}>
+                              {gsc.isIndexed ? "Indexed" : "Not Indexed"}
+                            </span>
+                          ) : (
+                            <span className="text-[9px] font-bold text-stone-400 bg-stone-50 border border-stone-200 px-2 py-0.5 rounded-full">
+                              Unverified
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-3 text-[#6B6560] max-w-[220px] truncate" title={gsc?.coverage || "Not Checked"}>
+                          {gsc?.coverage || "Not checked yet"}
+                        </td>
+                        <td className="p-3 text-center font-mono text-stone-500 whitespace-nowrap">
+                          {gsc?.lastCrawl ? new Date(gsc.lastCrawl).toLocaleDateString() : "N/A"}
+                        </td>
+                        <td className="p-3 text-center font-mono text-stone-500 whitespace-nowrap" title={gsc?.lastChecked}>
+                          {gsc?.lastChecked ? new Date(gsc.lastChecked).toLocaleString() : "Never"}
+                        </td>
+                        <td className="p-3 text-center">
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              disabled={isLoading}
+                              onClick={() => runLiveInspection(p.path)}
+                              className="p-1 hover:bg-stone-100 text-[#6B6560] hover:text-[#8B4513] rounded transition-colors cursor-pointer border border-stone-200/50 bg-stone-50/50"
+                              title="Re-verify indexing status for this path only"
+                            >
+                              <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
+                            </button>
+                            {gsc && !gsc.isIndexed && (
+                              <a
+                                href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent("sc-domain:uniqdecorfurniture.in")}&url=${encodeURIComponent("https://www.uniqdecorfurniture.in" + p.path)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1 hover:bg-amber-50 text-amber-700 rounded transition-colors cursor-pointer border border-amber-200 bg-amber-50/20"
+                                title="Open in GSC to request manual index submission"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Modal Footer */}
+          <div className="p-4 border-t border-[#8B4513]/10 bg-white flex justify-end gap-3 shrink-0">
+            <button 
+              onClick={() => setShowIndexRegistry(false)}
+              className="px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold uppercase rounded-lg transition-colors cursor-pointer text-[10px] tracking-wider"
+            >
+              Close Registry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Render a detailed popup modal for a selected priority fix
   function renderFixDetailsModal() {
