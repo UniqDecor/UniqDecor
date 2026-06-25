@@ -8,6 +8,11 @@ export const dynamic = "force-dynamic";
 
 const PAGES_LIST = [
   "/",
+  "/about",
+  "/contact",
+  "/blog",
+  "/privacy",
+  "/terms",
   "/ddecor",
   "/geeken",
   "/roserro",
@@ -43,11 +48,52 @@ const PAGES_LIST = [
   "/ddecor/hospitality/hotel-curtains",
   "/ddecor/hospitality/mewari-heritage",
   "/ddecor/hospitality/villa-furnishing",
-  "/ddecor/hospitality/banquet-linens"
+  "/ddecor/hospitality/banquet-linens",
+  "/geeken/ergonomic-chairs",
+  "/geeken/workstations",
+  "/geeken/storage",
+  "/geeken/healthcare",
+  "/geeken/locations",
+  "/roserro/bed-linen",
+  "/roserro/bath-linen",
+  "/roserro/banquet-linen",
+  "/roserro/healthcare-linen",
+  "/roserro/locations",
+  "/laxree-amenities/room-amenities",
+  "/laxree-amenities/washroom-amenities",
+  "/laxree-amenities/lobby-amenities",
+  "/laxree-amenities/restaurant-furniture",
+  "/laxree-amenities/banquet-furniture",
+  "/laxree-amenities/outdoor-furniture",
+  "/laxree-amenities/space-pods",
+  "/laxree-amenities/locations",
+  "/laxree-roofing/stone-coated-tiles",
+  "/laxree-roofing/synthetic-thatch",
+  "/laxree-roofing/asphalt-shingles",
+  "/laxree-roofing/locations",
+  "/blog/curtain-fabrics-guide-udaipur",
+  "/blog/best-ergonomic-office-chairs-udaipur",
+  "/blog/hotel-linen-thread-count-gsm-guide",
+  "/blog/stone-coated-roofing-vs-clay-tiles",
+  "/blog/hotel-room-amenities-guide-udaipur",
+  "/blog/ddecor-vs-other-brands-udaipur",
+  "/blog/choose-wallpaper-udaipur-home",
+  "/blog/office-furniture-setup-guide-udaipur",
+  "/blog/geeken-bifma-certification-standards",
+  "/blog/hospitality-linen-supplier-udaipur",
+  "/blog/roserro-vs-other-linen-brands",
+  "/blog/silent-minibar-vs-traditional-comparison",
+  "/blog/synthetic-thatch-roofing-resort-guide",
+  "/blog/asphalt-shingles-vs-metal-roofing"
 ];
 
 const KEYWORDS_MAP = {
   "/": "Premium Furniture Showroom Udaipur",
+  "/about": "About Uniq Decor Udaipur",
+  "/contact": "Contact Uniq Decor Udaipur",
+  "/blog": "Interior Design Blog Udaipur",
+  "/privacy": "Privacy Policy Uniq Decor",
+  "/terms": "Terms of Service Uniq Decor",
   "/ddecor": "D'Decor Showroom Udaipur",
   "/geeken": "Geeken Office Furniture Udaipur",
   "/roserro": "Roserro Mattress Udaipur",
@@ -83,7 +129,43 @@ const KEYWORDS_MAP = {
   "/ddecor/hospitality/hotel-curtains": "commercial hotel curtains Udaipur",
   "/ddecor/hospitality/mewari-heritage": "royal home decor fabrics Udaipur",
   "/ddecor/hospitality/villa-furnishing": "luxury villa interior fabrics Udaipur",
-  "/ddecor/hospitality/banquet-linens": "premium banquet fabrics Udaipur"
+  "/ddecor/hospitality/banquet-linens": "premium banquet fabrics Udaipur",
+  "/geeken/ergonomic-chairs": "Geeken Ergonomic Chairs Udaipur",
+  "/geeken/workstations": "Geeken Modular Workstations Udaipur",
+  "/geeken/storage": "Geeken Steel Lockers Udaipur",
+  "/geeken/healthcare": "Geeken Healthcare Furniture Udaipur",
+  "/geeken/locations": "Geeken Furniture Showroom Udaipur",
+  "/roserro/bed-linen": "Roserro Bed Linen Udaipur",
+  "/roserro/bath-linen": "Roserro Bath Linen Udaipur",
+  "/roserro/banquet-linen": "Roserro Banquet Linen Udaipur",
+  "/roserro/healthcare-linen": "Roserro Healthcare Linen Udaipur",
+  "/roserro/locations": "Roserro Linen Showroom Udaipur",
+  "/laxree-amenities/room-amenities": "LaxRee Hotel Room Amenities Udaipur",
+  "/laxree-amenities/washroom-amenities": "LaxRee Hotel Washroom Amenities Udaipur",
+  "/laxree-amenities/lobby-amenities": "LaxRee Hotel Lobby Amenities Udaipur",
+  "/laxree-amenities/restaurant-furniture": "LaxRee Restaurant Furniture Udaipur",
+  "/laxree-amenities/banquet-furniture": "LaxRee Banquet Furniture Udaipur",
+  "/laxree-amenities/outdoor-furniture": "LaxRee Outdoor Furniture Udaipur",
+  "/laxree-amenities/space-pods": "LaxRee Glamping Space Pods Udaipur",
+  "/laxree-amenities/locations": "LaxRee Amenities Showroom Udaipur",
+  "/laxree-roofing/stone-coated-tiles": "LaxRee Stone Coated Roof Tiles Udaipur",
+  "/laxree-roofing/synthetic-thatch": "LaxRee Synthetic Thatch Udaipur",
+  "/laxree-roofing/asphalt-shingles": "LaxRee Asphalt Shingles Udaipur",
+  "/laxree-roofing/locations": "LaxRee Roofing Sheets Showroom Udaipur",
+  "/blog/curtain-fabrics-guide-udaipur": "Curtain Fabrics Guide Udaipur",
+  "/blog/best-ergonomic-office-chairs-udaipur": "Best Ergonomic Office Chairs Udaipur",
+  "/blog/hotel-linen-thread-count-gsm-guide": "Hotel Linen Thread Count GSM",
+  "/blog/stone-coated-roofing-vs-clay-tiles": "Stone Coated Roofing vs Clay Tiles",
+  "/blog/hotel-room-amenities-guide-udaipur": "Hotel Room Amenities Guide Udaipur",
+  "/blog/ddecor-vs-other-brands-udaipur": "D'Decor vs Other Brands Udaipur",
+  "/blog/choose-wallpaper-udaipur-home": "How to Choose Wallpaper Udaipur",
+  "/blog/office-furniture-setup-guide-udaipur": "Office Furniture Setup Udaipur",
+  "/blog/geeken-bifma-certification-standards": "Geeken BIFMA Certification Standards",
+  "/blog/hospitality-linen-supplier-udaipur": "Hospitality Linen Supplier Udaipur",
+  "/blog/roserro-vs-other-linen-brands": "Roserro vs Other Linen Brands",
+  "/blog/silent-minibar-vs-traditional-comparison": "Silent Minibar vs Traditional Minibar",
+  "/blog/synthetic-thatch-roofing-resort-guide": "Synthetic Thatch Roofing Resort",
+  "/blog/asphalt-shingles-vs-metal-roofing": "Asphalt Shingles vs Metal Roofing"
 };
 
 // HTML Entities Decoder Helper
@@ -108,10 +190,24 @@ function getLastUpdatedForRoute(routePath) {
   else if (routePath === "/laxree") fileToStat = "app/laxree/page.js";
   else if (routePath === "/laxree-amenities") fileToStat = "app/laxree-amenities/page.js";
   else if (routePath === "/laxree-roofing") fileToStat = "app/laxree-roofing/page.js";
+  else if (routePath === "/about") fileToStat = "app/about/page.js";
+  else if (routePath === "/contact") fileToStat = "app/contact/page.js";
+  else if (routePath === "/blog") fileToStat = "app/blog/page.js";
+  else if (routePath === "/privacy") fileToStat = "app/privacy/page.js";
+  else if (routePath === "/terms") fileToStat = "app/terms/page.js";
+  else if (routePath === "/geeken/locations") fileToStat = "app/geeken/locations/page.js";
+  else if (routePath === "/roserro/locations") fileToStat = "app/roserro/locations/page.js";
+  else if (routePath === "/laxree-amenities/locations") fileToStat = "app/laxree-amenities/locations/page.js";
+  else if (routePath === "/laxree-roofing/locations") fileToStat = "app/laxree-roofing/locations/page.js";
   else if (routePath.includes("/locations/")) fileToStat = "app/ddecor/locationsData.js";
   else if (routePath.includes("/materials/")) fileToStat = "app/ddecor/materialsData.js";
   else if (routePath.includes("/hospitality/")) fileToStat = "app/ddecor/hospitalityData.js";
   else if (routePath.startsWith("/ddecor/")) fileToStat = "app/ddecor/categoriesData.js";
+  else if (routePath.startsWith("/geeken/")) fileToStat = "app/geeken/geekenCategoriesData.js";
+  else if (routePath.startsWith("/roserro/")) fileToStat = "app/roserro/roserroCategoriesData.js";
+  else if (routePath.startsWith("/laxree-amenities/")) fileToStat = "app/laxree-amenities/laxreeAmenitiesCategoriesData.js";
+  else if (routePath.startsWith("/laxree-roofing/")) fileToStat = "app/laxree-roofing/laxreeRoofingCategoriesData.js";
+  else if (routePath.startsWith("/blog/")) fileToStat = "app/blog/blogData.js";
   
   try {
     const stats = fs.statSync(pathLib.join(process.cwd(), fileToStat));

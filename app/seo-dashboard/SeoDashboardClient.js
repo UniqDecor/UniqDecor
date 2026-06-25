@@ -139,23 +139,31 @@ export default function SeoDashboardClient() {
   const togglePageExpand = (path) => {
     setExpandedPages(prev => ({ ...prev, [path]: !prev[path] }));
   };
-
   const getPageGroup = (path) => {
-    if (path.includes("/locations/")) return "Neighborhood Local SEO Pages";
+    if (path.includes("/locations/") || path.endsWith("/locations")) return "Neighborhood Local SEO Pages";
     if (path.includes("/materials/")) return "Niche Tech Materials Pages";
     if (path.includes("/hospitality/")) return "B2B Hospitality Niches";
     if (path.startsWith("/ddecor/")) return "Dynamic Fabric Category Hubs";
+    if (path.startsWith("/geeken/")) return "Geeken Office Furniture Pages";
+    if (path.startsWith("/roserro/")) return "Roserro Luxury Linen Pages";
+    if (path.startsWith("/laxree-amenities/")) return "LaxRee Hospitality Amenities Pages";
+    if (path.startsWith("/laxree-roofing/")) return "LaxRee Premium Roofing Pages";
+    if (path.startsWith("/blog/")) return "Company Blog Posts";
     return "Main Brand & Layout Pages";
   };
 
   const groupsOrder = [
     "Main Brand & Layout Pages",
     "Dynamic Fabric Category Hubs",
+    "Geeken Office Furniture Pages",
+    "Roserro Luxury Linen Pages",
+    "LaxRee Hospitality Amenities Pages",
+    "LaxRee Premium Roofing Pages",
     "Neighborhood Local SEO Pages",
     "Niche Tech Materials Pages",
-    "B2B Hospitality Niches"
+    "B2B Hospitality Niches",
+    "Company Blog Posts"
   ];
-
   if (error) {
     return (
       <div className="min-h-screen bg-[#080D09] text-white flex flex-col items-center justify-center p-6 font-sans">
@@ -295,7 +303,7 @@ export default function SeoDashboardClient() {
         {/* Progress Bar */}
         {loading && (
           <div className="mb-8 bg-white border border-[#8B4513]/10 p-6 rounded-2xl shadow-sm text-center">
-            <p className="text-sm font-semibold text-[#8B4513] animate-pulse mb-3 font-serif">Crawling and indexing all 37 dynamic route configurations...</p>
+            <p className="text-sm font-semibold text-[#8B4513] animate-pulse mb-3 font-serif">Crawling and indexing all {data?.pages?.length || 78} dynamic route configurations...</p>
             <div className="w-full bg-[#FAF9F6] border border-[#8B4513]/10 h-3.5 rounded-full overflow-hidden">
               <div 
                 className="bg-gradient-to-r from-[#C5A059] to-[#8B4513] h-full transition-all duration-300 rounded-full" 
