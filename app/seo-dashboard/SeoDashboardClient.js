@@ -453,6 +453,7 @@ export default function SeoDashboardClient() {
 
       let successCount = 0;
       let activationRequired = null;
+      let ownershipRequiredEmail = null;
 
       const newInspectionsState = { ...inspections };
 
@@ -480,9 +481,10 @@ export default function SeoDashboardClient() {
         } else {
           if (r.needsActivation) {
             activationRequired = r.activationUrl;
-          } else {
-            console.error(`Index submit failed for ${r.path}:`, r.error);
+          } else if (r.needsOwnership) {
+            ownershipRequiredEmail = r.serviceAccountEmail;
           }
+          console.error(`Index submit failed for ${r.path}:`, r.error);
         }
       });
 
@@ -524,6 +526,12 @@ export default function SeoDashboardClient() {
           `GSC Index Submission failed because the Google Indexing API is disabled on your Google Cloud project.\n\nPlease click OK to open the Google Cloud Console and enable the Indexing API for your project. After enabling it, you can submit again!`
         );
         window.open(activationRequired, "_blank");
+      } else if (ownershipRequiredEmail) {
+        alert(
+          `Google Index Submission failed because the service account has no permission/ownership for this website.\n\nTo resolve this, you MUST add this service account email as an OWNER in Google Search Console:\n\n${ownershipRequiredEmail}\n\nClick OK to automatically copy this email to your clipboard and open the Search Console Settings page to add it.`
+        );
+        navigator.clipboard.writeText(ownershipRequiredEmail).catch(() => {});
+        window.open("https://search.google.com/search-console/users", "_blank");
       } else if (successCount > 0) {
         alert(`Successfully submitted ${successCount} page(s) to Google for Instant Indexing! Googlebot will crawl them shortly.`);
       }
