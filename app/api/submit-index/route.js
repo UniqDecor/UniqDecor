@@ -71,6 +71,25 @@ export async function POST(request) {
         
         let needsActivation = false;
         let errorMessage = err.message;
+        let finalActivationUrl = activationUrl;
+
+        // Try to extract exact developers console activation link from API error details
+        if (err.response?.data?.error?.details) {
+          try {
+            const details = err.response.data.error.details;
+            const errorInfo = details.find(d => d["@type"] && d["@type"].includes("ErrorInfo"));
+            if (errorInfo && errorInfo.metadata && errorInfo.metadata.activationUrl) {
+              finalActivationUrl = errorInfo.metadata.activationUrl;
+            } else {
+              const helpInfo = details.find(d => d["@type"] && d["@type"].includes("Help"));
+              if (helpInfo && helpInfo.links && helpInfo.links[0] && helpInfo.links[0].url) {
+                finalActivationUrl = helpInfo.links[0].url;
+              }
+            }
+          } catch (e) {
+            console.error("Failed to parse details for activationUrl:", e);
+          }
+        }
         
         // Check if API is disabled in the Google Cloud project
         if (
@@ -79,7 +98,7 @@ export async function POST(request) {
           (err.response && err.response.data && JSON.stringify(err.response.data).includes("disabled"))
         ) {
           needsActivation = true;
-          errorMessage = `Google Indexing API is disabled. Please enable it in the GCP Console using this link: ${activationUrl}`;
+          errorMessage = `Google Indexing API is disabled. Please enable it in the GCP Console using this link: ${finalActivationUrl}`;
         }
 
         results.push({
@@ -88,7 +107,7 @@ export async function POST(request) {
           success: false,
           error: errorMessage,
           needsActivation,
-          activationUrl
+          activationUrl: finalActivationUrl
         });
       }
     }
