@@ -183,8 +183,14 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json(); // Map of { [path]: { verdict, coverage, lastCrawl, canonical, mobileUsability, isIndexed, lastChecked } }
-    ensureInspectionsFile();
-    const inspections = loadInspections();
+    
+    let inspections = {};
+    try {
+      ensureInspectionsFile();
+      inspections = loadInspections();
+    } catch (e) {
+      console.warn("Could not access local inspections file (expected in read-only environment):", e.message);
+    }
     
     Object.entries(body).forEach(([path, data]) => {
       inspections[path] = {
@@ -198,7 +204,12 @@ export async function POST(request) {
       };
     });
     
-    fs.writeFileSync(INSPECTIONS_FILE, JSON.stringify(inspections, null, 2), "utf8");
+    try {
+      fs.writeFileSync(INSPECTIONS_FILE, JSON.stringify(inspections, null, 2), "utf8");
+    } catch (e) {
+      console.warn("Failed to write GSC inspections cache to local disk (expected in read-only environment):", e.message);
+    }
+    
     return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
